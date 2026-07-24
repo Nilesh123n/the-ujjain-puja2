@@ -1,0 +1,6 @@
+{
+  "name": "Ujjain Puja",
+  "description": "Authentic Vedic Pujas & Astrology Services in Ujjain with online booking, live streaming, AI recommendations and consultation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
