@@ -61,9 +61,9 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
   return (
     <div className="pt-24 pb-20 animate-in fade-in duration-300">
       {/* PAGE HERO */}
-      <section className="bg-gradient-to-r from-[#5C3A1E] via-[#e07b39] to-[#f7ae62] text-white py-14 px-4 text-center relative overflow-hidden">
+      <section className="bg-[#C87A2F] text-white py-14 px-4 text-center relative overflow-hidden border-b-2 border-[#B5460F]">
         <div className="max-w-4xl mx-auto relative z-10 space-y-3">
-          <div className="flex items-center justify-center gap-2 text-xs text-amber-100 font-medium">
+          <div className="flex items-center justify-center gap-2 text-xs text-[#FDF6EC] font-medium">
             <span>{t('nav_home', 'Home')}</span>
             <i className="fas fa-chevron-right text-[10px]"></i>
             <span>{t('nav_puja', 'Puja')}</span>
@@ -71,7 +71,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
           <h1 className="font-cinzel text-3xl sm:text-5xl font-bold">
             {lang === 'hi' ? '🪔 उज्जैन सिद्ध वैदिक पूजा अनुष्ठान' : '🪔 Sacred Pujas at Ujjain'}
           </h1>
-          <p className="text-sm sm:text-base text-amber-100/90 max-w-xl mx-auto">
+          <p className="text-sm sm:text-base text-[#FDF6EC]/90 max-w-xl mx-auto">
             {lang === 'hi'
               ? 'उज्जैन के परदेश्वर महादेव, मंगलनाथ एवं त्रिवेणी धाम में 25+ सिद्ध पूजन एवं दोष निवारण।'
               : 'Explore 25+ authentic Vedic rituals, HAVAN, Jap Anushthans & Dosh Nivaran performed at Mahakal Nagari Ujjain.'}
@@ -110,7 +110,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
                 onClick={() => setActiveCategory(cat.id)}
                 className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
                   activeCategory === cat.id
-                    ? 'bg-gradient-to-r from-[#f7ae62] to-[#e09040] text-[#5C3A1E] border-[#e09040] shadow-xs'
+                    ? 'bg-[#B5460F] text-white border-[#B5460F] shadow-xs'
                     : 'bg-[#FDF6EC] text-[#5C3A1E] border-[#F5E6D0] hover:bg-[#F5E6D0]'
                 }`}
               >
@@ -259,13 +259,13 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
                       <div className="flex gap-2">
                         <button
                           onClick={() => onOpenDetail(puja)}
-                          className="bg-[#F5E6D0] text-[#5C3A1E] hover:bg-[#f7ae62] font-semibold text-xs px-3.5 py-2 rounded-xl transition-colors cursor-pointer"
+                          className="bg-[#F5E6D0] text-[#5C3A1E] hover:bg-[#B5460F] hover:text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition-colors cursor-pointer"
                         >
                           {t('card_details', 'Details')}
                         </button>
                         <button
                           onClick={() => onOpenBooking(puja)}
-                          className="bg-gradient-to-r from-[#f7ae62] to-[#e09040] hover:from-[#e09040] hover:to-[#c47a2a] text-[#5C3A1E] hover:text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-xs"
+                          className="bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-xs"
                         >
                           {t('card_book', 'Book Now')}
                         </button>
@@ -306,7 +306,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
                         </button>
                         <button
                           onClick={() => onOpenBooking(puja)}
-                          className="bg-gradient-to-r from-[#f7ae62] to-[#e09040] text-[#5C3A1E] font-bold text-xs px-4 py-2 rounded-xl cursor-pointer"
+                          className="bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-xs px-4 py-2 rounded-xl cursor-pointer"
                         >
                           {t('card_book', 'Book Now')}
                         </button>

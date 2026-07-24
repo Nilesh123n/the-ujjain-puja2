@@ -73,25 +73,25 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
   ];
 
   return (
-    <section id="ujjain-mahima" className="py-20 bg-[#FDF6EC] border-y-2 border-[#f7ae62]/40 relative overflow-hidden">
+    <section id="ujjain-mahima" className="py-20 bg-[#C87A2F] text-white border-y-2 border-[#B5460F] relative overflow-hidden">
       {/* BACKGROUND SHIVA YANTRA PATTERN */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#e09040_1px,transparent_1px)] [background-size:24px_24px]"></div>
+      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#FDF6EC_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         {/* SECTION HEADER */}
         <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
-          <div className="inline-flex items-center gap-2 bg-[#F5E6D0] border border-[#f7ae62] text-[#e09040] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-xs">
+          <div className="inline-flex items-center gap-2 bg-[#FDF6EC] border border-[#B5460F] text-[#B5460F] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
             <span>🕉️</span> {t('mahima_badge', 'Avantika Kshetra')}
           </div>
-          <h2 className="font-cinzel text-3xl sm:text-5xl font-bold text-[#5C3A1E] leading-tight">
+          <h2 className="font-cinzel text-3xl sm:text-5xl font-bold text-white leading-tight">
             {lang === 'hi' ? 'उज्जैन महिमा • पवित्र महाकाल अवंतिका क्षेत्र' : 'Ujjain Mahima • Holy Glory of Ujjain'}
           </h2>
-          <p className="text-sm sm:text-base text-[#8B6F5E] leading-relaxed">
+          <p className="text-sm sm:text-base text-[#FDF6EC]/90 leading-relaxed">
             {t('mahima_sub', 'Why performing Puja in sacred Ujjain bestows 1000x divine merit & removes all planetary doshas')}
           </p>
 
           {/* SANSKRIT SHLOKA BOX */}
-          <div className="mt-6 p-4 sm:p-5 bg-gradient-to-r from-[#F5E6D0] via-[#FFF8EE] to-[#F5E6D0] border-2 border-[#f7ae62]/50 rounded-2xl shadow-inner max-w-2xl mx-auto">
+          <div className="mt-6 p-4 sm:p-5 bg-[#FDF6EC] border-2 border-[#B5460F] rounded-2xl shadow-xl max-w-2xl mx-auto text-[#5C3A1E]">
             <p className="font-cinzel font-bold text-base sm:text-lg text-[#8B3A00] tracking-wide leading-relaxed">
               "अवंतिकायां विहितावतारं मुक्तिप्रदानाय च सज्जनानाम्।<br className="hidden sm:inline" />
               अकालमृत्योः परिरक्षणार्थं वन्दे महाकालमहासमुद्रम्॥"
@@ -112,8 +112,8 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
               onClick={() => setActiveTab(idx)}
               className={`shrink-0 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 border ${
                 activeTab === idx
-                  ? 'bg-gradient-to-r from-[#e07b39] to-[#d97706] text-white border-[#d97706] shadow-md scale-105'
-                  : 'bg-white text-[#5C3A1E] border-[#F5E6D0] hover:bg-[#F5E6D0]/50'
+                  ? 'bg-[#B5460F] text-white border-white shadow-lg scale-105'
+                  : 'bg-[#FDF6EC] text-[#5C3A1E] border-[#F5E6D0] hover:bg-white'
               }`}
             >
               <span>{idx === 0 ? '🔱' : idx === 1 ? '🪔' : idx === 2 ? '🔴' : idx === 3 ? '🪐' : idx === 4 ? '🌳' : '🌺'}</span>
@@ -123,7 +123,7 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
         </div>
 
         {/* ACTIVE FEATURED HERO CARD */}
-        <div className="bg-white border-2 border-[#f7ae62] rounded-3xl overflow-hidden shadow-2xl mb-12 grid grid-cols-1 lg:grid-cols-12">
+        <div className="bg-[#FDF6EC] border-2 border-[#B5460F] rounded-3xl overflow-hidden shadow-2xl mb-12 grid grid-cols-1 lg:grid-cols-12 text-[#5C3A1E]">
           <div className="lg:col-span-5 relative min-h-[280px] lg:min-h-[380px]">
             <img
               src={mahimaItems[activeTab].image}
@@ -131,7 +131,7 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent lg:hidden flex items-end p-6">
-              <span className="text-white text-xs font-bold uppercase tracking-wider bg-[#e07b39] px-3 py-1 rounded-full">
+              <span className="text-white text-xs font-bold uppercase tracking-wider bg-[#B5460F] px-3 py-1 rounded-full">
                 {lang === 'hi' ? mahimaItems[activeTab].subtitleHi : mahimaItems[activeTab].subtitleEn}
               </span>
             </div>
@@ -139,7 +139,7 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
 
           <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between space-y-6">
             <div>
-              <span className="hidden lg:inline-block text-[#e07b39] text-xs font-bold uppercase tracking-wider bg-[#F5E6D0] px-3 py-1 rounded-full mb-3">
+              <span className="hidden lg:inline-block text-[#B5460F] text-xs font-bold uppercase tracking-wider bg-[#F5E6D0] px-3 py-1 rounded-full mb-3">
                 {lang === 'hi' ? mahimaItems[activeTab].subtitleHi : mahimaItems[activeTab].subtitleEn}
               </span>
               <h3 className="font-cinzel text-2xl sm:text-3xl font-bold text-[#5C3A1E] mb-4">
@@ -158,7 +158,7 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
               {onBookNow && (
                 <button
                   onClick={onBookNow}
-                  className="bg-gradient-to-r from-[#f7ae62] to-[#e09040] hover:from-[#e09040] hover:to-[#c47a2a] text-[#5C3A1E] hover:text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-full shadow-md transition-all cursor-pointer flex items-center gap-2"
+                  className="bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-full shadow-md transition-all cursor-pointer flex items-center gap-2"
                 >
                   <span>📿</span> {lang === 'hi' ? 'उज्जैन में पूजा बुक करें' : 'Book Ujjain Puja'}
                 </button>

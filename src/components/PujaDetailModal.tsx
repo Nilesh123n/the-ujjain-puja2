@@ -177,7 +177,7 @@ export const PujaDetailModal: React.FC<PujaDetailModalProps> = ({
                 onClose();
                 onBook(puja);
               }}
-              className="flex-1 sm:flex-none bg-gradient-to-r from-[#f7ae62] to-[#e09040] hover:from-[#e09040] hover:to-[#c47a2a] text-[#5C3A1E] hover:text-white font-bold text-sm px-6 py-3 rounded-full transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer"
+              className="flex-1 sm:flex-none bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-sm px-6 py-3 rounded-full transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer"
             >
               <span>📿</span> {t('card_book', 'Book Now')}
             </button>

@@ -463,7 +463,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-[#f7ae62] via-[#e09040] to-[#c47a2a] hover:opacity-95 text-[#5C3A1E] hover:text-white font-bold text-base py-3.5 rounded-full shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-base py-3.5 rounded-full shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>

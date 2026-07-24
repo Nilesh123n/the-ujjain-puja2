@@ -44,25 +44,22 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
   return (
     <div className="pt-24 pb-20 animate-in fade-in duration-300">
       {/* COSMIC HERO */}
-      <section className="relative bg-gradient-to-b from-[#0d0d2b] via-[#1a0a3d] to-[#2d1b69] text-white py-20 px-4 text-center overflow-hidden">
-        {/* STARS OVERLAY */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/40 via-purple-950/20 to-transparent pointer-events-none"></div>
-
+      <section className="relative bg-[#C87A2F] text-white py-20 px-4 text-center overflow-hidden border-b-2 border-[#B5460F]">
         <div className="relative z-10 max-w-4xl mx-auto space-y-4">
-          <span className="inline-block bg-[#f0c040]/20 border border-[#f0c040] text-[#f0c040] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
+          <span className="inline-block bg-[#FDF6EC] border border-[#B5460F] text-[#B5460F] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
             🔮 Vedic Jyotish Consultation
           </span>
           <h1 className="font-cinzel text-3xl sm:text-5xl font-black text-white leading-tight">
-            Unlock Your <span className="text-[#f0c040]">Cosmic Destiny</span>
+            Unlock Your <span className="text-[#FDF6EC] underline decoration-[#B5460F]">Cosmic Destiny</span>
           </h1>
-          <p className="text-sm sm:text-base text-purple-200/90 max-w-xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-[#FDF6EC]/90 max-w-xl mx-auto leading-relaxed">
             Get 100% authentic birth chart (Janam Kundali) analysis, gun milan & planetary remedies directly from senior Ujjain Vedic astrologers.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 pt-4">
             <a
               href="#consult-form"
-              className="bg-gradient-to-r from-[#f0c040] to-[#d4a017] text-[#0d0d2b] font-bold text-sm px-7 py-3.5 rounded-full shadow-lg hover:shadow-yellow-500/20 transition-all cursor-pointer"
+              className="bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-sm px-7 py-3.5 rounded-full shadow-lg transition-all cursor-pointer"
             >
               ⭐ Book Personal Consultation
             </a>
@@ -70,9 +67,9 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
               href="https://wa.me/919993540314"
               target="_blank"
               rel="noreferrer"
-              className="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold text-sm px-6 py-3.5 rounded-full transition-all flex items-center gap-2"
+              className="bg-[#25D366] hover:bg-[#128C7E] text-white font-bold text-sm px-6 py-3.5 rounded-full transition-all flex items-center gap-2 shadow-md"
             >
-              <i className="fab fa-whatsapp text-emerald-400 text-base"></i> Chat on WhatsApp
+              <i className="fab fa-whatsapp text-white text-base"></i> Chat on WhatsApp
             </a>
           </div>
         </div>
@@ -116,13 +113,13 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
               <div className="pt-4 border-t border-[#F5E6D0] flex items-center justify-between">
                 <div>
                   <span className="text-[10px] text-[#8B6F5E] block">Fee per session</span>
-                  <span className="font-cinzel text-xl font-bold text-[#6c3483]">{srv.priceDisplay}</span>
+                  <span className="font-cinzel text-xl font-bold text-[#e09040]">{srv.priceDisplay}</span>
                 </div>
                 <a
                   href={`https://wa.me/919993540314?text=I want to book ${encodeURIComponent(srv.title)}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="bg-gradient-to-r from-[#6c3483] to-[#8e44ad] text-white font-bold text-xs px-5 py-2.5 rounded-full hover:opacity-90 transition-all cursor-pointer shadow-xs"
+                  className="bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-xs px-5 py-2.5 rounded-full transition-all cursor-pointer shadow-xs"
                 >
                   Book Session
                 </a>
@@ -133,16 +130,16 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
       </section>
 
       {/* RASHIFAL / ZODIAC SELECTOR */}
-      <section className="py-20 bg-gradient-to-br from-[#0d0d2b] to-[#1a0a3d] text-white">
+      <section className="py-20 bg-[#C87A2F] text-white border-y-2 border-[#B5460F]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
-            <span className="inline-block bg-[#f0c040]/20 border border-[#f0c040] text-[#f0c040] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-3">
+            <span className="inline-block bg-[#FDF6EC] border border-[#B5460F] text-[#B5460F] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-3 shadow-md">
               Daily Rashifal
             </span>
             <h2 className="font-cinzel text-3xl sm:text-4xl font-bold text-white">
               Check Today's Horoscope
             </h2>
-            <p className="text-xs sm:text-sm text-purple-200/80 mt-2">
+            <p className="text-xs sm:text-sm text-[#FDF6EC]/90 mt-2">
               Select your Zodiac Rashi below for today's planetary prediction & lucky highlights.
             </p>
           </div>
@@ -155,28 +152,28 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
                 onClick={() => setSelectedZodiac(z)}
                 className={`p-3.5 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
                   selectedZodiac.id === z.id
-                    ? 'bg-[#f0c040]/20 border-[#f0c040] text-white shadow-lg shadow-yellow-500/10 scale-105'
-                    : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'
+                    ? 'bg-[#B5460F] border-white text-white shadow-lg scale-105'
+                    : 'bg-[#FDF6EC] border-[#F5E6D0] text-[#5C3A1E] hover:bg-white'
                 }`}
               >
                 <span className="text-2xl mb-1">{z.symbol}</span>
                 <span className="text-xs font-bold line-clamp-1">{z.name}</span>
-                <span className="text-[10px] text-purple-300/70">{z.dates}</span>
+                <span className="text-[10px] opacity-80">{z.dates}</span>
               </button>
             ))}
           </div>
 
           {/* SELECTED RASHIFAL RESULT */}
-          <div className="bg-white/10 border-2 border-[#f0c040]/40 rounded-3xl p-6 sm:p-8 backdrop-blur-md max-w-3xl mx-auto space-y-4 animate-in fade-in duration-300">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="bg-[#FDF6EC] border-2 border-[#B5460F] rounded-3xl p-6 sm:p-8 text-[#5C3A1E] max-w-3xl mx-auto space-y-4 shadow-2xl animate-in fade-in duration-300">
+            <div className="flex items-center justify-between border-b border-[#F5E6D0] pb-4">
               <div className="flex items-center gap-3">
                 <span className="text-4xl">{selectedZodiac.symbol}</span>
                 <div>
-                  <h3 className="font-cinzel text-xl font-bold text-[#f0c040]">{selectedZodiac.name} Rashifal</h3>
-                  <span className="text-xs text-purple-200">{selectedZodiac.dates}</span>
+                  <h3 className="font-cinzel text-xl font-bold text-[#B5460F]">{selectedZodiac.name} Rashifal</h3>
+                  <span className="text-xs text-[#8B6F5E]">{selectedZodiac.dates}</span>
                 </div>
               </div>
-              <span className="bg-[#f0c040] text-[#0d0d2b] font-bold text-[10px] px-3 py-1 rounded-full uppercase">
+              <span className="bg-[#B5460F] text-white font-bold text-[10px] px-3 py-1 rounded-full uppercase">
                 Today's Reading
               </span>
             </div>
@@ -248,11 +245,11 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
       </section>
 
       {/* CONSULTATION BOOKING FORM */}
-      <section id="consult-form" className="py-20 bg-[#FDF6EC] border-t-2 border-[#F5E6D0]">
+      <section id="consult-form" className="py-20 bg-[#C87A2F] border-t-2 border-[#B5460F] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="bg-white border-2 border-[#f7ae62] rounded-3xl p-6 sm:p-10 shadow-2xl">
+          <div className="bg-[#FDF6EC] border-2 border-[#B5460F] rounded-3xl p-6 sm:p-10 shadow-2xl text-[#5C3A1E]">
             <div className="text-center mb-8">
-              <span className="inline-block bg-[#F5E6D0] text-[#e09040] font-bold text-xs px-4 py-1 rounded-full uppercase mb-2">
+              <span className="inline-block bg-[#F5E6D0] border border-[#B5460F] text-[#B5460F] font-bold text-xs px-4 py-1 rounded-full uppercase mb-2 shadow-xs">
                 Personal Session
               </span>
               <h2 className="font-cinzel text-2xl sm:text-3xl font-bold text-[#5C3A1E]">
@@ -365,7 +362,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#6c3483] to-[#8e44ad] text-white font-bold text-sm py-3.5 rounded-full shadow-lg hover:opacity-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-sm py-3.5 rounded-full shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>🔮</span> Request Astrology Session
               </button>

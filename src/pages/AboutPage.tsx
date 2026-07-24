@@ -12,9 +12,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
   return (
     <div className="pt-24 pb-20 animate-in fade-in duration-300">
       {/* PAGE HERO */}
-      <section className="bg-gradient-to-r from-[#5C3A1E] via-[#e07b39] to-[#f7ae62] text-white py-16 px-4 text-center">
+      <section className="bg-[#C87A2F] text-white py-16 px-4 text-center border-b-2 border-[#B5460F]">
         <div className="max-w-4xl mx-auto space-y-3">
-          <div className="flex items-center justify-center gap-2 text-xs text-amber-100 font-medium">
+          <div className="flex items-center justify-center gap-2 text-xs text-[#FDF6EC] font-medium">
             <span>{t('nav_home', 'Home')}</span>
             <i className="fas fa-chevron-right text-[10px]"></i>
             <span>{t('nav_about', 'About Us')}</span>
@@ -22,7 +22,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
           <h1 className="font-cinzel text-3xl sm:text-5xl font-bold">
             {lang === 'hi' ? 'ℹ️ हमारे विद्वान एवं तीर्थ सेवा' : 'ℹ️ About Ujjain Puja'}
           </h1>
-          <p className="text-sm sm:text-base text-amber-100/90 max-w-xl mx-auto">
+          <p className="text-sm sm:text-base text-[#FDF6EC]/90 max-w-xl mx-auto">
             {lang === 'hi'
               ? 'उज्जैन के पावन धाम से सिद्ध पूजन एवं वैदिक संस्कृति का प्रसार।'
               : 'Bringing authentic Vedic traditions, Mahakal blessings, and certified scholars to devotees around the world.'}
@@ -31,66 +31,66 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
       </section>
 
       {/* STATS BAR */}
-      <section className="bg-white py-8 border-b-2 border-[#F5E6D0]">
+      <section className="bg-[#FDF6EC] py-8 border-b-2 border-[#C87A2F]/30">
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div>
-            <span className="font-cinzel text-3xl font-black text-[#e09040] block">150+</span>
-            <span className="text-xs text-[#8B6F5E]">{lang === 'hi' ? 'संतुष्ट परिवार' : 'Happy Families Served'}</span>
+            <span className="font-cinzel text-3xl font-black text-[#B5460F] block">150+</span>
+            <span className="text-xs text-[#5C3A1E] font-semibold">{lang === 'hi' ? 'संतुष्ट परिवार' : 'Happy Families Served'}</span>
           </div>
           <div>
-            <span className="font-cinzel text-3xl font-black text-[#e09040] block">85+</span>
-            <span className="text-xs text-[#8B6F5E]">{lang === 'hi' ? 'शहरों में सेवा' : 'Cities Reached'}</span>
+            <span className="font-cinzel text-3xl font-black text-[#B5460F] block">85+</span>
+            <span className="text-xs text-[#5C3A1E] font-semibold">{lang === 'hi' ? 'शहरों में सेवा' : 'Cities Reached'}</span>
           </div>
           <div>
-            <span className="font-cinzel text-3xl font-black text-[#e09040] block">25+</span>
-            <span className="text-xs text-[#8B6F5E]">{lang === 'hi' ? 'वैदिक विद्वान' : 'Certified Pandits'}</span>
+            <span className="font-cinzel text-3xl font-black text-[#B5460F] block">25+</span>
+            <span className="text-xs text-[#5C3A1E] font-semibold">{lang === 'hi' ? 'वैदिक विद्वान' : 'Certified Pandits'}</span>
           </div>
           <div>
-            <span className="font-cinzel text-3xl font-black text-[#e09040] block">100%</span>
-            <span className="text-xs text-[#8B6F5E]">{lang === 'hi' ? 'शास्त्रोक्त विधि' : 'Authentic Vidhi'}</span>
+            <span className="font-cinzel text-3xl font-black text-[#B5460F] block">100%</span>
+            <span className="text-xs text-[#5C3A1E] font-semibold">{lang === 'hi' ? 'शास्त्रोक्त विधि' : 'Authentic Vidhi'}</span>
           </div>
         </div>
       </section>
 
       {/* SACRED JOURNEY STORY */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <section className="py-20 bg-[#C87A2F] text-white border-b-2 border-[#B5460F]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="relative">
-            <div className="aspect-4/3 bg-gradient-to-br from-[#F5E6D0] to-[#f7ae62]/30 rounded-3xl flex items-center justify-center text-8xl shadow-xl border-2 border-[#f7ae62]">
+            <div className="aspect-4/3 bg-[#FDF6EC] rounded-3xl flex items-center justify-center text-8xl shadow-xl border-2 border-[#B5460F] text-[#5C3A1E]">
               🛕
             </div>
-            <div className="absolute -bottom-6 -right-6 bg-gradient-to-r from-[#5C3A1E] to-[#e07b39] text-white p-5 rounded-2xl shadow-xl text-center">
+            <div className="absolute -bottom-6 -right-6 bg-[#B5460F] text-white p-5 rounded-2xl shadow-xl text-center">
               <span className="font-cinzel text-3xl font-black block">Ujjain</span>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-amber-200">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-[#FDF6EC]">
                 {lang === 'hi' ? 'अवंतिका तीर्थ' : 'Holy Avantika Seva'}
               </span>
             </div>
           </div>
 
           <div className="space-y-4">
-            <span className="inline-block bg-[#F5E6D0] text-[#e09040] font-bold text-xs px-3.5 py-1 rounded-full uppercase">
+            <span className="inline-block bg-[#FDF6EC] text-[#B5460F] font-bold text-xs px-3.5 py-1 rounded-full uppercase shadow-md">
               {lang === 'hi' ? 'हमारा संकल्प' : 'Our Journey'}
             </span>
-            <h2 className="font-cinzel text-2xl sm:text-4xl font-bold text-[#5C3A1E] leading-tight">
+            <h2 className="font-cinzel text-2xl sm:text-4xl font-bold text-white leading-tight">
               {lang === 'hi'
                 ? 'अवंतिका तीर्थ में सनातन संस्कृति एवं वैदिक पूजन का संरक्षण'
                 : 'Preserving Vedic Sanatana Traditions in Sacred Ujjain'}
             </h2>
-            <p className="text-xs sm:text-sm text-[#8B6F5E] leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#FDF6EC]/90 leading-relaxed">
               Ujjain Puja was established with a singular devotion: making authentic Vedic rituals accessible to every devotee across India and globally. Located in Ujjain — the eternal city of Lord Mahakal and Avantika Kshetra — we serve with absolute purity.
             </p>
-            <p className="text-xs sm:text-sm text-[#8B6F5E] leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#FDF6EC]/90 leading-relaxed">
               Every ritual is performed adhering strictly to ancient Samhita, Ashtadhyay, and Agamas. Whether attending in-person at Pardeshwar Mahadev or participating live via high-definition video calls, devotees experience absolute purity and peace.
             </p>
 
             <div className="pt-2 space-y-2">
-              <div className="flex items-center gap-3 bg-[#FDF6EC] p-3 rounded-xl border border-[#F5E6D0]">
-                <i className="fas fa-certificate text-[#e09040] text-lg"></i>
-                <span className="text-xs font-bold text-[#5C3A1E]">100% Certified Kashi & Ujjain Vidyapeeth Scholars</span>
+              <div className="flex items-center gap-3 bg-[#FDF6EC] p-3 rounded-xl border border-[#B5460F] text-[#5C3A1E]">
+                <i className="fas fa-certificate text-[#B5460F] text-lg"></i>
+                <span className="text-xs font-bold">100% Certified Kashi & Ujjain Vidyapeeth Scholars</span>
               </div>
-              <div className="flex items-center gap-3 bg-[#FDF6EC] p-3 rounded-xl border border-[#F5E6D0]">
-                <i className="fas fa-video text-[#e09040] text-lg"></i>
-                <span className="text-xs font-bold text-[#5C3A1E]">Live Video Streaming for Devotees in 85+ Cities</span>
+              <div className="flex items-center gap-3 bg-[#FDF6EC] p-3 rounded-xl border border-[#B5460F] text-[#5C3A1E]">
+                <i className="fas fa-video text-[#B5460F] text-lg"></i>
+                <span className="text-xs font-bold">Live Video Streaming for Devotees in 85+ Cities</span>
               </div>
             </div>
           </div>
@@ -139,28 +139,28 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
       </section>
 
       {/* TRUST BADGES */}
-      <section className="py-16 bg-[#FDF6EC] border-t-2 border-[#F5E6D0] text-center">
+      <section className="py-16 bg-[#C87A2F] border-t-2 border-[#B5460F] text-white text-center">
         <div className="max-w-5xl mx-auto px-4 space-y-6">
-          <h3 className="font-cinzel text-2xl font-bold text-[#5C3A1E]">
+          <h3 className="font-cinzel text-2xl font-bold text-white">
             {lang === 'hi' ? 'भरोसा एवं प्रमाण पत्र' : 'Trust Badges & Certifications'}
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="bg-white p-4 rounded-2xl border border-[#F5E6D0] shadow-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-[#5C3A1E]">
+            <div className="bg-[#FDF6EC] p-4 rounded-2xl border border-[#B5460F] shadow-xs">
               <span className="text-3xl block mb-1">🏆</span>
               <span className="text-xs font-bold text-[#5C3A1E] block">Top Puja Platform</span>
               <span className="text-[10px] text-[#8B6F5E]">Ujjain Tirth</span>
             </div>
-            <div className="bg-white p-4 rounded-2xl border border-[#F5E6D0] shadow-xs">
+            <div className="bg-[#FDF6EC] p-4 rounded-2xl border border-[#B5460F] shadow-xs">
               <span className="text-3xl block mb-1">🔒</span>
               <span className="text-xs font-bold text-[#5C3A1E] block">256-Bit SSL</span>
               <span className="text-[10px] text-[#8B6F5E]">100% Payment Safe</span>
             </div>
-            <div className="bg-white p-4 rounded-2xl border border-[#F5E6D0] shadow-xs">
+            <div className="bg-[#FDF6EC] p-4 rounded-2xl border border-[#B5460F] shadow-xs">
               <span className="text-3xl block mb-1">📜</span>
               <span className="text-xs font-bold text-[#5C3A1E] block">Vedic Authenticity</span>
               <span className="text-[10px] text-[#8B6F5E]">Scripture Compliant</span>
             </div>
-            <div className="bg-white p-4 rounded-2xl border border-[#F5E6D0] shadow-xs">
+            <div className="bg-[#FDF6EC] p-4 rounded-2xl border border-[#B5460F] shadow-xs">
               <span className="text-3xl block mb-1">📦</span>
               <span className="text-xs font-bold text-[#5C3A1E] block">Prasad Shipment</span>
               <span className="text-[10px] text-[#8B6F5E]">Tracked Delivery</span>
@@ -169,7 +169,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
           <div className="pt-4">
             <button
               onClick={onOpenBooking}
-              className="bg-gradient-to-r from-[#f7ae62] to-[#e09040] text-[#5C3A1E] font-bold text-sm px-8 py-3.5 rounded-full shadow-md cursor-pointer"
+              className="bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-sm px-8 py-3.5 rounded-full shadow-lg transition-all cursor-pointer"
             >
               📿 {t('btn_book_puja', 'Book Your Puja Today')}
             </button>

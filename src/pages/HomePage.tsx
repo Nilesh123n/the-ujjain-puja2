@@ -58,13 +58,13 @@ export const HomePage: React.FC<HomePageProps> = ({
           <div className="flex flex-wrap gap-4 justify-center pt-2">
             <button
               onClick={() => onOpenBooking()}
-              className="bg-gradient-to-r from-[#f7ae62] via-[#e09040] to-[#c47a2a] text-[#5C3A1E] hover:text-white font-bold text-base px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 cursor-pointer flex items-center gap-2"
+              className="bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-base px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 cursor-pointer flex items-center gap-2"
             >
               <span>🙏</span> {t('btn_book_puja', 'Book Puja Now')}
             </button>
             <a
               href="#ai-section"
-              className="bg-transparent hover:bg-[#f7ae62]/20 border-2 border-[#f7ae62] text-[#5C3A1E] font-bold text-base px-7 py-3.5 rounded-full transition-all cursor-pointer flex items-center gap-2"
+              className="bg-transparent hover:bg-[#B5460F]/10 border-2 border-[#B5460F] text-[#B5460F] font-bold text-base px-7 py-3.5 rounded-full transition-all cursor-pointer flex items-center gap-2"
             >
               <span>🤖</span> {t('btn_ai_rec', 'AI Recommendation')}
             </a>
@@ -95,7 +95,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* MARQUEE */}
-      <div className="bg-gradient-to-r from-[#f7ae62] via-[#e09040] to-[#f7ae62] py-3.5 border-y border-[#c47a2a] overflow-hidden text-[#5C3A1E] font-cinzel font-semibold text-sm tracking-wider">
+      <div className="bg-[#C87A2F] py-3.5 border-y border-[#B5460F] overflow-hidden text-white font-cinzel font-semibold text-sm tracking-wider shadow-inner">
         <div className="animate-marquee whitespace-nowrap flex gap-12">
           <span>🙏 Rudrabhishek Puja</span>
           <span>🪔 Laghu Rudrabhishek</span>
@@ -111,9 +111,6 @@ export const HomePage: React.FC<HomePageProps> = ({
           <span>🪔 Laghu Rudrabhishek</span>
         </div>
       </div>
-
-      {/* UJJAIN MAHIMA SECTION */}
-      <UjjainMahima onBookNow={() => onOpenBooking()} />
 
       {/* AI RECOMMENDATION WIZARD */}
       <AiRecommendation onSelectPuja={(p) => onOpenBooking(p)} />
@@ -201,7 +198,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   </button>
                   <button
                     onClick={() => onOpenBooking(puja)}
-                    className="bg-gradient-to-r from-[#f7ae62] to-[#e09040] hover:from-[#e09040] hover:to-[#c47a2a] text-[#5C3A1E] hover:text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-xs"
+                    className="bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-xs"
                   >
                     {t('card_book', 'Book Now')}
                   </button>
@@ -214,7 +211,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="text-center mt-12">
           <button
             onClick={() => setActiveTab('pujas')}
-            className="bg-[#5C3A1E] text-[#f7ae62] hover:bg-[#2C1A0E] font-bold text-sm px-8 py-3.5 rounded-full transition-all shadow-md cursor-pointer"
+            className="bg-[#B5460F] text-white hover:bg-[#8E350A] font-bold text-sm px-8 py-3.5 rounded-full transition-all shadow-md cursor-pointer"
           >
             {t('btn_view_all_pujas', 'View All 25+ Pujas →')}
           </button>
@@ -222,13 +219,13 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* WHY CHOOSE US */}
-      <section className="py-20 bg-gradient-to-br from-[#F5E6D0]/60 via-[#FDF6EC] to-[#F5E6D0]/60 border-y border-[#f7ae62]/30">
+      <section className="py-20 bg-[#C87A2F] text-white border-y border-[#B5460F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-12">
-            <span className="inline-block bg-[#FDF6EC] border border-[#f7ae62] text-[#e09040] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-3">
+            <span className="inline-block bg-[#FDF6EC] border border-[#B5460F] text-[#B5460F] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-3 shadow-md">
               {t('why_badge', 'Why Us')}
             </span>
-            <h2 className="font-cinzel text-3xl sm:text-4xl font-bold text-[#5C3A1E]">
+            <h2 className="font-cinzel text-3xl sm:text-4xl font-bold text-white">
               {t('why_title', 'Why Devotees Choose Ujjain Puja?')}
             </h2>
           </div>
@@ -325,6 +322,9 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
+      {/* UJJAIN MAHIMA / AVANTIKA KSHETRA SECTION (PAVED AT BOTTOM OF PAGE) */}
+      <UjjainMahima onBookNow={() => onOpenBooking()} />
+
       {/* FAQ SECTION */}
       <section className="py-20 bg-[#FDF6EC] border-t-2 border-[#F5E6D0]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
@@ -359,12 +359,12 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* CTA SECTION */}
-      <section className="py-16 bg-gradient-to-r from-[#f7ae62] via-[#e09040] to-[#c47a2a] text-[#5C3A1E] text-center px-4">
+      <section className="py-16 bg-[#C87A2F] text-white text-center px-4 border-t-2 border-[#B5460F]">
         <div className="max-w-3xl mx-auto space-y-4">
           <h2 className="font-cinzel text-2xl sm:text-4xl font-bold">
             🙏 {lang === 'hi' ? 'महाकाल कृपा एवं दिव्य फल प्राप्त करें' : 'Ready to Experience Divine Blessings?'}
           </h2>
-          <p className="text-sm sm:text-base font-medium text-[#5C3A1E]/90">
+          <p className="text-sm sm:text-base font-medium text-[#FDF6EC]/90">
             {lang === 'hi'
               ? 'आज ही अपना अनुष्ठान बुक करें एवं उज्जैन के सिद्ध आचार्यों द्वारा महाकाल का आशीर्वाद प्राप्त करें।'
               : 'Book your puja today and let our experienced pandits guide you towards spiritual peace, prosperity, and divine Mahakal grace.'}
@@ -372,7 +372,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           <div className="flex flex-wrap justify-center gap-4 pt-3">
             <button
               onClick={() => onOpenBooking()}
-              className="bg-[#5C3A1E] hover:bg-[#2C1A0E] text-[#f7ae62] font-bold text-sm px-8 py-3.5 rounded-full shadow-lg transition-all cursor-pointer"
+              className="bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-sm px-8 py-3.5 rounded-full shadow-lg transition-all cursor-pointer"
             >
               📿 {t('btn_book_puja', 'Book Puja Now')}
             </button>

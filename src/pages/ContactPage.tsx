@@ -51,58 +51,59 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
   return (
     <div className="pt-24 pb-20 animate-in fade-in duration-300">
       {/* PAGE HERO */}
-      <section className="bg-gradient-to-r from-[#5C3A1E] via-[#e07b39] to-[#f7ae62] text-white py-16 px-4 text-center">
+      <section className="bg-[#C87A2F] text-white py-16 px-4 text-center border-b-2 border-[#B5460F]">
         <div className="max-w-4xl mx-auto space-y-3">
-          <div className="flex items-center justify-center gap-2 text-xs text-amber-100 font-medium">
+          <div className="flex items-center justify-center gap-2 text-xs text-[#FDF6EC] font-medium">
             <span>Home</span>
             <i className="fas fa-chevron-right text-[10px]"></i>
             <span>Contact Us</span>
           </div>
           <h1 className="font-cinzel text-3xl sm:text-5xl font-bold">📞 Get in Touch with Us</h1>
-          <p className="text-sm sm:text-base text-amber-100/90 max-w-xl mx-auto">
+          <p className="text-sm sm:text-base text-[#FDF6EC]/90 max-w-xl mx-auto">
             Our temple coordinators & pandits are available 24/7 to answer your queries and organize your rituals.
           </p>
         </div>
       </section>
 
       {/* CONTACT INFO CARDS */}
-      <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white border-2 border-[#F5E6D0] hover:border-[#25D366] rounded-3xl p-6 text-center shadow-md transition-all group">
-            <div className="w-16 h-16 rounded-full bg-emerald-50 text-[#25D366] text-3xl flex items-center justify-center mx-auto mb-4 border border-emerald-200 group-hover:scale-110 transition-transform">
-              <i className="fab fa-whatsapp"></i>
+      <section className="py-12 bg-[#FDF6EC] border-b-2 border-[#C87A2F]/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white border-2 border-[#F5E6D0] hover:border-[#25D366] rounded-3xl p-6 text-center shadow-md transition-all group">
+              <div className="w-16 h-16 rounded-full bg-emerald-50 text-[#25D366] text-3xl flex items-center justify-center mx-auto mb-4 border border-emerald-200 group-hover:scale-110 transition-transform">
+                <i className="fab fa-whatsapp"></i>
+              </div>
+              <h3 className="font-cinzel text-base font-bold text-[#5C3A1E]">WhatsApp Us</h3>
+              <p className="text-xs text-[#8B6F5E] my-1">Fastest response within minutes</p>
+              <a href="https://wa.me/919993540314" target="_blank" rel="noreferrer" className="text-sm font-bold text-[#5C3A1E] block mb-3 hover:text-[#25D366]">
+                +91 99935 40314
+              </a>
+              <a
+                href="https://wa.me/919993540314"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-block bg-[#25D366] text-white font-bold text-xs px-5 py-2 rounded-full shadow-xs hover:bg-[#128C7E] transition-colors"
+              >
+                Chat Now
+              </a>
             </div>
-            <h3 className="font-cinzel text-base font-bold text-[#5C3A1E]">WhatsApp Us</h3>
-            <p className="text-xs text-[#8B6F5E] my-1">Fastest response within minutes</p>
-            <a href="https://wa.me/919993540314" target="_blank" rel="noreferrer" className="text-sm font-bold text-[#5C3A1E] block mb-3 hover:text-[#25D366]">
-              +91 99935 40314
-            </a>
-            <a
-              href="https://wa.me/919993540314"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-block bg-[#25D366] text-white font-bold text-xs px-5 py-2 rounded-full shadow-xs hover:bg-[#128C7E] transition-colors"
-            >
-              Chat Now
-            </a>
-          </div>
 
-          <div className="bg-white border-2 border-[#F5E6D0] hover:border-[#e09040] rounded-3xl p-6 text-center shadow-md transition-all group">
-            <div className="w-16 h-16 rounded-full bg-amber-50 text-[#e09040] text-3xl flex items-center justify-center mx-auto mb-4 border border-amber-200 group-hover:scale-110 transition-transform">
-              <i className="fas fa-phone-alt"></i>
+            <div className="bg-white border-2 border-[#F5E6D0] hover:border-[#B5460F] rounded-3xl p-6 text-center shadow-md transition-all group">
+              <div className="w-16 h-16 rounded-full bg-amber-50 text-[#B5460F] text-3xl flex items-center justify-center mx-auto mb-4 border border-amber-200 group-hover:scale-110 transition-transform">
+                <i className="fas fa-phone-alt"></i>
+              </div>
+              <h3 className="font-cinzel text-base font-bold text-[#5C3A1E]">Call Directly</h3>
+              <p className="text-xs text-[#8B6F5E] my-1">Mon - Sun: 6:00 AM - 10:00 PM</p>
+              <a href="tel:+919993540314" className="text-sm font-bold text-[#5C3A1E] block mb-3 hover:text-[#B5460F]">
+                +91 99935 40314
+              </a>
+              <a
+                href="tel:+919993540314"
+                className="inline-block bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-xs px-5 py-2 rounded-full shadow-xs"
+              >
+                Call Now
+              </a>
             </div>
-            <h3 className="font-cinzel text-base font-bold text-[#5C3A1E]">Call Directly</h3>
-            <p className="text-xs text-[#8B6F5E] my-1">Mon - Sun: 6:00 AM - 10:00 PM</p>
-            <a href="tel:+919993540314" className="text-sm font-bold text-[#5C3A1E] block mb-3 hover:text-[#e09040]">
-              +91 99935 40314
-            </a>
-            <a
-              href="tel:+919993540314"
-              className="inline-block bg-gradient-to-r from-[#f7ae62] to-[#e09040] text-[#5C3A1E] font-bold text-xs px-5 py-2 rounded-full shadow-xs"
-            >
-              Call Now
-            </a>
-          </div>
 
           <div className="bg-white border-2 border-[#F5E6D0] hover:border-blue-400 rounded-3xl p-6 text-center shadow-md transition-all group">
             <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 text-3xl flex items-center justify-center mx-auto mb-4 border border-blue-200 group-hover:scale-110 transition-transform">
@@ -140,57 +141,59 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
             </a>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* MAIN CONTACT SECTION & FORM */}
-      <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* SUPPORT HOURS & SOCIAL */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white border-2 border-[#F5E6D0] rounded-3xl p-6 shadow-md">
-              <h3 className="font-cinzel text-xl font-bold text-[#5C3A1E] mb-4 flex items-center gap-2">
-                <i className="fas fa-clock text-[#e09040]"></i> Temple & Seva Timings
-              </h3>
-              <div className="space-y-3 text-xs">
-                <div className="flex justify-between items-center p-2.5 bg-[#FDF6EC] rounded-xl border border-[#F5E6D0]">
-                  <span className="font-semibold text-[#5C3A1E]">🌅 Morning Rituals</span>
-                  <span className="text-[#8B6F5E]">6:00 AM – 12:00 PM</span>
-                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Open</span>
+      <section className="py-12 bg-[#C87A2F] border-b-2 border-[#B5460F] text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* SUPPORT HOURS & SOCIAL */}
+            <div className="lg:col-span-5 space-y-6 text-[#5C3A1E]">
+              <div className="bg-[#FDF6EC] border-2 border-[#B5460F] rounded-3xl p-6 shadow-md">
+                <h3 className="font-cinzel text-xl font-bold text-[#5C3A1E] mb-4 flex items-center gap-2">
+                  <i className="fas fa-clock text-[#B5460F]"></i> Temple & Seva Timings
+                </h3>
+                <div className="space-y-3 text-xs">
+                  <div className="flex justify-between items-center p-2.5 bg-white rounded-xl border border-[#F5E6D0]">
+                    <span className="font-semibold text-[#5C3A1E]">🌅 Morning Rituals</span>
+                    <span className="text-[#8B6F5E]">6:00 AM – 12:00 PM</span>
+                    <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Open</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2.5 bg-white rounded-xl border border-[#F5E6D0]">
+                    <span className="font-semibold text-[#5C3A1E]">☀️ Afternoon Seva</span>
+                    <span className="text-[#8B6F5E]">12:00 PM – 4:00 PM</span>
+                    <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Open</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2.5 bg-white rounded-xl border border-[#F5E6D0]">
+                    <span className="font-semibold text-[#5C3A1E]">🌆 Evening Aarti & Jap</span>
+                    <span className="text-[#8B6F5E]">4:00 PM – 10:00 PM</span>
+                    <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Open</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2.5 bg-white rounded-xl border border-[#F5E6D0]">
+                    <span className="font-semibold text-[#5C3A1E]">📱 WhatsApp Support</span>
+                    <span className="text-[#8B6F5E]">24 Hours / 7 Days</span>
+                    <span className="bg-[#25D366] text-white text-[10px] font-bold px-2 py-0.5 rounded-md">Always Active</span>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center p-2.5 bg-[#FDF6EC] rounded-xl border border-[#F5E6D0]">
-                  <span className="font-semibold text-[#5C3A1E]">☀️ Afternoon Seva</span>
-                  <span className="text-[#8B6F5E]">12:00 PM – 4:00 PM</span>
-                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Open</span>
-                </div>
-                <div className="flex justify-between items-center p-2.5 bg-[#FDF6EC] rounded-xl border border-[#F5E6D0]">
-                  <span className="font-semibold text-[#5C3A1E]">🌆 Evening Aarti & Jap</span>
-                  <span className="text-[#8B6F5E]">4:00 PM – 10:00 PM</span>
-                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Open</span>
-                </div>
-                <div className="flex justify-between items-center p-2.5 bg-[#FDF6EC] rounded-xl border border-[#F5E6D0]">
-                  <span className="font-semibold text-[#5C3A1E]">📱 WhatsApp Support</span>
-                  <span className="text-[#8B6F5E]">24 Hours / 7 Days</span>
-                  <span className="bg-[#25D366] text-white text-[10px] font-bold px-2 py-0.5 rounded-md">Always Active</span>
-                </div>
+              </div>
+
+              <div className="bg-[#FDF6EC] border-2 border-[#B5460F] rounded-3xl p-6 shadow-md">
+                <h4 className="font-cinzel text-lg font-bold text-[#5C3A1E] mb-2">🚗 How to Reach Ujjain</h4>
+                <ul className="text-xs text-[#5C3A1E]/90 space-y-2 leading-relaxed">
+                  <li>• <strong>By Train:</strong> Ujjain Junction (UJN) is well connected nationwide. Temple is 3 km from station.</li>
+                  <li>• <strong>By Air:</strong> Nearest airport is Indore Devi Ahilya Bai Holkar Airport (IDR), 55 km via expressway.</li>
+                  <li>• <strong>By Road:</strong> Direct cabs and MP State luxury buses available from Indore, Bhopal, Ahmedabad.</li>
+                </ul>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-[#F5E6D0] to-[#f7ae62]/20 border-2 border-[#f7ae62] rounded-3xl p-6 shadow-md">
-              <h4 className="font-cinzel text-lg font-bold text-[#5C3A1E] mb-2">🚗 How to Reach Ujjain</h4>
-              <ul className="text-xs text-[#5C3A1E]/90 space-y-2 leading-relaxed">
-                <li>• <strong>By Train:</strong> Ujjain Junction (UJN) is well connected nationwide. Temple is 3 km from station.</li>
-                <li>• <strong>By Air:</strong> Nearest airport is Indore Devi Ahilya Bai Holkar Airport (IDR), 55 km via expressway.</li>
-                <li>• <strong>By Road:</strong> Direct cabs and MP State luxury buses available from Indore, Bhopal, Ahmedabad.</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* CONTACT FORM */}
-          <div className="lg:col-span-7 bg-white border-2 border-[#f7ae62] rounded-3xl p-6 sm:p-8 shadow-xl">
-            <h3 className="font-cinzel text-2xl font-bold text-[#5C3A1E] mb-1">✉️ Send Message to Pandit Team</h3>
-            <p className="text-xs text-[#8B6F5E] mb-6">
-              Fill details below. Our temple coordinator will review your request and get back to you immediately.
-            </p>
+            {/* CONTACT FORM */}
+            <div className="lg:col-span-7 bg-[#FDF6EC] border-2 border-[#B5460F] rounded-3xl p-6 sm:p-8 shadow-xl text-[#5C3A1E]">
+              <h3 className="font-cinzel text-2xl font-bold text-[#5C3A1E] mb-1">✉️ Send Message to Pandit Team</h3>
+              <p className="text-xs text-[#8B6F5E] mb-6">
+                Fill details below. Our temple coordinator will review your request and get back to you immediately.
+              </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -307,7 +310,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
               <button
                 type="submit"
                 disabled={isSending}
-                className="w-full bg-gradient-to-r from-[#f7ae62] via-[#e09040] to-[#c47a2a] text-[#5C3A1E] hover:text-white font-bold text-sm py-3.5 rounded-full shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-sm py-3.5 rounded-full shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 {isSending ? (
                   <>
@@ -322,31 +325,34 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
             </form>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* MAP PLACEHOLDER / MAP CONTAINER */}
-      <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="bg-white border-2 border-[#F5E6D0] rounded-3xl overflow-hidden shadow-lg">
-          <div className="p-4 bg-[#F5E6D0] border-b border-[#f7ae62]/30 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm font-bold text-[#5C3A1E]">
-              <i className="fas fa-map-marked-alt text-[#e09040]"></i> Pardeshwar Mahadev Mandir & Triveni Shani Mandir Location
+      <section className="py-12 bg-[#FDF6EC]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="bg-white border-2 border-[#B5460F] rounded-3xl overflow-hidden shadow-lg">
+            <div className="p-4 bg-[#F5E6D0] border-b border-[#f7ae62]/30 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm font-bold text-[#5C3A1E]">
+                <i className="fas fa-map-marked-alt text-[#e09040]"></i> Pardeshwar Mahadev Mandir & Triveni Shani Mandir Location
+              </div>
+              <a
+                href="https://maps.google.com/?q=Mahakaleshwar+Jyotirlinga+Ujjain"
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs font-bold text-[#e09040] hover:underline"
+              >
+                Open Google Maps ↗
+              </a>
             </div>
-            <a
-              href="https://maps.google.com/?q=Mahakaleshwar+Jyotirlinga+Ujjain"
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs font-bold text-[#e09040] hover:underline"
-            >
-              Open Google Maps ↗
-            </a>
-          </div>
-          <div className="h-80 w-full bg-amber-50 relative flex items-center justify-center">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3666.3824565896705!2d75.76795!3d23.18264!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3963700084f71bc5%3A0x5ab49b1da21c6012!2sMahakaleshwar%20Jyotirlinga!5e0!3m2!1sen!2sin!4v1698000000000"
-              className="w-full h-full border-0"
-              loading="lazy"
-              title="Ujjain Temple Map"
-            ></iframe>
+            <div className="h-80 w-full bg-amber-50 relative flex items-center justify-center">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3666.3824565896705!2d75.76795!3d23.18264!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3963700084f71bc5%3A0x5ab49b1da21c6012!2sMahakaleshwar%20Jyotirlinga!5e0!3m2!1sen!2sin!4v1698000000000"
+                className="w-full h-full border-0"
+                loading="lazy"
+                title="Ujjain Temple Map"
+              ></iframe>
+            </div>
           </div>
         </div>
       </section>

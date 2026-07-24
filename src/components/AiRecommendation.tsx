@@ -95,49 +95,49 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
   };
 
   return (
-    <section id="ai-section" className="py-20 bg-gradient-to-br from-[#FDF6EC] via-[#F5E6D0]/60 to-[#FDF6EC] border-y-2 border-[#f7ae62]">
+    <section id="ai-section" className="py-20 bg-[#C87A2F] text-white border-y-2 border-[#B5460F]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         {/* SECTION HEADER */}
         <div className="text-center mb-10">
-          <span className="inline-block bg-[#F5E6D0] border border-[#f7ae62] text-[#e09040] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-3">
+          <span className="inline-block bg-[#FDF6EC] border border-[#B5460F] text-[#B5460F] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-3 shadow-md">
             🤖 AI Powered Recommendation
           </span>
-          <h2 className="font-cinzel text-2xl sm:text-4xl font-bold text-[#5C3A1E]">
+          <h2 className="font-cinzel text-2xl sm:text-4xl font-bold text-white">
             AI Puja Recommender
           </h2>
-          <p className="text-sm text-[#8B6F5E] mt-2 max-w-md mx-auto">
+          <p className="text-sm text-[#FDF6EC]/90 mt-2 max-w-md mx-auto">
             Answer 3 quick questions — our intelligent algorithm will match the ideal Vedic ritual for your unique planetary needs & goals.
           </p>
         </div>
 
         {/* AI CARD */}
-        <div className="bg-white border-2 border-[#f7ae62] rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+        <div className="bg-[#FDF6EC] border-2 border-[#B5460F] rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden text-[#5C3A1E]">
           {/* STEP INDICATORS */}
           <div className="flex items-center justify-center gap-3 sm:gap-6 mb-8 max-w-md mx-auto">
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all border-2 ${
                 step >= 1
-                  ? 'bg-gradient-to-br from-[#f7ae62] to-[#e09040] text-[#5C3A1E] border-[#e09040] shadow-md'
+                  ? 'bg-[#B5460F] text-white border-[#B5460F] shadow-md'
                   : 'bg-[#F5E6D0] text-[#8B6F5E] border-transparent'
               }`}
             >
               1
             </div>
-            <div className={`h-1 flex-1 rounded-full transition-all ${step >= 2 ? 'bg-[#f7ae62]' : 'bg-[#F5E6D0]'}`} />
+            <div className={`h-1 flex-1 rounded-full transition-all ${step >= 2 ? 'bg-[#B5460F]' : 'bg-[#F5E6D0]'}`} />
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all border-2 ${
                 step >= 2
-                  ? 'bg-gradient-to-br from-[#f7ae62] to-[#e09040] text-[#5C3A1E] border-[#e09040] shadow-md'
+                  ? 'bg-[#B5460F] text-white border-[#B5460F] shadow-md'
                   : 'bg-[#F5E6D0] text-[#8B6F5E] border-transparent'
               }`}
             >
               2
             </div>
-            <div className={`h-1 flex-1 rounded-full transition-all ${step >= 3 ? 'bg-[#f7ae62]' : 'bg-[#F5E6D0]'}`} />
+            <div className={`h-1 flex-1 rounded-full transition-all ${step >= 3 ? 'bg-[#B5460F]' : 'bg-[#F5E6D0]'}`} />
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all border-2 ${
                 step >= 3
-                  ? 'bg-gradient-to-br from-[#f7ae62] to-[#e09040] text-[#5C3A1E] border-[#e09040] shadow-md'
+                  ? 'bg-[#B5460F] text-white border-[#B5460F] shadow-md'
                   : 'bg-[#F5E6D0] text-[#8B6F5E] border-transparent'
               }`}
             >
@@ -270,7 +270,7 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
                           </div>
                           <button
                             onClick={() => onSelectPuja(puja)}
-                            className="w-full bg-gradient-to-r from-[#f7ae62] to-[#e09040] text-[#5C3A1E] font-bold text-xs py-2 rounded-xl hover:opacity-90 transition-all cursor-pointer"
+                            className="w-full bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-xs py-2 rounded-xl transition-all cursor-pointer shadow-md"
                           >
                             Book This Puja
                           </button>
