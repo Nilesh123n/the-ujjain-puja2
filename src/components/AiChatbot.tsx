@@ -120,7 +120,7 @@ export const AiChatbot: React.FC<AiChatbotProps> = ({ onOpenBooking }) => {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
       {/* CHAT WINDOW */}
       {isOpen && (
-        <div className="bg-[#FDF6EC] border-2 border-[#f7ae62] rounded-3xl w-80 sm:w-96 h-[500px] shadow-2xl flex flex-col overflow-hidden mb-4 animate-in slide-in-from-bottom-5 duration-300">
+        <div className="bg-[#FFFFE3] border-2 border-[#f7ae62] rounded-3xl w-80 sm:w-96 h-[500px] shadow-2xl flex flex-col overflow-hidden mb-4 animate-in slide-in-from-bottom-5 duration-300">
           {/* HEADER */}
           <div className="bg-gradient-to-r from-[#5C3A1E] to-[#e07b39] p-4 text-white flex items-center justify-between shadow-md">
             <div className="flex items-center gap-3">
@@ -143,7 +143,7 @@ export const AiChatbot: React.FC<AiChatbotProps> = ({ onOpenBooking }) => {
           </div>
 
           {/* MESSAGES CONTAINER */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#fdf8f0]">
+          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#FFFFE3]">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -158,7 +158,7 @@ export const AiChatbot: React.FC<AiChatbotProps> = ({ onOpenBooking }) => {
                   className={`max-w-[80%] rounded-2xl p-3 text-xs leading-relaxed ${
                     msg.role === 'user'
                       ? 'bg-gradient-to-r from-[#5C3A1E] to-[#e07b39] text-white rounded-br-none shadow-xs'
-                      : 'bg-white border border-[#F5E6D0] text-[#2C1A0E] rounded-bl-none shadow-xs'
+                      : 'bg-white border border-[#2C1A0E]/10 text-[#2C1A0E] rounded-bl-none shadow-xs'
                   }`}
                 >
                   <div className="whitespace-pre-line">{msg.text}</div>
@@ -183,7 +183,7 @@ export const AiChatbot: React.FC<AiChatbotProps> = ({ onOpenBooking }) => {
                 <div className="w-7 h-7 rounded-full bg-[#f7ae62] text-white flex items-center justify-center text-xs">
                   🕉️
                 </div>
-                <div className="bg-white border border-[#F5E6D0] px-3 py-2 rounded-2xl flex gap-1 items-center">
+                <div className="bg-white border border-[#2C1A0E]/10 px-3 py-2 rounded-2xl flex gap-1 items-center">
                   <span className="w-1.5 h-1.5 bg-[#e09040] rounded-full animate-bounce"></span>
                   <span className="w-1.5 h-1.5 bg-[#e09040] rounded-full animate-bounce [animation-delay:0.2s]"></span>
                   <span className="w-1.5 h-1.5 bg-[#e09040] rounded-full animate-bounce [animation-delay:0.4s]"></span>
@@ -194,7 +194,7 @@ export const AiChatbot: React.FC<AiChatbotProps> = ({ onOpenBooking }) => {
           </div>
 
           {/* QUICK CHIPS */}
-          <div className="px-3 py-2 bg-[#F5E6D0]/50 border-t border-[#F5E6D0] flex gap-1.5 overflow-x-auto no-scrollbar">
+          <div className="px-3 py-2 bg-[#FFFFE3] border-t border-[#2C1A0E]/10 flex gap-1.5 overflow-x-auto no-scrollbar">
             {quickChips.map((chip, idx) => (
               <button
                 key={idx}
@@ -213,14 +213,14 @@ export const AiChatbot: React.FC<AiChatbotProps> = ({ onOpenBooking }) => {
           </div>
 
           {/* INPUT AREA */}
-          <div className="p-3 bg-white border-t border-[#F5E6D0] flex items-center gap-2">
+          <div className="p-3 bg-white border-t border-[#2C1A0E]/10 flex items-center gap-2">
             <input
               type="text"
               placeholder="Ask Mahakal Bot..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-              className="flex-1 bg-[#FDF6EC] border border-[#F5E6D0] focus:border-[#f7ae62] rounded-full px-3.5 py-2 text-xs text-[#2C1A0E] outline-none"
+              className="flex-1 bg-[#FFFFE3] border border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-full px-3.5 py-2 text-xs text-[#2C1A0E] outline-none"
             />
             <button
               onClick={() => handleSendMessage()}

@@ -95,50 +95,50 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
   };
 
   return (
-    <section id="ai-section" className="py-20 bg-[#C87A2F] text-white border-y-2 border-[#B5460F]">
+    <section id="ai-section" className="py-20 bg-[#f2b705] text-[#2C1A0E] border-y-2 border-[#FFFFE3]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         {/* SECTION HEADER */}
         <div className="text-center mb-10">
-          <span className="inline-block bg-[#FDF6EC] border border-[#B5460F] text-[#B5460F] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-3 shadow-md">
+          <span className="inline-block bg-[#ff5c00] text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-3 shadow-md border border-[#ff5c00]">
             🤖 AI Powered Recommendation
           </span>
-          <h2 className="font-cinzel text-2xl sm:text-4xl font-bold text-white">
+          <h2 className="font-cinzel text-2xl sm:text-4xl font-bold text-[#2C1A0E]">
             AI Puja Recommender
           </h2>
-          <p className="text-sm text-[#FDF6EC]/90 mt-2 max-w-md mx-auto">
+          <p className="text-sm text-[#3A220F] font-medium mt-2 max-w-md mx-auto">
             Answer 3 quick questions — our intelligent algorithm will match the ideal Vedic ritual for your unique planetary needs & goals.
           </p>
         </div>
 
-        {/* AI CARD */}
-        <div className="bg-[#FDF6EC] border-2 border-[#B5460F] rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden text-[#5C3A1E]">
+        {/* AI CARD CONTAINER */}
+        <div className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden text-[#2C1A0E]">
           {/* STEP INDICATORS */}
           <div className="flex items-center justify-center gap-3 sm:gap-6 mb-8 max-w-md mx-auto">
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all border-2 ${
                 step >= 1
-                  ? 'bg-[#B5460F] text-white border-[#B5460F] shadow-md'
-                  : 'bg-[#F5E6D0] text-[#8B6F5E] border-transparent'
+                  ? 'bg-[#f2b705] text-[#2C1A0E] border-[#2C1A0E] shadow-md'
+                  : 'bg-[#2C1A0E]/20 text-[#2C1A0E]/80 border-transparent'
               }`}
             >
               1
             </div>
-            <div className={`h-1 flex-1 rounded-full transition-all ${step >= 2 ? 'bg-[#B5460F]' : 'bg-[#F5E6D0]'}`} />
+            <div className={`h-1 flex-1 rounded-full transition-all ${step >= 2 ? 'bg-[#f2b705]' : 'bg-[#2C1A0E]/20'}`} />
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all border-2 ${
                 step >= 2
-                  ? 'bg-[#B5460F] text-white border-[#B5460F] shadow-md'
-                  : 'bg-[#F5E6D0] text-[#8B6F5E] border-transparent'
+                  ? 'bg-[#f2b705] text-[#2C1A0E] border-[#2C1A0E] shadow-md'
+                  : 'bg-[#2C1A0E]/20 text-[#2C1A0E]/80 border-transparent'
               }`}
             >
               2
             </div>
-            <div className={`h-1 flex-1 rounded-full transition-all ${step >= 3 ? 'bg-[#B5460F]' : 'bg-[#F5E6D0]'}`} />
+            <div className={`h-1 flex-1 rounded-full transition-all ${step >= 3 ? 'bg-[#f2b705]' : 'bg-[#2C1A0E]/20'}`} />
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all border-2 ${
                 step >= 3
-                  ? 'bg-[#B5460F] text-white border-[#B5460F] shadow-md'
-                  : 'bg-[#F5E6D0] text-[#8B6F5E] border-transparent'
+                  ? 'bg-[#f2b705] text-[#2C1A0E] border-[#2C1A0E] shadow-md'
+                  : 'bg-[#2C1A0E]/20 text-[#2C1A0E]/80 border-transparent'
               }`}
             >
               3
@@ -148,7 +148,7 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
           {/* STEP 1: PURPOSE */}
           {step === 1 && (
             <div className="animate-in fade-in duration-300">
-              <h3 className="font-cinzel text-lg sm:text-xl font-bold text-[#5C3A1E] text-center mb-6">
+              <h3 className="font-cinzel text-lg sm:text-xl font-bold text-[#2C1A0E] text-center mb-6">
                 What is your primary intent or purpose for seeking a Puja?
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -163,9 +163,9 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
                   <button
                     key={opt.id}
                     onClick={() => handleSelectOption(1, opt.id)}
-                    className="flex items-center gap-3 p-4 rounded-xl bg-[#FDF6EC] border-2 border-[#F5E6D0] hover:border-[#f7ae62] hover:bg-[#F5E6D0] transition-all text-left font-medium text-sm text-[#5C3A1E] cursor-pointer group"
+                    className="flex items-center gap-3 p-4 rounded-xl bg-[#ff5c00] border-2 border-[#f2b705] hover:bg-[#e05200] hover:border-white transition-all text-left font-semibold text-sm text-white cursor-pointer group shadow-sm"
                   >
-                    <i className={`${opt.icon} text-lg text-[#e09040] group-hover:scale-110 transition-transform`}></i>
+                    <i className={`${opt.icon} text-lg text-[#f2b705] group-hover:scale-110 transition-transform`}></i>
                     <span>{opt.label}</span>
                   </button>
                 ))}
@@ -176,7 +176,7 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
           {/* STEP 2: DOSH */}
           {step === 2 && (
             <div className="animate-in fade-in duration-300">
-              <h3 className="font-cinzel text-lg sm:text-xl font-bold text-[#5C3A1E] text-center mb-6">
+              <h3 className="font-cinzel text-lg sm:text-xl font-bold text-[#2C1A0E] text-center mb-6">
                 Any specific planetary affliction or Dosh in Kundali?
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -191,9 +191,9 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
                   <button
                     key={opt.id}
                     onClick={() => handleSelectOption(2, opt.id)}
-                    className="flex items-center gap-3 p-4 rounded-xl bg-[#FDF6EC] border-2 border-[#F5E6D0] hover:border-[#f7ae62] hover:bg-[#F5E6D0] transition-all text-left font-medium text-sm text-[#5C3A1E] cursor-pointer group"
+                    className="flex items-center gap-3 p-4 rounded-xl bg-[#ff5c00] border-2 border-[#f2b705] hover:bg-[#e05200] hover:border-white transition-all text-left font-semibold text-sm text-white cursor-pointer group shadow-sm"
                   >
-                    <i className={`${opt.icon} text-lg text-[#e09040] group-hover:scale-110 transition-transform`}></i>
+                    <i className={`${opt.icon} text-lg text-[#f2b705] group-hover:scale-110 transition-transform`}></i>
                     <span>{opt.label}</span>
                   </button>
                 ))}
@@ -204,7 +204,7 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
           {/* STEP 3: BUDGET */}
           {step === 3 && (
             <div className="animate-in fade-in duration-300">
-              <h3 className="font-cinzel text-lg sm:text-xl font-bold text-[#5C3A1E] text-center mb-6">
+              <h3 className="font-cinzel text-lg sm:text-xl font-bold text-[#2C1A0E] text-center mb-6">
                 Select your comfortable budget preference?
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl mx-auto">
@@ -217,9 +217,9 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
                   <button
                     key={opt.id}
                     onClick={() => handleSelectOption(3, opt.id)}
-                    className="flex items-center gap-3 p-4 rounded-xl bg-[#FDF6EC] border-2 border-[#F5E6D0] hover:border-[#f7ae62] hover:bg-[#F5E6D0] transition-all text-left font-medium text-sm text-[#5C3A1E] cursor-pointer group"
+                    className="flex items-center gap-3 p-4 rounded-xl bg-[#ff5c00] border-2 border-[#f2b705] hover:bg-[#e05200] hover:border-white transition-all text-left font-semibold text-sm text-white cursor-pointer group shadow-sm"
                   >
-                    <i className={`${opt.icon} text-lg text-[#e09040] group-hover:scale-110 transition-transform`}></i>
+                    <i className={`${opt.icon} text-lg text-[#f2b705] group-hover:scale-110 transition-transform`}></i>
                     <span>{opt.label}</span>
                   </button>
                 ))}
@@ -233,18 +233,18 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
               {isLoading ? (
                 <div className="py-12 text-center flex flex-col items-center justify-center gap-4">
                   <div className="spinner"></div>
-                  <p className="font-cinzel text-lg font-bold text-[#5C3A1E]">
+                  <p className="font-cinzel text-lg font-bold text-[#2C1A0E]">
                     AI is analyzing your horoscopic requirements...
                   </p>
-                  <p className="text-xs text-[#8B6F5E]">Matching Vedic mantras, vidhi & location in Ujjain</p>
+                  <p className="text-xs text-[#5C3A1E]">Matching Vedic mantras, vidhi & location in Ujjain</p>
                 </div>
               ) : (
                 <div>
                   <div className="text-center mb-6">
-                    <h3 className="font-cinzel text-xl font-bold text-[#5C3A1E] flex items-center justify-center gap-2">
+                    <h3 className="font-cinzel text-xl font-bold text-[#2C1A0E] flex items-center justify-center gap-2">
                       <span>✨</span> AI Recommended Pujas for You
                     </h3>
-                    <p className="text-xs text-[#8B6F5E] mt-1">
+                    <p className="text-xs text-[#5C3A1E] mt-1">
                       Based on your preferences ({purpose || 'Intent'}, {dosh || 'Dosh'}, {budget || 'Budget'})
                     </p>
                   </div>
@@ -253,24 +253,24 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
                     {recommendations.map((puja) => (
                       <div
                         key={puja.id}
-                        className="bg-[#FDF6EC] border-2 border-[#f7ae62] rounded-2xl p-4 flex flex-col justify-between hover:shadow-lg transition-all transform hover:-translate-y-1"
+                        className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-2xl p-4 flex flex-col justify-between hover:shadow-xl transition-all transform hover:-translate-y-1 text-[#2C1A0E] shadow-md"
                       >
                         <div>
                           <div className="text-3xl mb-2 text-center">{puja.emoji}</div>
-                          <h4 className="font-cinzel font-bold text-sm text-[#5C3A1E] mb-1 leading-tight text-center">
+                          <h4 className="font-cinzel font-bold text-sm text-[#2C1A0E] mb-1 leading-tight text-center">
                             {puja.name}
                           </h4>
-                          <p className="text-[11px] text-[#8B6F5E] mb-3 line-clamp-2 text-center">
+                          <p className="text-[11px] text-[#5C3A1E] mb-3 line-clamp-2 text-center">
                             {puja.description}
                           </p>
                         </div>
                         <div>
-                          <div className="font-cinzel font-bold text-base text-[#e09040] text-center mb-3">
+                          <div className="font-cinzel font-bold text-base text-[#2C1A0E] text-center mb-3">
                             {puja.priceDisplay}
                           </div>
                           <button
                             onClick={() => onSelectPuja(puja)}
-                            className="w-full bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-xs py-2 rounded-xl transition-all cursor-pointer shadow-md"
+                            className="w-full bg-[#f2b705] hover:bg-[#2C1A0E] hover:text-white text-[#2C1A0E] font-bold text-xs py-2 rounded-xl transition-all cursor-pointer shadow-md"
                           >
                             Book This Puja
                           </button>
@@ -282,7 +282,7 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
                   <div className="text-center">
                     <button
                       onClick={handleReset}
-                      className="bg-transparent border-2 border-[#f7ae62] text-[#5C3A1E] font-semibold text-xs px-6 py-2.5 rounded-full hover:bg-[#f7ae62] transition-colors cursor-pointer"
+                      className="bg-transparent border-2 border-[#f2b705] text-[#2C1A0E] font-semibold text-xs px-6 py-2.5 rounded-full hover:bg-[#f2b705] hover:text-[#2C1A0E] transition-colors cursor-pointer"
                     >
                       🔄 Reset & Try Again
                     </button>

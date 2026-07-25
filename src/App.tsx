@@ -62,7 +62,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FDF6EC] text-[#2C1A0E] relative selection:bg-[#f7ae62] selection:text-[#5C3A1E]">
+    <div className="min-h-screen flex flex-col bg-[#FFFFE3] text-[#2C1A0E] relative selection:bg-[#f7ae62] selection:text-[#5C3A1E]">
       {/* NAVBAR */}
       <Navbar
         activeTab={activeTab}

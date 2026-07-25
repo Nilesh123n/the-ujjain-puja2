@@ -60,15 +60,15 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ booking, onGoHome })
         <div className="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-3.5 flex items-center justify-center gap-3 text-xs sm:text-sm font-semibold text-[#5C3A1E]">
           <span className="text-xl">⏱️</span>
           <span>Pandit Coordinator WhatsApp Contact Window:</span>
-          <span className="font-mono text-base font-bold text-[#e09040] bg-white px-3 py-1 rounded-lg border border-[#F5E6D0]">
+          <span className="font-mono text-base font-bold text-[#e09040] bg-white px-3 py-1 rounded-lg border border-[#2C1A0E]/10">
             {formatCountdown(countdown)}
           </span>
         </div>
 
         {/* BOOKING DETAILS CARD */}
         {booking && (
-          <div className="bg-[#FDF6EC] border-2 border-[#F5E6D0] rounded-2xl p-5 text-left text-xs space-y-2.5">
-            <div className="flex items-center justify-between border-b border-[#F5E6D0] pb-2 font-bold text-[#5C3A1E]">
+          <div className="bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 rounded-2xl p-5 text-left text-xs space-y-2.5">
+            <div className="flex items-center justify-between border-b border-[#2C1A0E]/10 pb-2 font-bold text-[#5C3A1E]">
               <span className="font-cinzel text-sm">Booking Receipt</span>
               <span className="text-[#e09040] bg-amber-100/60 px-2.5 py-0.5 rounded-md font-mono">{booking.bookingId}</span>
             </div>
@@ -103,7 +103,7 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ booking, onGoHome })
         )}
 
         {/* ROADMAP STEPS */}
-        <div className="bg-white border border-[#F5E6D0] rounded-2xl p-4 text-left space-y-2">
+        <div className="bg-white border border-[#2C1A0E]/10 rounded-2xl p-4 text-left space-y-2">
           <h4 className="font-cinzel font-bold text-xs text-[#5C3A1E] mb-2 flex items-center gap-2">
             <i className="fas fa-list-ol text-[#e09040]"></i> What Happens Next?
           </h4>
@@ -144,7 +144,7 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ booking, onGoHome })
 
           <button
             onClick={printReceipt}
-            className="bg-[#F5E6D0] hover:bg-[#f7ae62] text-[#5C3A1E] font-bold text-xs px-5 py-3 rounded-full transition-colors flex items-center gap-2 cursor-pointer"
+            className="bg-[#FFFFE3] hover:bg-[#f7ae62] text-[#5C3A1E] font-bold text-xs px-5 py-3 rounded-full transition-colors flex items-center gap-2 cursor-pointer border border-[#2C1A0E]/10"
           >
             <i className="fas fa-print"></i> Print Receipt
           </button>

@@ -36,8 +36,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
       id="navbar"
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-[#FDF6EC]/95 backdrop-blur-md shadow-lg border-b-2 border-[#f7ae62] py-2'
-          : 'bg-[#FDF6EC]/90 backdrop-blur-sm border-b border-[#f7ae62]/40 py-3'
+          ? 'bg-[#FFFFE3] shadow-lg border-b-2 border-[#f2b705] py-2'
+          : 'bg-[#FFFFE3] border-b border-[#f2b705]/50 py-3'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
@@ -49,14 +49,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
           <img
             src={logoImg}
             alt="Ujjain Puja Logo"
-            className="w-12 h-12 object-contain rounded-full border-2 border-[#f7ae62] shadow-md group-hover:scale-105 transition-transform bg-[#FDF6EC]"
+            className="w-12 h-12 object-contain rounded-full border-2 border-[#2C1A0E]/20 shadow-md group-hover:scale-105 transition-transform bg-white"
             referrerPolicy="no-referrer"
           />
           <div>
-            <div className="font-cinzel text-xl font-black text-[#5C3A1E] tracking-tight leading-none">
+            <div className="font-cinzel text-xl font-black text-[#2C1A0E] tracking-tight leading-none">
               Ujjain Puja
             </div>
-            <div className="text-[10px] font-semibold text-[#e07b39] tracking-wider uppercase mt-0.5">
+            <div className="text-[10px] font-semibold text-[#5C3A1E] tracking-wider uppercase mt-0.5">
               {lang === 'hi' ? 'जय महाकाल • श्री अवंतिका सेवा' : 'Jai Mahakal • Sacred Avantika Seva'}
             </div>
           </div>
@@ -69,8 +69,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
               onClick={() => handleNavClick('home')}
               className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'home'
-                  ? 'bg-[#F5E6D0] text-[#e09040] shadow-xs'
-                  : 'text-[#5C3A1E] hover:text-[#e09040] hover:bg-[#F5E6D0]/60'
+                  ? 'bg-[#f2b705] text-[#2C1A0E] shadow-xs'
+                  : 'text-[#2C1A0E] hover:text-[#5C3A1E] hover:bg-[#2C1A0E]/10'
               }`}
             >
               <i className="fas fa-home mr-1.5 opacity-80"></i> {t('nav_home', 'Home')}
@@ -81,8 +81,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
               onClick={() => handleNavClick('pujas')}
               className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'pujas'
-                  ? 'bg-[#F5E6D0] text-[#e09040] shadow-xs'
-                  : 'text-[#5C3A1E] hover:text-[#e09040] hover:bg-[#F5E6D0]/60'
+                  ? 'bg-[#f2b705] text-[#2C1A0E] shadow-xs'
+                  : 'text-[#2C1A0E] hover:text-[#5C3A1E] hover:bg-[#2C1A0E]/10'
               }`}
             >
               <i className="fas fa-om mr-1.5 opacity-80"></i> {t('nav_puja', 'Puja')}
@@ -93,8 +93,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
               onClick={() => handleNavClick('astrology')}
               className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'astrology'
-                  ? 'bg-[#F5E6D0] text-[#e09040] shadow-xs'
-                  : 'text-[#5C3A1E] hover:text-[#e09040] hover:bg-[#F5E6D0]/60'
+                  ? 'bg-[#f2b705] text-[#2C1A0E] shadow-xs'
+                  : 'text-[#2C1A0E] hover:text-[#5C3A1E] hover:bg-[#2C1A0E]/10'
               }`}
             >
               <i className="fas fa-star mr-1.5 opacity-80"></i> {t('nav_astrology', 'Astrology')}
@@ -105,8 +105,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
               onClick={() => handleNavClick('about')}
               className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'about'
-                  ? 'bg-[#F5E6D0] text-[#e09040] shadow-xs'
-                  : 'text-[#5C3A1E] hover:text-[#e09040] hover:bg-[#F5E6D0]/60'
+                  ? 'bg-[#f2b705] text-[#2C1A0E] shadow-xs'
+                  : 'text-[#2C1A0E] hover:text-[#5C3A1E] hover:bg-[#2C1A0E]/10'
               }`}
             >
               <i className="fas fa-info-circle mr-1.5 opacity-80"></i> {t('nav_about', 'About Us')}
@@ -117,8 +117,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
               onClick={() => handleNavClick('contact')}
               className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'contact'
-                  ? 'bg-[#F5E6D0] text-[#e09040] shadow-xs'
-                  : 'text-[#5C3A1E] hover:text-[#e09040] hover:bg-[#F5E6D0]/60'
+                  ? 'bg-[#f2b705] text-[#2C1A0E] shadow-xs'
+                  : 'text-[#2C1A0E] hover:text-[#5C3A1E] hover:bg-[#2C1A0E]/10'
               }`}
             >
               <i className="fas fa-phone-alt mr-1.5 opacity-80"></i> {t('nav_contact', 'Contact')}
@@ -127,13 +127,13 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
 
           {/* LANGUAGE TOGGLE SWITCHER */}
           <li className="ml-2">
-            <div className="flex bg-[#F5E6D0] border border-[#f7ae62]/60 rounded-full p-0.5 shadow-xs">
+            <div className="flex bg-[#2C1A0E]/10 border border-[#2C1A0E]/20 rounded-full p-0.5 shadow-xs">
               <button
                 onClick={() => setLang('en')}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
                   lang === 'en'
-                    ? 'bg-[#5C3A1E] text-[#f7ae62] shadow-xs'
-                    : 'text-[#5C3A1E] hover:text-[#e09040]'
+                    ? 'bg-[#f2b705] text-[#2C1A0E] shadow-xs'
+                    : 'text-[#2C1A0E] hover:text-[#5C3A1E]'
                 }`}
               >
                 🇬🇧 EN
@@ -142,8 +142,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
                 onClick={() => setLang('hi')}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
                   lang === 'hi'
-                    ? 'bg-[#5C3A1E] text-[#f7ae62] shadow-xs'
-                    : 'text-[#5C3A1E] hover:text-[#e09040]'
+                    ? 'bg-[#f2b705] text-[#2C1A0E] shadow-xs'
+                    : 'text-[#2C1A0E] hover:text-[#5C3A1E]'
                 }`}
               >
                 🇮🇳 हिंदी
@@ -155,7 +155,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
           <li className="ml-2">
             <button
               onClick={onOpenBooking}
-              className="bg-gradient-to-r from-[#f7ae62] to-[#e09040] hover:from-[#e09040] hover:to-[#c47a2a] text-[#5C3A1E] hover:text-white font-bold text-xs px-4 py-2 rounded-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer flex items-center gap-1.5"
+              className="bg-[#f2b705] hover:bg-[#2C1A0E] hover:text-white text-[#2C1A0E] font-bold text-xs px-4 py-2 rounded-full shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer flex items-center gap-1.5"
             >
               <span>📿</span> {t('nav_book_now', 'Book Now')}
             </button>
@@ -167,14 +167,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
           {/* MOBILE LANG TOGGLE BUTTON */}
           <button
             onClick={toggleLang}
-            className="bg-[#F5E6D0] border border-[#f7ae62] text-[#5C3A1E] font-bold text-xs px-2.5 py-1.5 rounded-full flex items-center gap-1 cursor-pointer"
+            className="bg-[#f2b705] border border-[#2C1A0E]/20 text-[#2C1A0E] font-bold text-xs px-2.5 py-1.5 rounded-full flex items-center gap-1 cursor-pointer"
           >
             <span>🌐</span> {lang === 'en' ? 'EN' : 'हिंदी'}
           </button>
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="text-[#5C3A1E] text-2xl p-2 rounded-lg focus:outline-none cursor-pointer"
+            className="text-[#2C1A0E] text-2xl p-2 rounded-lg focus:outline-none cursor-pointer"
             aria-label="Toggle menu"
           >
             <i className={`fas ${mobileOpen ? 'fa-times' : 'fa-bars'}`}></i>
@@ -184,57 +184,57 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
 
       {/* MOBILE DRAWER */}
       {mobileOpen && (
-        <div className="md:hidden bg-[#FDF6EC] border-b-2 border-[#f7ae62] px-6 py-5 shadow-2xl animate-in slide-in-from-top duration-300">
+        <div className="md:hidden bg-[#FFFFE3] border-b-2 border-[#f2b705] px-6 py-5 shadow-2xl animate-in slide-in-from-top duration-300">
           <div className="flex flex-col gap-3">
             <button
               onClick={() => handleNavClick('home')}
               className={`flex items-center gap-3 text-left py-2.5 px-4 rounded-xl font-medium text-base ${
-                activeTab === 'home' ? 'bg-[#F5E6D0] text-[#e09040] font-bold' : 'text-[#5C3A1E]'
+                activeTab === 'home' ? 'bg-[#f2b705] text-[#2C1A0E] font-bold' : 'text-[#2C1A0E]'
               }`}
             >
-              <i className="fas fa-home w-6 text-[#f7ae62]"></i> {t('nav_home', 'Home')}
+              <i className="fas fa-home w-6"></i> {t('nav_home', 'Home')}
             </button>
             <button
               onClick={() => handleNavClick('pujas')}
               className={`flex items-center gap-3 text-left py-2.5 px-4 rounded-xl font-medium text-base ${
-                activeTab === 'pujas' ? 'bg-[#F5E6D0] text-[#e09040] font-bold' : 'text-[#5C3A1E]'
+                activeTab === 'pujas' ? 'bg-[#f2b705] text-[#2C1A0E] font-bold' : 'text-[#2C1A0E]'
               }`}
             >
-              <i className="fas fa-om w-6 text-[#f7ae62]"></i> {t('nav_puja', 'Puja')}
+              <i className="fas fa-om w-6"></i> {t('nav_puja', 'Puja')}
             </button>
             <button
               onClick={() => handleNavClick('astrology')}
               className={`flex items-center gap-3 text-left py-2.5 px-4 rounded-xl font-medium text-base ${
-                activeTab === 'astrology' ? 'bg-[#F5E6D0] text-[#e09040] font-bold' : 'text-[#5C3A1E]'
+                activeTab === 'astrology' ? 'bg-[#f2b705] text-[#2C1A0E] font-bold' : 'text-[#2C1A0E]'
               }`}
             >
-              <i className="fas fa-star w-6 text-[#f7ae62]"></i> {t('nav_astrology', 'Astrology')}
+              <i className="fas fa-star w-6"></i> {t('nav_astrology', 'Astrology')}
             </button>
             <button
               onClick={() => handleNavClick('about')}
               className={`flex items-center gap-3 text-left py-2.5 px-4 rounded-xl font-medium text-base ${
-                activeTab === 'about' ? 'bg-[#F5E6D0] text-[#e09040] font-bold' : 'text-[#5C3A1E]'
+                activeTab === 'about' ? 'bg-[#f2b705] text-[#2C1A0E] font-bold' : 'text-[#2C1A0E]'
               }`}
             >
-              <i className="fas fa-info-circle w-6 text-[#f7ae62]"></i> {t('nav_about', 'About Us')}
+              <i className="fas fa-info-circle w-6"></i> {t('nav_about', 'About Us')}
             </button>
             <button
               onClick={() => handleNavClick('contact')}
               className={`flex items-center gap-3 text-left py-2.5 px-4 rounded-xl font-medium text-base ${
-                activeTab === 'contact' ? 'bg-[#F5E6D0] text-[#e09040] font-bold' : 'text-[#5C3A1E]'
+                activeTab === 'contact' ? 'bg-[#f2b705] text-[#2C1A0E] font-bold' : 'text-[#2C1A0E]'
               }`}
             >
-              <i className="fas fa-phone-alt w-6 text-[#f7ae62]"></i> {t('nav_contact', 'Contact')}
+              <i className="fas fa-phone-alt w-6"></i> {t('nav_contact', 'Contact')}
             </button>
 
             {/* LANGUAGE SELECTOR IN MOBILE DRAWER */}
-            <div className="pt-2 flex items-center justify-between border-t border-[#F5E6D0]">
-              <span className="text-xs font-bold text-[#5C3A1E]">Language / भाषा:</span>
-              <div className="flex bg-[#F5E6D0] rounded-full p-0.5">
+            <div className="pt-2 flex items-center justify-between border-t border-[#2C1A0E]/20">
+              <span className="text-xs font-bold text-[#2C1A0E]">Language / भाषा:</span>
+              <div className="flex bg-[#2C1A0E]/10 rounded-full p-0.5">
                 <button
                   onClick={() => setLang('en')}
                   className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    lang === 'en' ? 'bg-[#5C3A1E] text-[#f7ae62]' : 'text-[#5C3A1E]'
+                    lang === 'en' ? 'bg-[#f2b705] text-[#2C1A0E]' : 'text-[#2C1A0E]'
                   }`}
                 >
                   English
@@ -242,7 +242,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
                 <button
                   onClick={() => setLang('hi')}
                   className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    lang === 'hi' ? 'bg-[#5C3A1E] text-[#f7ae62]' : 'text-[#5C3A1E]'
+                    lang === 'hi' ? 'bg-[#f2b705] text-[#2C1A0E]' : 'text-[#2C1A0E]'
                   }`}
                 >
                   हिंदी
@@ -255,7 +255,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
                 setMobileOpen(false);
                 onOpenBooking();
               }}
-              className="mt-2 w-full bg-gradient-to-r from-[#f7ae62] to-[#e09040] text-[#5C3A1E] font-bold py-3 rounded-full text-center shadow-md flex items-center justify-center gap-2 cursor-pointer"
+              className="mt-2 w-full bg-[#f2b705] hover:bg-[#2C1A0E] hover:text-white text-[#2C1A0E] font-bold py-3 rounded-full text-center shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>📿</span> {t('nav_book_now', 'Book Now')}
             </button>

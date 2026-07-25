@@ -5,26 +5,26 @@
    ======================================== */
 
 :root {
-  --cream:        #FDF6EC;
-  --cream-dark:   #F5E6D0;
-  --gold:         #f7ae62;
-  --gold-dark:    #e09040;
-  --gold-deep:    #c47a2a;
-  --saffron:      #e07b39;
-  --brown:        #5C3A1E;
-  --brown-light:  #8B5E3C;
+  --cream:        #FFFFE3;
+  --cream-dark:   #FFFFE3;
+  --gold:         #f2b705;
+  --gold-dark:    #d9a304;
+  --saffron:      #ff5c00;
+  --saffron-hover:#e05200;
+  --light-section:#FFFFE3;
+  --dark-section: #f2b705;
+  --brown:        #3A220F;
   --text-dark:    #2C1A0E;
   --text-mid:     #5C3A1E;
-  --text-light:   #8B6F5E;
   --white:        #FFFFFF;
-  --shadow:       rgba(92, 58, 30, 0.15);
-  --shadow-gold:  rgba(247, 174, 98, 0.35);
+  --shadow:       rgba(255, 92, 0, 0.15);
+  --shadow-gold:  rgba(242, 183, 5, 0.35);
   --radius:       16px;
   --radius-sm:    10px;
   --transition:   all 0.3s ease;
   
   --astro-purple: #6c3483;
-  --astro-gold:   #f0c040;
+  --astro-gold:   #f2b705;
 }
 
 body {

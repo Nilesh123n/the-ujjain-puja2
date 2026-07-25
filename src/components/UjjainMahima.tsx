@@ -73,30 +73,30 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
   ];
 
   return (
-    <section id="ujjain-mahima" className="py-20 bg-[#C87A2F] text-white border-y-2 border-[#B5460F] relative overflow-hidden">
+    <section id="ujjain-mahima" className="py-20 bg-[#f2b705] text-[#2C1A0E] border-y-2 border-[#FFFFE3] relative overflow-hidden">
       {/* BACKGROUND SHIVA YANTRA PATTERN */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#FDF6EC_1px,transparent_1px)] [background-size:24px_24px]"></div>
+      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#FFFFE3_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         {/* SECTION HEADER */}
         <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
-          <div className="inline-flex items-center gap-2 bg-[#FDF6EC] border border-[#B5460F] text-[#B5460F] text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+          <div className="inline-flex items-center gap-2 bg-[#ff5c00] border border-[#ff5c00] text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
             <span>🕉️</span> {t('mahima_badge', 'Avantika Kshetra')}
           </div>
-          <h2 className="font-cinzel text-3xl sm:text-5xl font-bold text-white leading-tight">
+          <h2 className="font-cinzel text-3xl sm:text-5xl font-bold text-[#2C1A0E] leading-tight">
             {lang === 'hi' ? 'उज्जैन महिमा • पवित्र महाकाल अवंतिका क्षेत्र' : 'Ujjain Mahima • Holy Glory of Ujjain'}
           </h2>
-          <p className="text-sm sm:text-base text-[#FDF6EC]/90 leading-relaxed">
+          <p className="text-sm sm:text-base text-[#3A220F] font-medium leading-relaxed">
             {t('mahima_sub', 'Why performing Puja in sacred Ujjain bestows 1000x divine merit & removes all planetary doshas')}
           </p>
 
           {/* SANSKRIT SHLOKA BOX */}
-          <div className="mt-6 p-4 sm:p-5 bg-[#FDF6EC] border-2 border-[#B5460F] rounded-2xl shadow-xl max-w-2xl mx-auto text-[#5C3A1E]">
-            <p className="font-cinzel font-bold text-base sm:text-lg text-[#8B3A00] tracking-wide leading-relaxed">
+          <div className="mt-6 p-4 sm:p-5 bg-[#FFFFE3] border-2 border-[#f2b705] rounded-2xl shadow-xl max-w-2xl mx-auto text-[#2C1A0E]">
+            <p className="font-cinzel font-bold text-base sm:text-lg text-[#2C1A0E] tracking-wide leading-relaxed">
               "अवंतिकायां विहितावतारं मुक्तिप्रदानाय च सज्जनानाम्।<br className="hidden sm:inline" />
               अकालमृत्योः परिरक्षणार्थं वन्दे महाकालमहासमुद्रम्॥"
             </p>
-            <p className="text-xs text-[#5C3A1E]/80 mt-2 italic">
+            <p className="text-xs text-[#5C3A1E] mt-2 italic font-medium">
               {lang === 'hi'
                 ? '— उज्जैन में अवतरित महाकाल सज्जनों को मुक्ति देने वाले एवं अकाल मृत्यु से रक्षा करने वाले हैं।'
                 : '— Lord Mahakal incarnated in Ujjain to grant liberation to devotas and protect against untimely death.'}
@@ -112,8 +112,8 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
               onClick={() => setActiveTab(idx)}
               className={`shrink-0 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 border ${
                 activeTab === idx
-                  ? 'bg-[#B5460F] text-white border-white shadow-lg scale-105'
-                  : 'bg-[#FDF6EC] text-[#5C3A1E] border-[#F5E6D0] hover:bg-white'
+                  ? 'bg-[#ff5c00] text-white border-white shadow-lg scale-105'
+                  : 'bg-[#FFFFE3] text-[#2C1A0E] border-[#2C1A0E]/10 hover:bg-white'
               }`}
             >
               <span>{idx === 0 ? '🔱' : idx === 1 ? '🪔' : idx === 2 ? '🔴' : idx === 3 ? '🪐' : idx === 4 ? '🌳' : '🌺'}</span>
@@ -123,7 +123,7 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
         </div>
 
         {/* ACTIVE FEATURED HERO CARD */}
-        <div className="bg-[#FDF6EC] border-2 border-[#B5460F] rounded-3xl overflow-hidden shadow-2xl mb-12 grid grid-cols-1 lg:grid-cols-12 text-[#5C3A1E]">
+        <div className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl overflow-hidden shadow-2xl mb-12 grid grid-cols-1 lg:grid-cols-12 text-[#2C1A0E]">
           <div className="lg:col-span-5 relative min-h-[280px] lg:min-h-[380px]">
             <img
               src={mahimaItems[activeTab].image}
@@ -131,7 +131,7 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent lg:hidden flex items-end p-6">
-              <span className="text-white text-xs font-bold uppercase tracking-wider bg-[#B5460F] px-3 py-1 rounded-full">
+              <span className="text-[#2C1A0E] text-xs font-bold uppercase tracking-wider bg-[#f2b705] px-3 py-1 rounded-full">
                 {lang === 'hi' ? mahimaItems[activeTab].subtitleHi : mahimaItems[activeTab].subtitleEn}
               </span>
             </div>
@@ -139,26 +139,26 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
 
           <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between space-y-6">
             <div>
-              <span className="hidden lg:inline-block text-[#B5460F] text-xs font-bold uppercase tracking-wider bg-[#F5E6D0] px-3 py-1 rounded-full mb-3">
+              <span className="hidden lg:inline-block text-[#2C1A0E] text-xs font-bold uppercase tracking-wider bg-[#f2b705] px-3 py-1 rounded-full mb-3">
                 {lang === 'hi' ? mahimaItems[activeTab].subtitleHi : mahimaItems[activeTab].subtitleEn}
               </span>
-              <h3 className="font-cinzel text-2xl sm:text-3xl font-bold text-[#5C3A1E] mb-4">
+              <h3 className="font-cinzel text-2xl sm:text-3xl font-bold text-[#2C1A0E] mb-4">
                 {lang === 'hi' ? mahimaItems[activeTab].titleHi : mahimaItems[activeTab].titleEn}
               </h3>
-              <p className="text-sm sm:text-base text-[#8B6F5E] leading-relaxed">
+              <p className="text-sm sm:text-base text-[#5C3A1E] leading-relaxed">
                 {lang === 'hi' ? mahimaItems[activeTab].descHi : mahimaItems[activeTab].descEn}
               </p>
             </div>
 
-            <div className="pt-4 border-t border-[#F5E6D0] flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-2 text-xs font-semibold text-[#8B3A00]">
+            <div className="pt-4 border-t border-[#2C1A0E]/20 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-xs font-semibold text-[#2C1A0E]">
                 <span>✨ Ujjain Spiritual Merit:</span>
-                <span className="bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full border border-amber-300">1000x Fruitfulness</span>
+                <span className="bg-[#f2b705] text-[#2C1A0E] font-bold px-2.5 py-0.5 rounded-full border border-[#2C1A0E]/20">1000x Fruitfulness</span>
               </div>
               {onBookNow && (
                 <button
                   onClick={onBookNow}
-                  className="bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-xs sm:text-sm px-6 py-2.5 rounded-full shadow-md transition-all cursor-pointer flex items-center gap-2"
+                  className="bg-[#f2b705] hover:bg-[#2C1A0E] hover:text-white text-[#2C1A0E] font-bold text-xs sm:text-sm px-6 py-2.5 rounded-full shadow-md transition-all cursor-pointer flex items-center gap-2"
                 >
                   <span>📿</span> {lang === 'hi' ? 'उज्जैन में पूजा बुक करें' : 'Book Ujjain Puja'}
                 </button>
@@ -173,28 +173,28 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
             <div
               key={item.id}
               onClick={() => setActiveTab(idx)}
-              className={`bg-white border-2 ${
-                activeTab === idx ? 'border-[#e07b39] shadow-xl' : 'border-[#F5E6D0] hover:border-[#f7ae62]'
-              } rounded-2xl p-6 transition-all duration-300 cursor-pointer flex flex-col justify-between group transform hover:-translate-y-1`}
+              className={`bg-[#FFFFE3] border-2 ${
+                activeTab === idx ? 'border-[#2C1A0E] shadow-xl scale-[1.02]' : 'border-[#f2b705] hover:border-[#2C1A0E]'
+              } rounded-2xl p-6 transition-all duration-300 cursor-pointer flex flex-col justify-between group transform hover:-translate-y-1 text-[#2C1A0E] shadow-md`}
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-2xl">
                     {idx === 0 ? '🔱' : idx === 1 ? '🪔' : idx === 2 ? '🔴' : idx === 3 ? '🪐' : idx === 4 ? '🌳' : '🌺'}
                   </span>
-                  <span className="text-[10px] bg-[#FDF6EC] text-[#8B3A00] font-bold px-2.5 py-1 rounded-full border border-[#F5E6D0]">
+                  <span className="text-[10px] bg-[#f2b705] text-[#2C1A0E] font-bold px-2.5 py-1 rounded-full border border-[#2C1A0E]/20">
                     Spot #{idx + 1}
                   </span>
                 </div>
-                <h4 className="font-cinzel text-base font-bold text-[#5C3A1E] mb-2 group-hover:text-[#e07b39] transition-colors">
+                <h4 className="font-cinzel text-base font-bold text-[#2C1A0E] mb-2 group-hover:text-[#5C3A1E] transition-colors">
                   {lang === 'hi' ? item.titleHi.split('(')[0] : item.titleEn}
                 </h4>
-                <p className="text-xs text-[#8B6F5E] line-clamp-3 leading-relaxed">
+                <p className="text-xs text-[#5C3A1E] line-clamp-3 leading-relaxed">
                   {lang === 'hi' ? item.descHi : item.descEn}
                 </p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-[#F5E6D0] flex items-center justify-between text-[11px] font-bold text-[#e07b39]">
+              <div className="mt-4 pt-3 border-t border-[#2C1A0E]/20 flex items-center justify-between text-[11px] font-bold text-[#5C3A1E]">
                 <span>{lang === 'hi' ? 'विस्तार देखें' : 'View Significance'} →</span>
                 <i className="fas fa-chevron-right text-[10px]"></i>
               </div>

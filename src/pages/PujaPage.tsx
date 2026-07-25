@@ -61,17 +61,17 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
   return (
     <div className="pt-24 pb-20 animate-in fade-in duration-300">
       {/* PAGE HERO */}
-      <section className="bg-[#C87A2F] text-white py-14 px-4 text-center relative overflow-hidden border-b-2 border-[#B5460F]">
+      <section className="bg-[#f2b705] text-[#2C1A0E] py-14 px-4 text-center relative overflow-hidden border-b-2 border-[#FFFFE3]">
         <div className="max-w-4xl mx-auto relative z-10 space-y-3">
-          <div className="flex items-center justify-center gap-2 text-xs text-[#FDF6EC] font-medium">
+          <div className="flex items-center justify-center gap-2 text-xs text-[#2C1A0E] font-medium">
             <span>{t('nav_home', 'Home')}</span>
             <i className="fas fa-chevron-right text-[10px]"></i>
             <span>{t('nav_puja', 'Puja')}</span>
           </div>
-          <h1 className="font-cinzel text-3xl sm:text-5xl font-bold">
+          <h1 className="font-cinzel text-3xl sm:text-5xl font-bold text-[#2C1A0E]">
             {lang === 'hi' ? '🪔 उज्जैन सिद्ध वैदिक पूजा अनुष्ठान' : '🪔 Sacred Pujas at Ujjain'}
           </h1>
-          <p className="text-sm sm:text-base text-[#FDF6EC]/90 max-w-xl mx-auto">
+          <p className="text-sm sm:text-base text-[#3A220F] max-w-xl mx-auto font-medium">
             {lang === 'hi'
               ? 'उज्जैन के परदेश्वर महादेव, मंगलनाथ एवं त्रिवेणी धाम में 25+ सिद्ध पूजन एवं दोष निवारण।'
               : 'Explore 25+ authentic Vedic rituals, HAVAN, Jap Anushthans & Dosh Nivaran performed at Mahakal Nagari Ujjain.'}
@@ -80,7 +80,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
       </section>
 
       {/* STICKY SEARCH & FILTER BAR */}
-      <div className="bg-white border-b-2 border-[#F5E6D0] sticky top-16 z-30 shadow-xs">
+      <div className="bg-white border-b-2 border-[#2C1A0E]/10 sticky top-16 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 space-y-3">
           {/* SEARCH INPUT */}
           <div className="max-w-xl mx-auto relative">
@@ -90,12 +90,12 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
               placeholder={lang === 'hi' ? 'पूजा खोजें... जैसे रुद्राभिषेक, कालसर्प, शनि, नवग्रह' : 'Search pujas... e.g. Rudrabhishek, Kalsarp, Shani, Navgrah'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#FDF6EC] border-2 border-[#F5E6D0] focus:border-[#f7ae62] rounded-full pl-10 pr-10 py-2.5 text-xs sm:text-sm text-[#2C1A0E] outline-none"
+              className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-full pl-10 pr-10 py-2.5 text-xs sm:text-sm text-[#2C1A0E] outline-none"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8B6F5E] hover:text-[#5C3A1E] text-sm font-bold"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8B6F5E] hover:text-[#2C1A0E] text-sm font-bold"
               >
                 ✕
               </button>
@@ -110,8 +110,8 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
                 onClick={() => setActiveCategory(cat.id)}
                 className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
                   activeCategory === cat.id
-                    ? 'bg-[#B5460F] text-white border-[#B5460F] shadow-xs'
-                    : 'bg-[#FDF6EC] text-[#5C3A1E] border-[#F5E6D0] hover:bg-[#F5E6D0]'
+                    ? 'bg-[#ff5c00] text-white border-[#ff5c00] shadow-xs'
+                    : 'bg-[#FFFFE3] text-[#2C1A0E] border-[#2C1A0E]/10 hover:bg-[#2C1A0E]/10'
                 }`}
               >
                 {cat.emoji} {lang === 'hi' ? cat.labelHi : cat.labelEn}
@@ -135,7 +135,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-white border border-[#F5E6D0] rounded-xl px-3 py-1.5 text-xs text-[#5C3A1E] font-semibold outline-none cursor-pointer"
+            className="bg-white border border-[#2C1A0E]/10 rounded-xl px-3 py-1.5 text-xs text-[#5C3A1E] font-semibold outline-none cursor-pointer"
           >
             <option value="default">{lang === 'hi' ? 'क्रम: सामान्य' : 'Sort By: Default'}</option>
             <option value="price-low">{lang === 'hi' ? 'मूल्य: कम से अधिक' : 'Price: Low to High'}</option>
@@ -144,7 +144,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
             <option value="name">{lang === 'hi' ? 'नाम अनुसार' : 'Name: A to Z'}</option>
           </select>
 
-          <div className="flex bg-white border border-[#F5E6D0] rounded-xl p-0.5">
+          <div className="flex bg-white border border-[#2C1A0E]/10 rounded-xl p-0.5">
             <button
               onClick={() => setViewMode('grid')}
               className={`p-2 rounded-lg text-xs cursor-pointer ${
@@ -170,7 +170,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
       {/* PUJA GRID / LIST */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 min-h-[50vh]">
         {filteredPujas.length === 0 ? (
-          <div className="py-20 text-center bg-white border-2 border-dashed border-[#F5E6D0] rounded-3xl p-8">
+          <div className="py-20 text-center bg-white border-2 border-dashed border-[#2C1A0E]/10 rounded-3xl p-8">
             <div className="text-5xl mb-3">🔍</div>
             <h3 className="font-cinzel text-xl font-bold text-[#5C3A1E] mb-1">
               {lang === 'hi' ? 'कोई पूजा परिणाम नहीं मिला' : 'No Pujas Found'}
@@ -199,7 +199,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
             {filteredPujas.map((puja) => (
               <div
                 key={puja.id}
-                className={`bg-white border-2 border-[#F5E6D0] hover:border-[#f7ae62] rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ${
+                className={`bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 text-[#2C1A0E] ${
                   viewMode === 'list'
                     ? 'flex flex-col sm:flex-row items-center justify-between p-4 gap-4'
                     : 'flex flex-col justify-between'
@@ -218,7 +218,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
 
                         {puja.tag && (
-                          <span className="absolute top-3 right-3 bg-gradient-to-r from-[#f7ae62] to-[#e09040] text-[#5C3A1E] font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
+                          <span className="absolute top-3 right-3 bg-[#f2b705] text-[#2C1A0E] font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
                             {lang === 'hi' && puja.tagHi ? puja.tagHi : puja.tag}
                           </span>
                         )}
@@ -235,37 +235,37 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
 
                       {/* CARD CONTENT */}
                       <div className="p-6 space-y-3">
-                        <h3 className="font-cinzel text-lg font-bold text-[#5C3A1E] line-clamp-1">
+                        <h3 className="font-cinzel text-lg font-bold text-[#2C1A0E] line-clamp-1">
                           {lang === 'hi' && puja.nameHi ? puja.nameHi : puja.name}
                         </h3>
-                        <p className="text-xs text-[#8B6F5E] leading-relaxed line-clamp-2">
+                        <p className="text-xs text-[#5C3A1E] leading-relaxed line-clamp-2">
                           {lang === 'hi' && puja.descriptionHi ? puja.descriptionHi : puja.description}
                         </p>
 
                         <div className="flex flex-wrap gap-2 pt-1">
-                          <span className="text-[11px] bg-[#FDF6EC] text-[#5C3A1E] px-2.5 py-1 rounded-full border border-[#F5E6D0] flex items-center gap-1">
-                            <i className="fas fa-clock text-[#e09040]"></i> {puja.duration}
+                          <span className="text-[11px] bg-[#f2b705] text-[#2C1A0E] font-bold px-2.5 py-1 rounded-full border border-[#2C1A0E]/10 flex items-center gap-1">
+                            <i className="fas fa-clock text-[#2C1A0E]"></i> {puja.duration}
                           </span>
                         </div>
                       </div>
                     </div>
 
                     {/* CARD FOOTER */}
-                    <div className="p-5 bg-[#FDF6EC] border-t border-[#F5E6D0] flex items-center justify-between gap-3">
+                    <div className="p-5 bg-[#f2b705] border-t border-[#2C1A0E]/10 flex items-center justify-between gap-3">
                       <div>
-                        <span className="font-cinzel text-xl font-bold text-[#e09040] block">{puja.priceDisplay}</span>
-                        <span className="text-[10px] text-[#8B6F5E]">{t('card_per_pkg', 'fixed package')}</span>
+                        <span className="font-cinzel text-xl font-bold text-[#2C1A0E] block">{puja.priceDisplay}</span>
+                        <span className="text-[10px] text-[#5C3A1E]">{t('card_per_pkg', 'fixed package')}</span>
                       </div>
                       <div className="flex gap-2">
                         <button
                           onClick={() => onOpenDetail(puja)}
-                          className="bg-[#F5E6D0] text-[#5C3A1E] hover:bg-[#B5460F] hover:text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition-colors cursor-pointer"
+                          className="bg-white/60 text-[#2C1A0E] hover:bg-white font-semibold text-xs px-3.5 py-2 rounded-xl transition-colors cursor-pointer"
                         >
                           {t('card_details', 'Details')}
                         </button>
                         <button
                           onClick={() => onOpenBooking(puja)}
-                          className="bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-xs"
+                          className="bg-[#ff5c00] hover:bg-[#e05200] text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-xs"
                         >
                           {t('card_book', 'Book Now')}
                         </button>
@@ -278,13 +278,13 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
                       <img
                         src={puja.image}
                         alt={puja.name}
-                        className="w-20 h-20 rounded-2xl object-cover shrink-0"
+                        className="w-20 h-20 rounded-2xl object-cover shrink-0 border border-[#2C1A0E]/10"
                       />
                       <div>
-                        <h3 className="font-cinzel text-base font-bold text-[#5C3A1E]">
+                        <h3 className="font-cinzel text-base font-bold text-[#2C1A0E]">
                           {lang === 'hi' && puja.nameHi ? puja.nameHi : puja.name}
                         </h3>
-                        <p className="text-xs text-[#8B6F5E] line-clamp-1">
+                        <p className="text-xs text-[#5C3A1E] line-clamp-1">
                           {lang === 'hi' && puja.descriptionHi ? puja.descriptionHi : puja.description}
                         </p>
                         <div className="flex gap-3 text-[11px] text-[#5C3A1E] mt-1">
@@ -295,18 +295,18 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 shrink-0 w-full sm:w-auto justify-between border-t sm:border-t-0 pt-3 sm:pt-0 border-[#F5E6D0]">
-                      <span className="font-cinzel text-xl font-bold text-[#e09040]">{puja.priceDisplay}</span>
+                    <div className="flex items-center gap-4 shrink-0 w-full sm:w-auto justify-between border-t sm:border-t-0 pt-3 sm:pt-0 border-[#2C1A0E]/10">
+                      <span className="font-cinzel text-xl font-bold text-[#2C1A0E]">{puja.priceDisplay}</span>
                       <div className="flex gap-2">
                         <button
                           onClick={() => onOpenDetail(puja)}
-                          className="bg-[#F5E6D0] text-[#5C3A1E] text-xs font-semibold px-3 py-2 rounded-xl cursor-pointer"
+                          className="bg-white/60 text-[#2C1A0E] text-xs font-semibold px-3 py-2 rounded-xl cursor-pointer hover:bg-white"
                         >
                           {t('card_details', 'Details')}
                         </button>
                         <button
                           onClick={() => onOpenBooking(puja)}
-                          className="bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-xs px-4 py-2 rounded-xl cursor-pointer"
+                          className="bg-[#ff5c00] hover:bg-[#e05200] text-white font-bold text-xs px-4 py-2 rounded-xl cursor-pointer"
                         >
                           {t('card_book', 'Book Now')}
                         </button>
