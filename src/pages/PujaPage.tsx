@@ -61,7 +61,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
   return (
     <div className="pt-24 pb-20 animate-in fade-in duration-300">
       {/* PAGE HERO */}
-      <section className="bg-[#f2b705] text-[#2C1A0E] py-14 px-4 text-center relative overflow-hidden border-b-2 border-[#FFFFE3]">
+      <section className="bg-[#f2b705] text-[#2C1A0E] py-14 px-4 text-center relative overflow-hidden border-b-2 border-[#ffffff]">
         <div className="max-w-4xl mx-auto relative z-10 space-y-3">
           <div className="flex items-center justify-center gap-2 text-xs text-[#2C1A0E] font-medium">
             <span>{t('nav_home', 'Home')}</span>
@@ -90,7 +90,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
               placeholder={lang === 'hi' ? 'पूजा खोजें... जैसे रुद्राभिषेक, कालसर्प, शनि, नवग्रह' : 'Search pujas... e.g. Rudrabhishek, Kalsarp, Shani, Navgrah'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-full pl-10 pr-10 py-2.5 text-xs sm:text-sm text-[#2C1A0E] outline-none"
+              className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-full pl-10 pr-10 py-2.5 text-xs sm:text-sm text-[#2C1A0E] outline-none"
             />
             {searchQuery && (
               <button
@@ -111,7 +111,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
                 className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
                   activeCategory === cat.id
                     ? 'bg-[#ff5c00] text-white border-[#ff5c00] shadow-xs'
-                    : 'bg-[#FFFFE3] text-[#2C1A0E] border-[#2C1A0E]/10 hover:bg-[#2C1A0E]/10'
+                    : 'bg-[#ffffff] text-[#2C1A0E] border-[#2C1A0E]/10 hover:bg-[#2C1A0E]/10'
                 }`}
               >
                 {cat.emoji} {lang === 'hi' ? cat.labelHi : cat.labelEn}
@@ -199,7 +199,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
             {filteredPujas.map((puja) => (
               <div
                 key={puja.id}
-                className={`bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 text-[#2C1A0E] ${
+                className={`bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 text-[#2C1A0E] ${
                   viewMode === 'list'
                     ? 'flex flex-col sm:flex-row items-center justify-between p-4 gap-4'
                     : 'flex flex-col justify-between'

@@ -12,7 +12,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
   return (
     <div className="pt-24 pb-20 animate-in fade-in duration-300">
       {/* PAGE HERO */}
-      <section className="bg-[#f2b705] text-[#2C1A0E] py-16 px-4 text-center border-b-2 border-[#FFFFE3]">
+      <section className="bg-[#f2b705] text-[#2C1A0E] py-16 px-4 text-center border-b-2 border-[#ffffff]">
         <div className="max-w-4xl mx-auto space-y-3">
           <div className="flex items-center justify-center gap-2 text-xs text-[#2C1A0E] font-medium">
             <span>{t('nav_home', 'Home')}</span>
@@ -31,7 +31,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
       </section>
 
       {/* STATS BAR */}
-      <section className="bg-[#FFFFE3] py-8 border-b-2 border-[#2C1A0E]/10">
+      <section className="bg-[#ffffff] py-8 border-b-2 border-[#2C1A0E]/10">
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div>
             <span className="font-cinzel text-3xl font-black text-[#2C1A0E] block">150+</span>
@@ -53,13 +53,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
       </section>
 
       {/* SACRED JOURNEY STORY */}
-      <section className="py-20 bg-[#f2b705] text-[#2C1A0E] border-b-2 border-[#FFFFE3]">
+      <section className="py-20 bg-[#f2b705] text-[#2C1A0E] border-b-2 border-[#ffffff]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="relative">
-            <div className="aspect-4/3 bg-[#FFFFE3] rounded-3xl flex items-center justify-center text-8xl shadow-xl border-2 border-[#2C1A0E]/20 text-[#2C1A0E]">
+            <div className="aspect-4/3 bg-[#ffffff] rounded-3xl flex items-center justify-center text-8xl shadow-xl border-2 border-[#2C1A0E]/20 text-[#2C1A0E]">
               🛕
             </div>
-            <div className="absolute -bottom-6 -right-6 bg-[#2C1A0E] text-[#FFFFE3] p-5 rounded-2xl shadow-xl text-center">
+            <div className="absolute -bottom-6 -right-6 bg-[#2C1A0E] text-[#ffffff] p-5 rounded-2xl shadow-xl text-center">
               <span className="font-cinzel text-3xl font-black block">Ujjain</span>
               <span className="text-[10px] uppercase font-bold tracking-wider text-[#f2b705]">
                 {lang === 'hi' ? 'अवंतिका तीर्थ' : 'Holy Avantika Seva'}
@@ -84,11 +84,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
             </p>
 
             <div className="pt-2 space-y-2">
-              <div className="flex items-center gap-3 bg-[#FFFFE3] p-3 rounded-xl border border-[#2C1A0E]/10 text-[#2C1A0E]">
+              <div className="flex items-center gap-3 bg-[#ffffff] p-3 rounded-xl border border-[#2C1A0E]/10 text-[#2C1A0E]">
                 <i className="fas fa-certificate text-[#2C1A0E] text-lg"></i>
                 <span className="text-xs font-bold">100% Certified Kashi & Ujjain Vidyapeeth Scholars</span>
               </div>
-              <div className="flex items-center gap-3 bg-[#FFFFE3] p-3 rounded-xl border border-[#2C1A0E]/10 text-[#2C1A0E]">
+              <div className="flex items-center gap-3 bg-[#ffffff] p-3 rounded-xl border border-[#2C1A0E]/10 text-[#2C1A0E]">
                 <i className="fas fa-video text-[#2C1A0E] text-lg"></i>
                 <span className="text-xs font-bold">Live Video Streaming for Devotees in 85+ Cities</span>
               </div>
@@ -115,7 +115,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
           {TEAM_PANDITS.map((p, idx) => (
             <div
               key={idx}
-              className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl p-6 text-center text-[#2C1A0E] shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1"
+              className="bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl p-6 text-center text-[#2C1A0E] shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1"
             >
               <div className="w-20 h-20 rounded-full bg-[#f2b705] text-[#2C1A0E] text-4xl flex items-center justify-center mx-auto mb-4 border-2 border-[#2C1A0E]/10 shadow-md">
                 {p.avatar}
@@ -139,28 +139,28 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenBooking }) => {
       </section>
 
       {/* TRUST BADGES */}
-      <section className="py-16 bg-[#f2b705] border-t-2 border-[#FFFFE3] text-[#2C1A0E] text-center">
+      <section className="py-16 bg-[#f2b705] border-t-2 border-[#ffffff] text-[#2C1A0E] text-center">
         <div className="max-w-5xl mx-auto px-4 space-y-6">
           <h3 className="font-cinzel text-2xl font-bold text-[#2C1A0E]">
             {lang === 'hi' ? 'भरोसा एवं प्रमाण पत्र' : 'Trust Badges & Certifications'}
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-[#2C1A0E]">
-            <div className="bg-[#FFFFE3] p-4 rounded-2xl border border-[#2C1A0E]/10 shadow-xs">
+            <div className="bg-[#ffffff] p-4 rounded-2xl border border-[#2C1A0E]/10 shadow-xs">
               <span className="text-3xl block mb-1">🏆</span>
               <span className="text-xs font-bold text-[#2C1A0E] block">Top Puja Platform</span>
               <span className="text-[10px] text-[#5C3A1E]">Ujjain Tirth</span>
             </div>
-            <div className="bg-[#FFFFE3] p-4 rounded-2xl border border-[#2C1A0E]/10 shadow-xs">
+            <div className="bg-[#ffffff] p-4 rounded-2xl border border-[#2C1A0E]/10 shadow-xs">
               <span className="text-3xl block mb-1">🔒</span>
               <span className="text-xs font-bold text-[#2C1A0E] block">256-Bit SSL</span>
               <span className="text-[10px] text-[#5C3A1E]">100% Payment Safe</span>
             </div>
-            <div className="bg-[#FFFFE3] p-4 rounded-2xl border border-[#2C1A0E]/10 shadow-xs">
+            <div className="bg-[#ffffff] p-4 rounded-2xl border border-[#2C1A0E]/10 shadow-xs">
               <span className="text-3xl block mb-1">📜</span>
               <span className="text-xs font-bold text-[#2C1A0E] block">Vedic Authenticity</span>
               <span className="text-[10px] text-[#5C3A1E]">Scripture Compliant</span>
             </div>
-            <div className="bg-[#FFFFE3] p-4 rounded-2xl border border-[#2C1A0E]/10 shadow-xs">
+            <div className="bg-[#ffffff] p-4 rounded-2xl border border-[#2C1A0E]/10 shadow-xs">
               <span className="text-3xl block mb-1">📦</span>
               <span className="text-xs font-bold text-[#2C1A0E] block">Prasad Shipment</span>
               <span className="text-[10px] text-[#5C3A1E]">Tracked Delivery</span>

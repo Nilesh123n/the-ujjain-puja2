@@ -21,7 +21,7 @@ export const Toast: React.FC<ToastProps> = ({ toasts, onRemove }) => {
           key={t.id}
           className={`pointer-events-auto p-3.5 rounded-xl shadow-xl border-l-4 text-xs font-medium flex items-center justify-between gap-3 animate-in slide-in-from-right duration-300 ${
             t.type === 'success'
-              ? 'bg-[#5C3A1E] text-[#FFFFE3] border-emerald-500'
+              ? 'bg-[#5C3A1E] text-[#ffffff] border-emerald-500'
               : t.type === 'error'
               ? 'bg-rose-900 text-white border-rose-500'
               : 'bg-[#5C3A1E] text-white border-[#f7ae62]'

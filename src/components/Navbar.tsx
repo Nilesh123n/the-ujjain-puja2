@@ -36,8 +36,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
       id="navbar"
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-[#FFFFE3] shadow-lg border-b-2 border-[#f2b705] py-2'
-          : 'bg-[#FFFFE3] border-b border-[#f2b705]/50 py-3'
+          ? 'bg-[#ffffff] shadow-lg border-b-2 border-[#f2b705] py-2'
+          : 'bg-[#ffffff] border-b border-[#f2b705]/50 py-3'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
@@ -184,7 +184,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenB
 
       {/* MOBILE DRAWER */}
       {mobileOpen && (
-        <div className="md:hidden bg-[#FFFFE3] border-b-2 border-[#f2b705] px-6 py-5 shadow-2xl animate-in slide-in-from-top duration-300">
+        <div className="md:hidden bg-[#ffffff] border-b-2 border-[#f2b705] px-6 py-5 shadow-2xl animate-in slide-in-from-top duration-300">
           <div className="flex flex-col gap-3">
             <button
               onClick={() => handleNavClick('home')}

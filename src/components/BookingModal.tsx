@@ -263,7 +263,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         {/* CLOSE BUTTON */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#FFFFE3] border border-[#f7ae62] text-[#5C3A1E] font-bold text-lg hover:bg-[#f7ae62] hover:text-white transition-all flex items-center justify-center z-10 cursor-pointer"
+          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#ffffff] border border-[#f7ae62] text-[#5C3A1E] font-bold text-lg hover:bg-[#f7ae62] hover:text-white transition-all flex items-center justify-center z-10 cursor-pointer"
         >
           ✕
         </button>
@@ -289,7 +289,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <select
               value={selectedPuja.id}
               onChange={(e) => handlePujaChange(Number(e.target.value))}
-              className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#2C1A0E] outline-none"
+              className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#2C1A0E] outline-none"
             >
               {PUJA_DATA.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -311,7 +311,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 placeholder={lang === 'hi' ? 'अपना नाम दर्ज करें' : 'Enter your full name'}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
+                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
               />
             </div>
             <div>
@@ -324,7 +324,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 placeholder="+91 98765 43210"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
+                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
               />
             </div>
           </div>
@@ -340,7 +340,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
+                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
               />
             </div>
             <div>
@@ -353,7 +353,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 min={minDateStr}
                 value={pujaDate}
                 onChange={(e) => setPujaDate(e.target.value)}
-                className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
+                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
               />
             </div>
           </div>
@@ -369,7 +369,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 placeholder="e.g. Mumbai, Delhi, Ujjain"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
+                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
               />
             </div>
             <div>
@@ -379,7 +379,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <select
                 value={numPersons}
                 onChange={(e) => setNumPersons(Number(e.target.value))}
-                className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#2C1A0E] outline-none"
+                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#2C1A0E] outline-none"
               >
                 <option value={1}>1 Person</option>
                 <option value={2}>2 Persons (Family)</option>
@@ -399,7 +399,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 placeholder="e.g. Kashyap"
                 value={gotra}
                 onChange={(e) => setGotra(e.target.value)}
-                className="w-full bg-[#FFFFE3] border border-[#2C1A0E]/10 rounded-xl px-2.5 py-2 text-xs text-[#2C1A0E] outline-none"
+                className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 rounded-xl px-2.5 py-2 text-xs text-[#2C1A0E] outline-none"
               />
             </div>
             <div>
@@ -409,7 +409,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 placeholder="Optional"
                 value={nakshatra}
                 onChange={(e) => setNakshatra(e.target.value)}
-                className="w-full bg-[#FFFFE3] border border-[#2C1A0E]/10 rounded-xl px-2.5 py-2 text-xs text-[#2C1A0E] outline-none"
+                className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 rounded-xl px-2.5 py-2 text-xs text-[#2C1A0E] outline-none"
               />
             </div>
             <div>
@@ -417,7 +417,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <select
                 value={rashi}
                 onChange={(e) => setRashi(e.target.value)}
-                className="w-full bg-[#FFFFE3] border border-[#2C1A0E]/10 rounded-xl px-2 py-2 text-xs text-[#2C1A0E] outline-none"
+                className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 rounded-xl px-2 py-2 text-xs text-[#2C1A0E] outline-none"
               >
                 <option value="">Rashi</option>
                 <option value="Mesh">Mesh (Aries)</option>
@@ -446,12 +446,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               placeholder={lang === 'hi' ? 'संकल्प हेतु विशेष प्रार्थना एवं इच्छा लिख सकते हैं...' : 'Any specific prayer or family wish for panditji during sankalp...'}
               value={wishes}
               onChange={(e) => setWishes(e.target.value)}
-              className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2 text-xs text-[#2C1A0E] outline-none resize-none"
+              className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2 text-xs text-[#2C1A0E] outline-none resize-none"
             />
           </div>
 
           {/* COUPON SECTION */}
-          <div className="bg-[#FFFFE3] p-3 rounded-xl border border-[#2C1A0E]/10 flex flex-col gap-2">
+          <div className="bg-[#ffffff] p-3 rounded-xl border border-[#2C1A0E]/10 flex flex-col gap-2">
             <div className="flex gap-2">
               <input
                 type="text"
@@ -488,7 +488,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'razorpay'
                     ? 'border-[#ff5c00] bg-[#f2b705] text-[#2C1A0E] font-bold'
-                    : 'border-[#2C1A0E]/10 bg-[#FFFFE3] text-[#8B6F5E]'
+                    : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E]'
                 }`}
               >
                 <input
@@ -507,7 +507,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'upi'
                     ? 'border-[#ff5c00] bg-[#f2b705] text-[#2C1A0E] font-bold'
-                    : 'border-[#2C1A0E]/10 bg-[#FFFFE3] text-[#8B6F5E]'
+                    : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E]'
                 }`}
               >
                 <input
@@ -526,7 +526,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'whatsapp'
                     ? 'border-[#25D366] bg-emerald-50 text-emerald-800 font-bold'
-                    : 'border-[#2C1A0E]/10 bg-[#FFFFE3] text-[#8B6F5E]'
+                    : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E]'
                 }`}
               >
                 <input

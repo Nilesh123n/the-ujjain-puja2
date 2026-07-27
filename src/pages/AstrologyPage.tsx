@@ -44,7 +44,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
   return (
     <div className="pt-24 pb-20 animate-in fade-in duration-300">
       {/* COSMIC HERO */}
-      <section className="relative bg-[#f2b705] text-[#2C1A0E] py-20 px-4 text-center overflow-hidden border-b-2 border-[#FFFFE3]">
+      <section className="relative bg-[#f2b705] text-[#2C1A0E] py-20 px-4 text-center overflow-hidden border-b-2 border-[#ffffff]">
         <div className="relative z-10 max-w-4xl mx-auto space-y-4">
           <span className="inline-block bg-[#ff5c00] border border-[#ff5c00] text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
             🔮 Vedic Jyotish Consultation
@@ -93,7 +93,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
           {ASTROLOGY_SERVICES.map((srv) => (
             <div
               key={srv.id}
-              className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl p-6 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group transform hover:-translate-y-1.5 text-[#2C1A0E]"
+              className="bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl p-6 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group transform hover:-translate-y-1.5 text-[#2C1A0E]"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -130,7 +130,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
       </section>
 
       {/* RASHIFAL / ZODIAC SELECTOR */}
-      <section className="py-20 bg-[#f2b705] text-[#2C1A0E] border-y-2 border-[#FFFFE3]">
+      <section className="py-20 bg-[#f2b705] text-[#2C1A0E] border-y-2 border-[#ffffff]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-10">
             <span className="inline-block bg-[#ff5c00] border border-[#ff5c00] text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider mb-3 shadow-md">
@@ -153,7 +153,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
                 className={`p-3.5 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
                   selectedZodiac.id === z.id
                     ? 'bg-[#ff5c00] border-white text-white shadow-lg scale-105'
-                    : 'bg-[#FFFFE3] border-[#2C1A0E]/10 text-[#2C1A0E] hover:bg-white'
+                    : 'bg-[#ffffff] border-[#2C1A0E]/10 text-[#2C1A0E] hover:bg-white'
                 }`}
               >
                 <span className="text-2xl mb-1">{z.symbol}</span>
@@ -164,7 +164,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
           </div>
 
           {/* SELECTED RASHIFAL RESULT */}
-          <div className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl p-6 sm:p-8 text-[#2C1A0E] max-w-3xl mx-auto space-y-4 shadow-2xl animate-in fade-in duration-300">
+          <div className="bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl p-6 sm:p-8 text-[#2C1A0E] max-w-3xl mx-auto space-y-4 shadow-2xl animate-in fade-in duration-300">
             <div className="flex items-center justify-between border-b border-[#2C1A0E]/10 pb-4">
               <div className="flex items-center gap-3">
                 <span className="text-4xl">{selectedZodiac.symbol}</span>
@@ -235,7 +235,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
             { name: 'Rahu (North Node)', emoji: '🌑', desc: 'Governs Foreign Lands, Ambition, Sudden Luck or Obstacles.' },
             { name: 'Ketu (South Node)', emoji: '☄️', desc: 'Governs Liberation, Moksha, Intuition & Spiritual Wisdom.' }
           ].map((planet, idx) => (
-            <div key={idx} className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-2xl p-5 text-center shadow-xs text-[#2C1A0E] hover:border-[#2C1A0E] transition-all">
+            <div key={idx} className="bg-[#ffffff] border-2 border-[#f2b705] rounded-2xl p-5 text-center shadow-xs text-[#2C1A0E] hover:border-[#2C1A0E] transition-all">
               <div className="text-4xl mb-2">{planet.emoji}</div>
               <h3 className="font-cinzel text-base font-bold text-[#2C1A0E] mb-1">{planet.name}</h3>
               <p className="text-xs text-[#5C3A1E]">{planet.desc}</p>
@@ -245,9 +245,9 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
       </section>
 
       {/* CONSULTATION BOOKING FORM */}
-      <section id="consult-form" className="py-20 bg-[#f2b705] border-t-2 border-[#FFFFE3] text-[#2C1A0E]">
+      <section id="consult-form" className="py-20 bg-[#f2b705] border-t-2 border-[#ffffff] text-[#2C1A0E]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl p-6 sm:p-10 shadow-2xl text-[#2C1A0E]">
+          <div className="bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl p-6 sm:p-10 shadow-2xl text-[#2C1A0E]">
             <div className="text-center mb-8">
               <span className="inline-block bg-[#ff5c00] text-white font-bold text-xs px-4 py-1 rounded-full uppercase mb-2 shadow-xs border border-[#ff5c00]">
                 Personal Session
@@ -270,7 +270,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
                     placeholder="Enter your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-[#FFFFE3] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
+                    className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
                   />
                 </div>
                 <div>
@@ -281,7 +281,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
                     placeholder="+91 98765 43210"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                    className="w-full bg-[#FFFFE3] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
+                    className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
                   />
                 </div>
               </div>
@@ -294,7 +294,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
                     required
                     value={dob}
                     onChange={(e) => setDob(e.target.value)}
-                    className="w-full bg-[#FFFFE3] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
+                    className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
                   />
                 </div>
                 <div>
@@ -303,7 +303,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
                     type="time"
                     value={tob}
                     onChange={(e) => setTob(e.target.value)}
-                    className="w-full bg-[#FFFFE3] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
+                    className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
                   />
                 </div>
                 <div>
@@ -314,7 +314,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
                     placeholder="City, State"
                     value={pob}
                     onChange={(e) => setPob(e.target.value)}
-                    className="w-full bg-[#FFFFE3] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
+                    className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
                   />
                 </div>
               </div>
@@ -325,7 +325,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
                   <select
                     value={consultType}
                     onChange={(e) => setConsultType(e.target.value)}
-                    className="w-full bg-[#FFFFE3] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] font-semibold outline-none"
+                    className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] font-semibold outline-none"
                   >
                     <option value="Kundali Analysis">📜 Kundali Analysis — ₹1,100</option>
                     <option value="Horoscope Matching">💑 Gun Milan / Matching — ₹801</option>
@@ -340,7 +340,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
                   <select
                     value={mode}
                     onChange={(e) => setMode(e.target.value)}
-                    className="w-full bg-[#FFFFE3] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] font-semibold outline-none"
+                    className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] font-semibold outline-none"
                   >
                     <option value="WhatsApp Call">📱 WhatsApp Voice Call</option>
                     <option value="Direct Phone">📞 Direct Phone Call</option>
@@ -356,7 +356,7 @@ export const AstrologyPage: React.FC<AstrologyPageProps> = ({ showToast }) => {
                   placeholder="Describe your primary question regarding career, marriage, health or family..."
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
-                  className="w-full bg-[#FFFFE3] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2 text-xs text-[#2C1A0E] outline-none resize-none"
+                  className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2 text-xs text-[#2C1A0E] outline-none resize-none"
                 />
               </div>
 

@@ -95,7 +95,7 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
   };
 
   return (
-    <section id="ai-section" className="py-20 bg-[#f2b705] text-[#2C1A0E] border-y-2 border-[#FFFFE3]">
+    <section id="ai-section" className="py-20 bg-[#f2b705] text-[#2C1A0E] border-y-2 border-[#ffffff]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         {/* SECTION HEADER */}
         <div className="text-center mb-10">
@@ -111,7 +111,7 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
         </div>
 
         {/* AI CARD CONTAINER */}
-        <div className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden text-[#2C1A0E]">
+        <div className="bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden text-[#2C1A0E]">
           {/* STEP INDICATORS */}
           <div className="flex items-center justify-center gap-3 sm:gap-6 mb-8 max-w-md mx-auto">
             <div
@@ -253,7 +253,7 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
                     {recommendations.map((puja) => (
                       <div
                         key={puja.id}
-                        className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-2xl p-4 flex flex-col justify-between hover:shadow-xl transition-all transform hover:-translate-y-1 text-[#2C1A0E] shadow-md"
+                        className="bg-[#ffffff] border-2 border-[#f2b705] rounded-2xl p-4 flex flex-col justify-between hover:shadow-xl transition-all transform hover:-translate-y-1 text-[#2C1A0E] shadow-md"
                       >
                         <div>
                           <div className="text-3xl mb-2 text-center">{puja.emoji}</div>

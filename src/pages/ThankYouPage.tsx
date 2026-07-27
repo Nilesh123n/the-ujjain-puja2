@@ -67,7 +67,7 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ booking, onGoHome })
 
         {/* BOOKING DETAILS CARD */}
         {booking && (
-          <div className="bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 rounded-2xl p-5 text-left text-xs space-y-2.5">
+          <div className="bg-[#ffffff] border-2 border-[#2C1A0E]/10 rounded-2xl p-5 text-left text-xs space-y-2.5">
             <div className="flex items-center justify-between border-b border-[#2C1A0E]/10 pb-2 font-bold text-[#5C3A1E]">
               <span className="font-cinzel text-sm">Booking Receipt</span>
               <span className="text-[#e09040] bg-amber-100/60 px-2.5 py-0.5 rounded-md font-mono">{booking.bookingId}</span>
@@ -144,7 +144,7 @@ export const ThankYouPage: React.FC<ThankYouPageProps> = ({ booking, onGoHome })
 
           <button
             onClick={printReceipt}
-            className="bg-[#FFFFE3] hover:bg-[#f7ae62] text-[#5C3A1E] font-bold text-xs px-5 py-3 rounded-full transition-colors flex items-center gap-2 cursor-pointer border border-[#2C1A0E]/10"
+            className="bg-[#ffffff] hover:bg-[#f7ae62] text-[#5C3A1E] font-bold text-xs px-5 py-3 rounded-full transition-colors flex items-center gap-2 cursor-pointer border border-[#2C1A0E]/10"
           >
             <i className="fas fa-print"></i> Print Receipt
           </button>

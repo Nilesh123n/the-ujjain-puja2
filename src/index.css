@@ -5,13 +5,13 @@
    ======================================== */
 
 :root {
-  --cream:        #FFFFE3;
-  --cream-dark:   #FFFFE3;
+  --cream:        #ffffff;
+  --cream-dark:   #ffffff;
   --gold:         #f2b705;
   --gold-dark:    #d9a304;
   --saffron:      #ff5c00;
   --saffron-hover:#e05200;
-  --light-section:#FFFFE3;
+  --light-section:#ffffff;
   --dark-section: #f2b705;
   --brown:        #3A220F;
   --text-dark:    #2C1A0E;

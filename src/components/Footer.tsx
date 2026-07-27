@@ -16,7 +16,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onOpenBooking }) =
   };
 
   return (
-    <footer className="bg-[#f2b705] text-[#2C1A0E] pt-16 pb-8 border-t-4 border-[#FFFFE3]">
+    <footer className="bg-[#f2b705] text-[#2C1A0E] pt-16 pb-8 border-t-4 border-[#ffffff]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#2C1A0E]/20">
           {/* BRAND COLUMN */}
@@ -25,7 +25,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onOpenBooking }) =
               <img
                 src={logoImg}
                 alt="Ujjain Puja Logo"
-                className="w-13 h-13 object-contain rounded-full border-2 border-[#FFFFE3] bg-white shadow-md p-0.5"
+                className="w-13 h-13 object-contain rounded-full border-2 border-[#ffffff] bg-white shadow-md p-0.5"
                 referrerPolicy="no-referrer"
               />
               <div>

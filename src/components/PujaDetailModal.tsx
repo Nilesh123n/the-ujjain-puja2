@@ -66,7 +66,7 @@ export const PujaDetailModal: React.FC<PujaDetailModalProps> = ({
         <div className="p-6 sm:p-8 space-y-6">
           {/* META GRID */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-[#FFFFE3] border border-[#2C1A0E]/10 p-3 rounded-xl flex items-center gap-3">
+            <div className="bg-[#ffffff] border border-[#2C1A0E]/10 p-3 rounded-xl flex items-center gap-3">
               <i className="fas fa-map-marker-alt text-[#e09040] text-lg"></i>
               <div>
                 <span className="block text-[10px] text-[#8B6F5E] uppercase font-bold">
@@ -76,7 +76,7 @@ export const PujaDetailModal: React.FC<PujaDetailModalProps> = ({
               </div>
             </div>
 
-            <div className="bg-[#FFFFE3] border border-[#2C1A0E]/10 p-3 rounded-xl flex items-center gap-3">
+            <div className="bg-[#ffffff] border border-[#2C1A0E]/10 p-3 rounded-xl flex items-center gap-3">
               <i className="fas fa-clock text-[#e09040] text-lg"></i>
               <div>
                 <span className="block text-[10px] text-[#8B6F5E] uppercase font-bold">
@@ -86,7 +86,7 @@ export const PujaDetailModal: React.FC<PujaDetailModalProps> = ({
               </div>
             </div>
 
-            <div className="bg-[#FFFFE3] border border-[#2C1A0E]/10 p-3 rounded-xl flex items-center gap-3">
+            <div className="bg-[#ffffff] border border-[#2C1A0E]/10 p-3 rounded-xl flex items-center gap-3">
               <i className="fas fa-user-tie text-[#e09040] text-lg"></i>
               <div>
                 <span className="block text-[10px] text-[#8B6F5E] uppercase font-bold">
@@ -96,7 +96,7 @@ export const PujaDetailModal: React.FC<PujaDetailModalProps> = ({
               </div>
             </div>
 
-            <div className="bg-[#FFFFE3] border border-[#2C1A0E]/10 p-3 rounded-xl flex items-center gap-3">
+            <div className="bg-[#ffffff] border border-[#2C1A0E]/10 p-3 rounded-xl flex items-center gap-3">
               <i className="fas fa-om text-[#e09040] text-lg"></i>
               <div>
                 <span className="block text-[10px] text-[#8B6F5E] uppercase font-bold">
@@ -124,7 +124,7 @@ export const PujaDetailModal: React.FC<PujaDetailModalProps> = ({
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {benefits.map((b, idx) => (
-                <div key={idx} className="flex items-center gap-2 text-xs text-[#2C1A0E] bg-[#FFFFE3] p-2.5 rounded-lg border border-[#2C1A0E]/10">
+                <div key={idx} className="flex items-center gap-2 text-xs text-[#2C1A0E] bg-[#ffffff] p-2.5 rounded-lg border border-[#2C1A0E]/10">
                   <i className="fas fa-check-circle text-emerald-600 shrink-0"></i>
                   <span>{b}</span>
                 </div>
@@ -139,7 +139,7 @@ export const PujaDetailModal: React.FC<PujaDetailModalProps> = ({
             </h4>
             <div className="flex flex-wrap gap-2">
               {includes.map((inc, idx) => (
-                <span key={idx} className="bg-[#FFFFE3] border border-[#f7ae62]/50 text-[#5C3A1E] text-xs font-medium px-3 py-1.5 rounded-full">
+                <span key={idx} className="bg-[#ffffff] border border-[#f7ae62]/50 text-[#5C3A1E] text-xs font-medium px-3 py-1.5 rounded-full">
                   ✓ {inc}
                 </span>
               ))}
@@ -148,7 +148,7 @@ export const PujaDetailModal: React.FC<PujaDetailModalProps> = ({
 
           {/* BEST FOR */}
           {bestFor && (
-            <div className="bg-[#FFFFE3] p-3.5 rounded-xl border border-[#2C1A0E]/10">
+            <div className="bg-[#ffffff] p-3.5 rounded-xl border border-[#2C1A0E]/10">
               <span className="block text-[11px] font-bold text-[#e09040] uppercase tracking-wider mb-1">
                 {lang === 'hi' ? 'किसके लिए विशेष' : 'Recommended For'}
               </span>
@@ -158,7 +158,7 @@ export const PujaDetailModal: React.FC<PujaDetailModalProps> = ({
         </div>
 
         {/* FOOTER */}
-        <div className="p-6 bg-[#FFFFE3] border-t border-[#2C1A0E]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-6 bg-[#ffffff] border-t border-[#2C1A0E]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="text-xs text-[#8B6F5E] block">{t('card_per_pkg', 'fixed package')}</span>
             <span className="font-cinzel text-2xl font-bold text-[#e09040]">{puja.priceDisplay}</span>

@@ -73,9 +73,9 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
   ];
 
   return (
-    <section id="ujjain-mahima" className="py-20 bg-[#f2b705] text-[#2C1A0E] border-y-2 border-[#FFFFE3] relative overflow-hidden">
+    <section id="ujjain-mahima" className="py-20 bg-[#f2b705] text-[#2C1A0E] border-y-2 border-[#ffffff] relative overflow-hidden">
       {/* BACKGROUND SHIVA YANTRA PATTERN */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#FFFFE3_1px,transparent_1px)] [background-size:24px_24px]"></div>
+      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         {/* SECTION HEADER */}
@@ -91,7 +91,7 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
           </p>
 
           {/* SANSKRIT SHLOKA BOX */}
-          <div className="mt-6 p-4 sm:p-5 bg-[#FFFFE3] border-2 border-[#f2b705] rounded-2xl shadow-xl max-w-2xl mx-auto text-[#2C1A0E]">
+          <div className="mt-6 p-4 sm:p-5 bg-[#ffffff] border-2 border-[#f2b705] rounded-2xl shadow-xl max-w-2xl mx-auto text-[#2C1A0E]">
             <p className="font-cinzel font-bold text-base sm:text-lg text-[#2C1A0E] tracking-wide leading-relaxed">
               "अवंतिकायां विहितावतारं मुक्तिप्रदानाय च सज्जनानाम्।<br className="hidden sm:inline" />
               अकालमृत्योः परिरक्षणार्थं वन्दे महाकालमहासमुद्रम्॥"
@@ -113,7 +113,7 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
               className={`shrink-0 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 border ${
                 activeTab === idx
                   ? 'bg-[#ff5c00] text-white border-white shadow-lg scale-105'
-                  : 'bg-[#FFFFE3] text-[#2C1A0E] border-[#2C1A0E]/10 hover:bg-white'
+                  : 'bg-[#ffffff] text-[#2C1A0E] border-[#2C1A0E]/10 hover:bg-white'
               }`}
             >
               <span>{idx === 0 ? '🔱' : idx === 1 ? '🪔' : idx === 2 ? '🔴' : idx === 3 ? '🪐' : idx === 4 ? '🌳' : '🌺'}</span>
@@ -123,7 +123,7 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
         </div>
 
         {/* ACTIVE FEATURED HERO CARD */}
-        <div className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl overflow-hidden shadow-2xl mb-12 grid grid-cols-1 lg:grid-cols-12 text-[#2C1A0E]">
+        <div className="bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl overflow-hidden shadow-2xl mb-12 grid grid-cols-1 lg:grid-cols-12 text-[#2C1A0E]">
           <div className="lg:col-span-5 relative min-h-[280px] lg:min-h-[380px]">
             <img
               src={mahimaItems[activeTab].image}
@@ -173,7 +173,7 @@ export const UjjainMahima: React.FC<UjjainMahimaProps> = ({ onBookNow }) => {
             <div
               key={item.id}
               onClick={() => setActiveTab(idx)}
-              className={`bg-[#FFFFE3] border-2 ${
+              className={`bg-[#ffffff] border-2 ${
                 activeTab === idx ? 'border-[#2C1A0E] shadow-xl scale-[1.02]' : 'border-[#f2b705] hover:border-[#2C1A0E]'
               } rounded-2xl p-6 transition-all duration-300 cursor-pointer flex flex-col justify-between group transform hover:-translate-y-1 text-[#2C1A0E] shadow-md`}
             >

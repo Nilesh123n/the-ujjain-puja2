@@ -120,7 +120,7 @@ export const AiChatbot: React.FC<AiChatbotProps> = ({ onOpenBooking }) => {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
       {/* CHAT WINDOW */}
       {isOpen && (
-        <div className="bg-[#FFFFE3] border-2 border-[#f7ae62] rounded-3xl w-80 sm:w-96 h-[500px] shadow-2xl flex flex-col overflow-hidden mb-4 animate-in slide-in-from-bottom-5 duration-300">
+        <div className="bg-[#ffffff] border-2 border-[#f7ae62] rounded-3xl w-80 sm:w-96 h-[500px] shadow-2xl flex flex-col overflow-hidden mb-4 animate-in slide-in-from-bottom-5 duration-300">
           {/* HEADER */}
           <div className="bg-gradient-to-r from-[#5C3A1E] to-[#e07b39] p-4 text-white flex items-center justify-between shadow-md">
             <div className="flex items-center gap-3">
@@ -143,7 +143,7 @@ export const AiChatbot: React.FC<AiChatbotProps> = ({ onOpenBooking }) => {
           </div>
 
           {/* MESSAGES CONTAINER */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#FFFFE3]">
+          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#ffffff]">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -194,7 +194,7 @@ export const AiChatbot: React.FC<AiChatbotProps> = ({ onOpenBooking }) => {
           </div>
 
           {/* QUICK CHIPS */}
-          <div className="px-3 py-2 bg-[#FFFFE3] border-t border-[#2C1A0E]/10 flex gap-1.5 overflow-x-auto no-scrollbar">
+          <div className="px-3 py-2 bg-[#ffffff] border-t border-[#2C1A0E]/10 flex gap-1.5 overflow-x-auto no-scrollbar">
             {quickChips.map((chip, idx) => (
               <button
                 key={idx}
@@ -220,7 +220,7 @@ export const AiChatbot: React.FC<AiChatbotProps> = ({ onOpenBooking }) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-              className="flex-1 bg-[#FFFFE3] border border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-full px-3.5 py-2 text-xs text-[#2C1A0E] outline-none"
+              className="flex-1 bg-[#ffffff] border border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-full px-3.5 py-2 text-xs text-[#2C1A0E] outline-none"
             />
             <button
               onClick={() => handleSendMessage()}

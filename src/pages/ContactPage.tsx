@@ -51,7 +51,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
   return (
     <div className="pt-24 pb-20 animate-in fade-in duration-300">
       {/* PAGE HERO */}
-      <section className="bg-[#f2b705] text-[#2C1A0E] py-16 px-4 text-center border-b-2 border-[#FFFFE3]">
+      <section className="bg-[#f2b705] text-[#2C1A0E] py-16 px-4 text-center border-b-2 border-[#ffffff]">
         <div className="max-w-4xl mx-auto space-y-3">
           <div className="flex items-center justify-center gap-2 text-xs text-[#2C1A0E] font-medium">
             <span>Home</span>
@@ -66,10 +66,10 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
       </section>
 
       {/* CONTACT INFO CARDS */}
-      <section className="py-12 bg-[#FFFFE3] border-b-2 border-[#C87A2F]/20">
+      <section className="py-12 bg-[#ffffff] border-b-2 border-[#C87A2F]/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl p-6 text-center shadow-md transition-all text-[#2C1A0E] group">
+            <div className="bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl p-6 text-center shadow-md transition-all text-[#2C1A0E] group">
               <div className="w-16 h-16 rounded-full bg-[#f2b705] text-[#2C1A0E] text-3xl flex items-center justify-center mx-auto mb-4 border border-[#2C1A0E]/10 group-hover:scale-110 transition-transform">
                 <i className="fab fa-whatsapp"></i>
               </div>
@@ -88,7 +88,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
               </a>
             </div>
 
-            <div className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl p-6 text-center shadow-md transition-all text-[#2C1A0E] group">
+            <div className="bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl p-6 text-center shadow-md transition-all text-[#2C1A0E] group">
               <div className="w-16 h-16 rounded-full bg-[#f2b705] text-[#2C1A0E] text-3xl flex items-center justify-center mx-auto mb-4 border border-[#2C1A0E]/10 group-hover:scale-110 transition-transform">
                 <i className="fas fa-phone-alt"></i>
               </div>
@@ -105,7 +105,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
               </a>
             </div>
 
-            <div className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl p-6 text-center shadow-md transition-all text-[#2C1A0E] group">
+            <div className="bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl p-6 text-center shadow-md transition-all text-[#2C1A0E] group">
               <div className="w-16 h-16 rounded-full bg-[#f2b705] text-[#2C1A0E] text-3xl flex items-center justify-center mx-auto mb-4 border border-[#2C1A0E]/10 group-hover:scale-110 transition-transform">
                 <i className="fas fa-envelope"></i>
               </div>
@@ -122,7 +122,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
               </a>
             </div>
 
-            <div className="bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl p-6 text-center shadow-md transition-all text-[#2C1A0E] group">
+            <div className="bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl p-6 text-center shadow-md transition-all text-[#2C1A0E] group">
               <div className="w-16 h-16 rounded-full bg-[#f2b705] text-[#2C1A0E] text-3xl flex items-center justify-center mx-auto mb-4 border border-[#2C1A0E]/10 group-hover:scale-110 transition-transform">
                 <i className="fas fa-map-marker-alt"></i>
               </div>
@@ -145,12 +145,12 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
     </section>
 
       {/* MAIN CONTACT SECTION & FORM */}
-      <section className="py-12 bg-[#f2b705] border-b-2 border-[#FFFFE3] text-[#2C1A0E]">
+      <section className="py-12 bg-[#f2b705] border-b-2 border-[#ffffff] text-[#2C1A0E]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* SUPPORT HOURS & SOCIAL */}
             <div className="lg:col-span-5 space-y-6 text-[#2C1A0E]">
-              <div className="bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 rounded-3xl p-6 shadow-md">
+              <div className="bg-[#ffffff] border-2 border-[#2C1A0E]/10 rounded-3xl p-6 shadow-md">
                 <h3 className="font-cinzel text-xl font-bold text-[#2C1A0E] mb-4 flex items-center gap-2">
                   <i className="fas fa-clock text-[#2C1A0E]"></i> Temple & Seva Timings
                 </h3>
@@ -178,7 +178,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
                 </div>
               </div>
 
-              <div className="bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 rounded-3xl p-6 shadow-md">
+              <div className="bg-[#ffffff] border-2 border-[#2C1A0E]/10 rounded-3xl p-6 shadow-md">
                 <h4 className="font-cinzel text-lg font-bold text-[#2C1A0E] mb-2">🚗 How to Reach Ujjain</h4>
                 <ul className="text-xs text-[#2C1A0E]/90 space-y-2 leading-relaxed">
                   <li>• <strong>By Train:</strong> Ujjain Junction (UJN) is well connected nationwide. Temple is 3 km from station.</li>
@@ -189,7 +189,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
             </div>
 
             {/* CONTACT FORM */}
-            <div className="lg:col-span-7 bg-[#FFFFE3] border-2 border-[#f2b705] rounded-3xl p-6 sm:p-8 shadow-xl text-[#2C1A0E]">
+            <div className="lg:col-span-7 bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl p-6 sm:p-8 shadow-xl text-[#2C1A0E]">
               <h3 className="font-cinzel text-2xl font-bold text-[#2C1A0E] mb-1">✉️ Send Message to Pandit Team</h3>
               <p className="text-xs text-[#5C3A1E] mb-6">
                 Fill details below. Our temple coordinator will review your request and get back to you immediately.
@@ -205,7 +205,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
                     placeholder="Full name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
+                    className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
                   />
                 </div>
                 <div>
@@ -216,7 +216,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
                     placeholder="+91 98765 43210"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                    className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
+                    className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
                   />
                 </div>
               </div>
@@ -229,7 +229,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
                     placeholder="your@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
+                    className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
                   />
                 </div>
                 <div>
@@ -239,7 +239,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
                     placeholder="e.g. Indore, Delhi, USA"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
+                    className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none"
                   />
                 </div>
               </div>
@@ -249,7 +249,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
                 <select
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] font-semibold outline-none"
+                  className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] font-semibold outline-none"
                 >
                   <option value="Puja Booking Enquiry">🪔 Puja Booking Enquiry</option>
                   <option value="Astrology Consultation">🔮 Astrology & Kundali</option>
@@ -267,7 +267,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
                   placeholder="How can our pandit team assist you? Mention dates, gotra or specific questions..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none resize-none"
+                  className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#2C1A0E] rounded-xl px-3.5 py-2.5 text-xs text-[#2C1A0E] outline-none resize-none"
                 />
               </div>
 
@@ -329,7 +329,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
     </section>
 
       {/* MAP PLACEHOLDER / MAP CONTAINER */}
-      <section className="py-12 bg-[#FFFFE3]">
+      <section className="py-12 bg-[#ffffff]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="bg-white border-2 border-[#B5460F] rounded-3xl overflow-hidden shadow-lg">
             <div className="p-4 bg-[#f2b705] border-b border-[#f7ae62]/30 flex items-center justify-between">

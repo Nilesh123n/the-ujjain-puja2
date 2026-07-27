@@ -88,7 +88,7 @@ export const UpiPaymentModal: React.FC<UpiPaymentModalProps> = ({
 
         <div className="p-5 space-y-4">
           {/* QR CODE CONTAINER */}
-          <div className="bg-[#FFFFE3] p-4 rounded-2xl border border-[#2C1A0E]/10 flex flex-col items-center justify-center text-center">
+          <div className="bg-[#ffffff] p-4 rounded-2xl border border-[#2C1A0E]/10 flex flex-col items-center justify-center text-center">
             <span className="text-xs font-bold text-[#B5460F] uppercase tracking-wider mb-2">
               {lang === 'hi' ? 'स्कैन करके तुरंत भुगतान करें' : 'Scan QR Code with any UPI App'}
             </span>
@@ -148,7 +148,7 @@ export const UpiPaymentModal: React.FC<UpiPaymentModalProps> = ({
                 placeholder="e.g. 420812345678"
                 value={utrNumber}
                 onChange={(e) => setUtrNumber(e.target.value.replace(/[^0-9a-zA-Z]/g, ''))}
-                className="w-full bg-[#FFFFE3] border-2 border-[#2C1A0E]/10 focus:border-[#B5460F] rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold text-[#2C1A0E] outline-none"
+                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#B5460F] rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold text-[#2C1A0E] outline-none"
               />
             </div>
 
