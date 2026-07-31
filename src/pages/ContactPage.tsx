@@ -68,7 +68,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
       {/* CONTACT INFO CARDS */}
       <section className="py-12 bg-[#ffffff] border-b-2 border-[#C87A2F]/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl p-6 text-center shadow-md transition-all text-[#2C1A0E] group">
               <div className="w-16 h-16 rounded-full bg-[#f2b705] text-[#2C1A0E] text-3xl flex items-center justify-center mx-auto mb-4 border border-[#2C1A0E]/10 group-hover:scale-110 transition-transform">
                 <i className="fab fa-whatsapp"></i>
@@ -121,28 +121,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
                 Send Email
               </a>
             </div>
-
-            <div className="bg-[#ffffff] border-2 border-[#f2b705] rounded-3xl p-6 text-center shadow-md transition-all text-[#2C1A0E] group">
-              <div className="w-16 h-16 rounded-full bg-[#f2b705] text-[#2C1A0E] text-3xl flex items-center justify-center mx-auto mb-4 border border-[#2C1A0E]/10 group-hover:scale-110 transition-transform">
-                <i className="fas fa-map-marker-alt"></i>
-              </div>
-              <h3 className="font-cinzel text-base font-bold text-[#2C1A0E]">Visit Temple</h3>
-              <p className="text-xs text-[#5C3A1E] my-1">Pardeshwar Mahadev, Ujjain MP</p>
-              <span className="text-[11px] font-medium text-[#5C3A1E] block mb-3">
-                Near Mahakaleshwar Jyotirlinga
-              </span>
-              <a
-                href="https://maps.google.com/?q=Pardeshwar+Mahadev+Mandir+Ujjain"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-block bg-[#ff5c00] hover:bg-[#e05200] text-white font-bold text-xs px-5 py-2 rounded-full shadow-xs"
-              >
-                Directions
-              </a>
-            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
       {/* MAIN CONTACT SECTION & FORM */}
       <section className="py-12 bg-[#f2b705] border-b-2 border-[#ffffff] text-[#2C1A0E]">
@@ -150,34 +131,6 @@ export const ContactPage: React.FC<ContactPageProps> = ({ showToast }) => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* SUPPORT HOURS & SOCIAL */}
             <div className="lg:col-span-5 space-y-6 text-[#2C1A0E]">
-              <div className="bg-[#ffffff] border-2 border-[#2C1A0E]/10 rounded-3xl p-6 shadow-md">
-                <h3 className="font-cinzel text-xl font-bold text-[#2C1A0E] mb-4 flex items-center gap-2">
-                  <i className="fas fa-clock text-[#2C1A0E]"></i> Temple & Seva Timings
-                </h3>
-                <div className="space-y-3 text-xs">
-                  <div className="flex justify-between items-center p-2.5 bg-white rounded-xl border border-[#2C1A0E]/10">
-                    <span className="font-semibold text-[#2C1A0E]">🌅 Morning Rituals</span>
-                    <span className="text-[#5C3A1E]">6:00 AM – 12:00 PM</span>
-                    <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Open</span>
-                  </div>
-                  <div className="flex justify-between items-center p-2.5 bg-white rounded-xl border border-[#2C1A0E]/10">
-                    <span className="font-semibold text-[#2C1A0E]">☀️ Afternoon Seva</span>
-                    <span className="text-[#5C3A1E]">12:00 PM – 4:00 PM</span>
-                    <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Open</span>
-                  </div>
-                  <div className="flex justify-between items-center p-2.5 bg-white rounded-xl border border-[#2C1A0E]/10">
-                    <span className="font-semibold text-[#2C1A0E]">🌆 Evening Aarti & Jap</span>
-                    <span className="text-[#5C3A1E]">4:00 PM – 10:00 PM</span>
-                    <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">Open</span>
-                  </div>
-                  <div className="flex justify-between items-center p-2.5 bg-white rounded-xl border border-[#2C1A0E]/10">
-                    <span className="font-semibold text-[#2C1A0E]">📱 WhatsApp Support</span>
-                    <span className="text-[#5C3A1E]">24 Hours / 7 Days</span>
-                    <span className="bg-[#25D366] text-white text-[10px] font-bold px-2 py-0.5 rounded-md">Always Active</span>
-                  </div>
-                </div>
-              </div>
-
               <div className="bg-[#ffffff] border-2 border-[#2C1A0E]/10 rounded-3xl p-6 shadow-md">
                 <h4 className="font-cinzel text-lg font-bold text-[#2C1A0E] mb-2">🚗 How to Reach Ujjain</h4>
                 <ul className="text-xs text-[#2C1A0E]/90 space-y-2 leading-relaxed">

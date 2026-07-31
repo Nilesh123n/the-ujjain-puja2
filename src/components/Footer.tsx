@@ -37,8 +37,8 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onOpenBooking }) =
             </div>
             <p className="text-sm text-[#3A220F] font-medium leading-relaxed mb-6">
               {lang === 'hi'
-                ? 'उज्जैन के परदेश्वर महादेव, मंगलनाथ एवं त्रिवेणी शनि मंदिर में शास्त्रोक्त विधि से पूजन एवं लाइव दर्शन। 150+ से अधिक श्रद्धालुओं द्वारा भरोसेमंद।'
-                : 'Authentic Vedic pujas and spiritual consultations from the sacred city of Ujjain. Performed at Pardeshwar Mahadev & Triveni Shani Mandir. Trusted by 150+ devotees across 85+ cities.'}
+                ? 'उज्जैन के मंगलनाथ एवं त्रिवेणी शनि मंदिर में शास्त्रोक्त विधि से पूजन एवं लाइव दर्शन। 150+ से अधिक श्रद्धालुओं द्वारा भरोसेमंद।'
+                : 'Authentic Vedic pujas and spiritual consultations from the sacred city of Ujjain. Performed by experienced pandits in holy Ujjain. Trusted by 150+ devotees across 85+ cities.'}
             </p>
             <div className="flex gap-3">
               <a
@@ -181,10 +181,6 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onOpenBooking }) =
                   </a>
                   <p className="text-[11px] text-[#5C3A1E]">Quick response within 2 hrs</p>
                 </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <i className="fas fa-map-marker-alt text-[#3A220F] text-base mt-0.5 shrink-0"></i>
-                <span>Pardeshwar Mahadev Mandir, Near Mahakal Temple, Ujjain, MP 456001</span>
               </li>
             </ul>
           </div>
