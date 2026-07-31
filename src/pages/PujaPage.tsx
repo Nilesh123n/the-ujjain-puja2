@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Puja } from '../types';
-import { PUJA_DATA } from '../data/pujaData';
 import { useLanguage } from '../context/LanguageContext';
+import { useCustomization } from '../context/CustomizationContext';
 
 interface PujaPageProps {
   onOpenBooking: (puja: Puja) => void;
@@ -14,6 +14,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
   const [sortBy, setSortBy] = useState<string>('default');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { lang, t } = useLanguage();
+  const { pujas } = useCustomization();
 
   const categories = [
     { id: 'all', labelEn: 'All Pujas', labelHi: 'सभी पूजाएं', emoji: '🙏' },
@@ -27,7 +28,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
   ];
 
   const filteredPujas = useMemo(() => {
-    let result = PUJA_DATA;
+    let result = pujas;
 
     if (activeCategory !== 'all') {
       result = result.filter((p) => p.category === activeCategory);

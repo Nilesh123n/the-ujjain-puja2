@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Puja } from '../types';
-import { PUJA_DATA, TESTIMONIALS, FAQS } from '../data/pujaData';
+import { TESTIMONIALS, FAQS } from '../data/pujaData';
 import { AiRecommendation } from '../components/AiRecommendation';
 import { UjjainMahima } from '../components/UjjainMahima';
 import { useLanguage } from '../context/LanguageContext';
-import mahakalBgImage from '../assets/images/mahakal_temple_bg_1785148009037.jpg';
+import { useCustomization } from '../context/CustomizationContext';
 
 interface HomePageProps {
   onOpenBooking: (puja?: Puja) => void;
@@ -19,8 +19,9 @@ export const HomePage: React.FC<HomePageProps> = ({
 }) => {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const { lang, t } = useLanguage();
+  const { heroContent, pujas } = useCustomization();
 
-  const popularPujas = PUJA_DATA.filter((p) => p.popular).slice(0, 6);
+  const popularPujas = pujas.filter((p) => p.popular).slice(0, 6);
 
   const toggleFaq = (idx: number) => {
     setOpenFaq(openFaq === idx ? null : idx);
@@ -34,7 +35,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div
           className="absolute inset-0 bg-cover bg-center z-0 scale-105 transition-transform duration-1000 opacity-100"
           style={{
-            backgroundImage: `url(${mahakalBgImage})`
+            backgroundImage: `url(${heroContent.bgImage})`
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/75 z-0" />
@@ -42,17 +43,17 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="relative z-10 max-w-4xl mx-auto space-y-6">
           {/* TRUST BADGE */}
           <div className="inline-block bg-[#ff5c00] border border-[#ff5c00] text-white font-bold text-xs sm:text-sm px-5 py-2 rounded-full shadow-md tracking-wide">
-            {t('hero_badge', '✨ Trusted by 150+ Devotees Worldwide')}
+            {heroContent.badge}
           </div>
 
           {/* MAIN HEADING */}
           <h1 className="font-cinzel text-3xl sm:text-5xl lg:text-6xl font-black text-[#f2b705] leading-tight drop-shadow-lg">
-            <span className="text-[#f2b705]">{t('hero_title_1', 'Sacred Puja Seva')}</span> <br />
-            <span className="text-[#f2b705]">{t('hero_title_2', 'in Holy Ujjain')}</span>
+            <span className="text-[#f2b705]">{heroContent.title1}</span> <br />
+            <span className="text-[#f2b705]">{heroContent.title2}</span>
           </h1>
 
           <p className="text-base sm:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed drop-shadow-sm font-medium">
-            {t('hero_desc', 'Experience divine Mahakal blessings through authentic Vedic pujas, havans, and spiritual consultations performed by experienced pandits in sacred Ujjain.')}
+            {heroContent.description}
           </p>
 
           {/* CTA BUTTONS */}
@@ -70,6 +71,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               <span>🤖</span> {t('btn_ai_rec', 'AI Recommendation')}
             </a>
           </div>
+
 
           {/* STATS OVERLAY - UPDATED ACCORDING TO PROMPT */}
           <div className="pt-8">

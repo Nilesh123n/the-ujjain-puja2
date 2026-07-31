@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Puja } from '../types';
-import { PUJA_DATA } from '../data/pujaData';
+import { useCustomization } from '../context/CustomizationContext';
 
 interface AiRecommendationProps {
   onSelectPuja: (puja: Puja) => void;
 }
 
 export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja }) => {
+  const { pujas } = useCustomization();
   const [step, setStep] = useState(1);
   const [purpose, setPurpose] = useState('');
   const [dosh, setDosh] = useState('');
@@ -36,28 +37,33 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
 
       // DOSH LOGIC
       if (dVal === 'kalsarpa') {
-        result.push(...PUJA_DATA.filter((p) => p.id === 5 || p.id === 25));
+        result.push(...pujas.filter((p) => p.id === 5 || p.id === 25 || p.category === 'dosh'));
       } else if (dVal === 'mangal') {
-        result.push(...PUJA_DATA.filter((p) => p.id === 6 || p.id === 17));
+        result.push(...pujas.filter((p) => p.id === 6 || p.id === 17 || p.category === 'dosh'));
       } else if (dVal === 'pitra') {
-        result.push(...PUJA_DATA.filter((p) => p.id === 7));
+        result.push(...pujas.filter((p) => p.id === 7 || p.category === 'dosh'));
       } else if (dVal === 'shani') {
-        result.push(...PUJA_DATA.filter((p) => p.id === 11 || p.id === 12));
+        result.push(...pujas.filter((p) => p.id === 11 || p.id === 12 || p.category === 'shani'));
       }
 
       // PURPOSE LOGIC
       if (pVal === 'health') {
-        result.push(...PUJA_DATA.filter((p) => p.id === 4 || p.id === 1));
+        result.push(...pujas.filter((p) => p.id === 4 || p.id === 1));
       } else if (pVal === 'wealth') {
-        result.push(...PUJA_DATA.filter((p) => p.id === 15 || p.id === 2 || p.id === 1));
+        result.push(...pujas.filter((p) => p.id === 15 || p.id === 2 || p.id === 1));
       } else if (pVal === 'marriage') {
-        result.push(...PUJA_DATA.filter((p) => p.id === 6 || p.id === 18 || p.id === 21));
+        result.push(...pujas.filter((p) => p.id === 6 || p.id === 18 || p.id === 21));
       } else if (pVal === 'education') {
-        result.push(...PUJA_DATA.filter((p) => p.id === 15 || p.id === 16));
+        result.push(...pujas.filter((p) => p.id === 15 || p.id === 16));
       } else if (pVal === 'peace') {
-        result.push(...PUJA_DATA.filter((p) => p.id === 1 || p.id === 8 || p.id === 14));
+        result.push(...pujas.filter((p) => p.id === 1 || p.id === 8 || p.id === 14));
       } else if (pVal === 'protection') {
-        result.push(...PUJA_DATA.filter((p) => p.id === 1 || p.id === 4 || p.id === 19));
+        result.push(...pujas.filter((p) => p.id === 1 || p.id === 4 || p.id === 19));
+      }
+
+      // Fallback if empty
+      if (result.length === 0) {
+        result = pujas.filter((p) => p.popular).slice(0, 3);
       }
 
       // BUDGET FILTER
@@ -78,7 +84,7 @@ export const AiRecommendation: React.FC<AiRecommendationProps> = ({ onSelectPuja
 
       // Fallback if none found
       if (result.length === 0) {
-        result = PUJA_DATA.filter((p) => p.popular && p.price <= maxPrice).slice(0, 3);
+        result = pujas.filter((p) => p.popular && p.price <= maxPrice).slice(0, 3);
       }
 
       setRecommendations(result.slice(0, 3));

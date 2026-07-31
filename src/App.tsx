@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { Toast, ToastMessage } from './components/Toast';
@@ -12,6 +12,7 @@ import { AstrologyPage } from './pages/AstrologyPage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 import { ThankYouPage } from './pages/ThankYouPage';
+import { SecretAdminPortal } from './pages/SecretAdminPortal';
 
 import { Puja, BookingData } from './types';
 import { PUJA_DATA } from './data/pujaData';
@@ -23,6 +24,26 @@ export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState<BookingData | null>(null);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  // Check route for secret admin portal on load and location change
+  useEffect(() => {
+    const checkRoute = () => {
+      const path = window.location.pathname;
+      const hash = window.location.hash;
+      if (
+        path === '/secret-admin-portal' ||
+        path.startsWith('/secret-admin-portal') ||
+        hash === '#secret-admin-portal' ||
+        hash === '#/secret-admin-portal'
+      ) {
+        setActiveTab('secret-admin');
+      }
+    };
+
+    checkRoute();
+    window.addEventListener('popstate', checkRoute);
+    return () => window.removeEventListener('popstate', checkRoute);
+  }, []);
 
   const addToast = (text: string, type: 'success' | 'error' | 'info' = 'success') => {
     const id = Date.now().toString() + Math.random();
@@ -60,6 +81,23 @@ export default function App() {
     window.open(`https://wa.me/919993540314?text=${msg}`, '_blank');
     addToast('Opening WhatsApp Chat...', 'info');
   };
+
+  // IF SECRET ADMIN PORTAL IS ACTIVE
+  if (activeTab === 'secret-admin') {
+    return (
+      <div className="min-h-screen bg-[#FAF8F5]">
+        <Toast toasts={toasts} onRemove={removeToast} />
+        <SecretAdminPortal
+          showToast={addToast}
+          onGoHome={() => {
+            window.history.pushState({}, '', '/');
+            setActiveTab('home');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#ffffff] text-[#2C1A0E] relative selection:bg-[#f7ae62] selection:text-[#5C3A1E]">

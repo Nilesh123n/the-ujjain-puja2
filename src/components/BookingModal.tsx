@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Puja, BookingData } from '../types';
-import { PUJA_DATA } from '../data/pujaData';
 import { useLanguage } from '../context/LanguageContext';
+import { useCustomization } from '../context/CustomizationContext';
 import { UpiPaymentModal } from './UpiPaymentModal';
 
 interface BookingModalProps {
@@ -17,8 +17,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   onConfirmBooking,
   showToast
 }) => {
-  const [selectedPuja, setSelectedPuja] = useState<Puja>(puja || PUJA_DATA[0]);
+  const { pujas } = useCustomization();
+  const [selectedPuja, setSelectedPuja] = useState<Puja>(puja || pujas[0]);
   const [numPersons, setNumPersons] = useState<number>(1);
+
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -49,7 +51,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const minDateStr = minDate.toISOString().split('T')[0];
 
   const handlePujaChange = (pujaId: number) => {
-    const found = PUJA_DATA.find((p) => p.id === pujaId);
+    const found = pujas.find((p) => p.id === pujaId);
     if (found) {
       setSelectedPuja(found);
     }
@@ -118,7 +120,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       wishes: wishes.trim(),
       paymentMethod,
       paymentId: payId,
-      paymentStatus: payStatus,
+      paymentStatus: payStatus as 'SUCCESS' | 'PENDING' | 'FAILED',
       timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
     };
   };
@@ -291,7 +293,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               onChange={(e) => handlePujaChange(Number(e.target.value))}
               className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#2C1A0E] outline-none"
             >
-              {PUJA_DATA.map((p) => (
+              {pujas.map((p) => (
                 <option key={p.id} value={p.id}>
                   {lang === 'hi' && p.nameHi ? p.nameHi : p.name} ({p.priceDisplay})
                 </option>
