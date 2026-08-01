@@ -146,7 +146,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       const orderData = await response.json();
 
       if (orderData && orderData.orderId && typeof window !== 'undefined' && (window as any).Razorpay) {
-        const keyId = orderData.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_YOUR_KEY_ID';
+        const keyId = orderData.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_live_TKQ0HEnQP01Sze';
 
         const options = {
           key: keyId,

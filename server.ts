@@ -14,7 +14,7 @@ app.use(express.json());
 
 // API: Razorpay Config status
 app.get("/api/razorpay/config", (_req, res) => {
-  const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "";
+  const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TKQ0HEnQP01Sze";
   const hasSecret = Boolean(process.env.RAZORPAY_KEY_SECRET && process.env.RAZORPAY_KEY_SECRET !== "YOUR_RAZORPAY_KEY_SECRET");
   const isConfigured = Boolean(keyId && keyId !== "rzp_test_YOUR_KEY_ID" && hasSecret);
 
@@ -35,8 +35,8 @@ app.post("/api/razorpay/create-order", async (req, res) => {
       return res.status(400).json({ error: "Invalid amount provided" });
     }
 
-    const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "";
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || "";
+    const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TKQ0HEnQP01Sze";
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || "O1IJxdSRwJ6L614vR40cwDNQ";
 
     // Check if real keys are set
     if (
@@ -89,7 +89,7 @@ app.post("/api/razorpay/verify-payment", (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || "";
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || "O1IJxdSRwJ6L614vR40cwDNQ";
 
     if (!keySecret || keySecret === "YOUR_RAZORPAY_KEY_SECRET") {
       // In test fallback mode
