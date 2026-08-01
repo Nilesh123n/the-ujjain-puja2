@@ -232,24 +232,64 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
     showToast('✅ Security PIN updated successfully', 'success');
   };
 
+  // HELPER TO VALIDATE IMAGE FILE SIZE (MIN 100KB, MAX 10MB) AND ASPECT RATIO (16:9, 4:3 SUPPORT)
+  const validateAndProcessImageFile = (
+    file: File,
+    onSuccess: (base64: string, info: { ext: string; width: number; height: number; ratioStr: string }) => void
+  ) => {
+    // 1. Minimum 100KB check (100 * 1024 bytes)
+    if (file.size < 100 * 1024) {
+      const kb = (file.size / 1024).toFixed(1);
+      showToast(`⚠️ File size is too small (${kb} KB). Minimum 100 KB required!`, 'error');
+      return;
+    }
+
+    // 2. Maximum 10MB check (10 * 1024 * 1024 bytes)
+    if (file.size > 10 * 1024 * 1024) {
+      const mb = (file.size / (1024 * 1024)).toFixed(1);
+      showToast(`⚠️ File size is too large (${mb} MB). Maximum 10 MB allowed!`, 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64Str = event.target?.result as string;
+      if (!base64Str) return;
+
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        const width = img.width;
+        const height = img.height;
+        const ratio = width / height;
+
+        let ratioStr = `${width}x${height}`;
+        if (Math.abs(ratio - 16 / 9) < 0.15) {
+          ratioStr = `16:9 (${width}x${height})`;
+        } else if (Math.abs(ratio - 4 / 3) < 0.15) {
+          ratioStr = `4:3 (${width}x${height})`;
+        } else if (Math.abs(ratio - 1) < 0.12) {
+          ratioStr = `1:1 Square (${width}x${height})`;
+        }
+
+        const ext = file.name.split('.').pop()?.toUpperCase() || 'PNG/JPG';
+        onSuccess(base64Str, { ext, width, height, ratioStr });
+      };
+      img.onerror = () => {
+        showToast('⚠️ Failed to load image file. Please select a valid PNG or JPG file.', 'error');
+      };
+    };
+    reader.readAsDataURL(file);
+  };
+
   // HERO SECTION FILE PICKER HANDLER
   const handleHeroImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        showToast('⚠️ Image file is too large (Max 10MB)', 'error');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64Str = event.target?.result as string;
-        if (base64Str) {
-          setHeroBgImage(base64Str);
-          const ext = file.name.split('.').pop()?.toUpperCase() || 'PNG/JPG';
-          showToast(`🖼️ ${ext} image loaded! Click "Save Hero Changes" to apply.`, 'success');
-        }
-      };
-      reader.readAsDataURL(file);
+      validateAndProcessImageFile(file, (base64Str, info) => {
+        setHeroBgImage(base64Str);
+        showToast(`🖼️ ${info.ext} Image loaded! Aspect Ratio: ${info.ratioStr}. Click "Save Hero Changes" to apply.`, 'success');
+      });
     }
   };
 
@@ -269,20 +309,10 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
   const handleEditPujaImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && editingPuja) {
-      if (file.size > 10 * 1024 * 1024) {
-        showToast('⚠️ Image file is too large (Max 10MB)', 'error');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64Str = event.target?.result as string;
-        if (base64Str) {
-          setEditingPuja({ ...editingPuja, image: base64Str });
-          const ext = file.name.split('.').pop()?.toUpperCase() || 'PNG/JPG';
-          showToast(`🖼️ ${ext} image loaded from device!`, 'success');
-        }
-      };
-      reader.readAsDataURL(file);
+      validateAndProcessImageFile(file, (base64Str, info) => {
+        setEditingPuja({ ...editingPuja, image: base64Str });
+        showToast(`🖼️ ${info.ext} Image loaded! Aspect Ratio: ${info.ratioStr}.`, 'success');
+      });
     }
   };
 
@@ -290,20 +320,10 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
   const handleNewPujaImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        showToast('⚠️ Image file is too large (Max 10MB)', 'error');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64Str = event.target?.result as string;
-        if (base64Str) {
-          setNewPujaImage(base64Str);
-          const ext = file.name.split('.').pop()?.toUpperCase() || 'PNG/JPG';
-          showToast(`🖼️ ${ext} image loaded for new Puja card!`, 'success');
-        }
-      };
-      reader.readAsDataURL(file);
+      validateAndProcessImageFile(file, (base64Str, info) => {
+        setNewPujaImage(base64Str);
+        showToast(`🖼️ ${info.ext} Image loaded! Aspect Ratio: ${info.ratioStr}.`, 'success');
+      });
     }
   };
 
@@ -851,9 +871,17 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                     <label className="text-xs font-bold text-[#2C1A0E] flex items-center gap-2">
                       <Upload className="w-4 h-4 text-[#ff5c00]" /> Select Hero Background Image from Device
                     </label>
-                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md border border-emerald-300">
-                      PNG, JPG, WEBP, GIF
-                    </span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded-md border border-amber-300">
+                        Size: 100KB - 10MB
+                      </span>
+                      <span className="text-[10px] bg-blue-100 text-blue-900 font-bold px-2 py-0.5 rounded-md border border-blue-300">
+                        Ratio: 16:9 / 4:3
+                      </span>
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md border border-emerald-300">
+                        PNG, JPG, WEBP
+                      </span>
+                    </div>
                   </div>
                   
                   <div className="flex flex-col sm:flex-row items-center gap-3">
@@ -1261,9 +1289,17 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                   <label className="text-xs font-bold text-[#2C1A0E] flex items-center gap-1.5">
                     <Upload className="w-4 h-4 text-[#ff5c00]" /> Select Card Image from Local Device
                   </label>
-                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md border border-emerald-300">
-                    PNG, JPG, WEBP
-                  </span>
+                  <div className="flex items-center gap-1 flex-wrap">
+                    <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded-md border border-amber-300">
+                      100KB - 10MB
+                    </span>
+                    <span className="text-[10px] bg-blue-100 text-blue-900 font-bold px-2 py-0.5 rounded-md border border-blue-300">
+                      16:9 / 4:3
+                    </span>
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md border border-emerald-300">
+                      PNG, JPG, WEBP
+                    </span>
+                  </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
@@ -1401,9 +1437,17 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                   <label className="text-xs font-bold text-[#2C1A0E] flex items-center gap-1.5">
                     <Upload className="w-4 h-4 text-[#ff5c00]" /> Select Card Image from Local Device
                   </label>
-                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md border border-emerald-300">
-                    PNG, JPG, WEBP
-                  </span>
+                  <div className="flex items-center gap-1 flex-wrap">
+                    <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded-md border border-amber-300">
+                      100KB - 10MB
+                    </span>
+                    <span className="text-[10px] bg-blue-100 text-blue-900 font-bold px-2 py-0.5 rounded-md border border-blue-300">
+                      16:9 / 4:3
+                    </span>
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md border border-emerald-300">
+                      PNG, JPG, WEBP
+                    </span>
+                  </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
