@@ -236,8 +236,8 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
   const handleHeroImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 8 * 1024 * 1024) {
-        showToast('⚠️ Image file is too large (Max 8MB)', 'error');
+      if (file.size > 10 * 1024 * 1024) {
+        showToast('⚠️ Image file is too large (Max 10MB)', 'error');
         return;
       }
       const reader = new FileReader();
@@ -245,7 +245,8 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
         const base64Str = event.target?.result as string;
         if (base64Str) {
           setHeroBgImage(base64Str);
-          showToast('🖼️ Local image selected! Click "Save Hero Changes" to apply.', 'info');
+          const ext = file.name.split('.').pop()?.toUpperCase() || 'PNG/JPG';
+          showToast(`🖼️ ${ext} image loaded! Click "Save Hero Changes" to apply.`, 'success');
         }
       };
       reader.readAsDataURL(file);
@@ -268,8 +269,8 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
   const handleEditPujaImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && editingPuja) {
-      if (file.size > 8 * 1024 * 1024) {
-        showToast('⚠️ Image file is too large (Max 8MB)', 'error');
+      if (file.size > 10 * 1024 * 1024) {
+        showToast('⚠️ Image file is too large (Max 10MB)', 'error');
         return;
       }
       const reader = new FileReader();
@@ -277,7 +278,8 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
         const base64Str = event.target?.result as string;
         if (base64Str) {
           setEditingPuja({ ...editingPuja, image: base64Str });
-          showToast('🖼️ New card image loaded from local device!', 'info');
+          const ext = file.name.split('.').pop()?.toUpperCase() || 'PNG/JPG';
+          showToast(`🖼️ ${ext} image loaded from device!`, 'success');
         }
       };
       reader.readAsDataURL(file);
@@ -288,8 +290,8 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
   const handleNewPujaImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 8 * 1024 * 1024) {
-        showToast('⚠️ Image file is too large (Max 8MB)', 'error');
+      if (file.size > 10 * 1024 * 1024) {
+        showToast('⚠️ Image file is too large (Max 10MB)', 'error');
         return;
       }
       const reader = new FileReader();
@@ -297,7 +299,8 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
         const base64Str = event.target?.result as string;
         if (base64Str) {
           setNewPujaImage(base64Str);
-          showToast('🖼️ Local image loaded for new Puja card!', 'info');
+          const ext = file.name.split('.').pop()?.toUpperCase() || 'PNG/JPG';
+          showToast(`🖼️ ${ext} image loaded for new Puja card!`, 'success');
         }
       };
       reader.readAsDataURL(file);
@@ -844,16 +847,21 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
 
                 {/* FILE PICKER FOR HERO BACKGROUND */}
                 <div className="p-4 bg-amber-50/80 border-2 border-dashed border-[#f2b705]/60 rounded-2xl space-y-3">
-                  <label className="text-xs font-bold text-[#2C1A0E] flex items-center gap-2">
-                    <Upload className="w-4 h-4 text-[#ff5c00]" /> Select Hero Background Image from Local Device
-                  </label>
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <label className="text-xs font-bold text-[#2C1A0E] flex items-center gap-2">
+                      <Upload className="w-4 h-4 text-[#ff5c00]" /> Select Hero Background Image from Device
+                    </label>
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md border border-emerald-300">
+                      PNG, JPG, WEBP, GIF
+                    </span>
+                  </div>
                   
                   <div className="flex flex-col sm:flex-row items-center gap-3">
                     <label className="cursor-pointer bg-[#2C1A0E] hover:bg-black text-[#f2b705] font-bold text-xs px-4 py-2.5 rounded-xl shadow-md flex items-center gap-2 transition-all">
-                      <FileImage className="w-4 h-4" /> Pick File From Device
+                      <FileImage className="w-4 h-4" /> Pick File (PNG / JPG / WEBP)
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/*,image/png,image/jpeg,image/webp,image/gif,.png,.jpg,.jpeg,.webp,.gif"
                         onChange={handleHeroImageFileUpload}
                         className="hidden"
                       />
@@ -1249,9 +1257,14 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
 
               {/* LOCAL FILE PICKER FOR PUJA CARD IMAGE */}
               <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-2">
-                <label className="text-xs font-bold text-[#2C1A0E] flex items-center gap-1.5">
-                  <Upload className="w-4 h-4 text-[#ff5c00]" /> Select Card Image from Local Device
-                </label>
+                <div className="flex items-center justify-between flex-wrap gap-1">
+                  <label className="text-xs font-bold text-[#2C1A0E] flex items-center gap-1.5">
+                    <Upload className="w-4 h-4 text-[#ff5c00]" /> Select Card Image from Local Device
+                  </label>
+                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md border border-emerald-300">
+                    PNG, JPG, WEBP
+                  </span>
+                </div>
                 
                 <div className="flex items-center gap-3">
                   <div className="w-16 h-12 bg-gray-200 rounded-lg overflow-hidden shrink-0 border border-gray-300">
@@ -1259,10 +1272,10 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                   </div>
 
                   <label className="cursor-pointer bg-[#2C1A0E] hover:bg-black text-[#f2b705] font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all">
-                    <FileImage className="w-3.5 h-3.5" /> Pick Image File
+                    <FileImage className="w-3.5 h-3.5" /> Pick Image File (PNG/JPG)
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/*,image/png,image/jpeg,image/webp,image/gif,.png,.jpg,.jpeg,.webp,.gif"
                       onChange={handleEditPujaImageFileUpload}
                       className="hidden"
                     />
@@ -1384,16 +1397,21 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
 
               {/* LOCAL FILE PICKER FOR NEW PUJA */}
               <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-2">
-                <label className="text-xs font-bold text-[#2C1A0E] flex items-center gap-1.5">
-                  <Upload className="w-4 h-4 text-[#ff5c00]" /> Select Card Image from Local Device
-                </label>
+                <div className="flex items-center justify-between flex-wrap gap-1">
+                  <label className="text-xs font-bold text-[#2C1A0E] flex items-center gap-1.5">
+                    <Upload className="w-4 h-4 text-[#ff5c00]" /> Select Card Image from Local Device
+                  </label>
+                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md border border-emerald-300">
+                    PNG, JPG, WEBP
+                  </span>
+                </div>
                 
                 <div className="flex items-center gap-3">
                   <label className="cursor-pointer bg-[#2C1A0E] hover:bg-black text-[#f2b705] font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all">
-                    <FileImage className="w-3.5 h-3.5" /> Choose Image File
+                    <FileImage className="w-3.5 h-3.5" /> Choose Image File (PNG/JPG)
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/*,image/png,image/jpeg,image/webp,image/gif,.png,.jpg,.jpeg,.webp,.gif"
                       onChange={handleNewPujaImageFileUpload}
                       className="hidden"
                     />
