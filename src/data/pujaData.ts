@@ -371,7 +371,7 @@ export const PUJA_DATA: Puja[] = [
     includes: ["19,000 Guru Mantra Jaap", "5 Pandit Seva", "Guru Samagri", "Prasad"],
     benefits: ["Wisdom & knowledge", "Children's welfare", "Spiritual growth", "Overall prosperity"],
     benefitsHi: ["ज्ञान व विवेक वृद्धि", "संतान प्राप्ति व सुख", "उच्च शिक्षा व धन लाभ", "गुरु कृपा"],
-    image: "https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=800&q=80",
+    image: "/images/pujas/1000277460_guru.jpg",
     tag: "Wisdom & Prosperity",
     tagHi: "ज्ञान व समृद्धि"
   },
@@ -394,7 +394,7 @@ export const PUJA_DATA: Puja[] = [
     includes: ["10,000 Mangal Mantra Jaap", "5 Pandit Seva", "Mangal Samagri", "Prasad"],
     benefits: ["Courage boost", "Property issues resolution", "Mangal dosh relief", "Sibling harmony"],
     benefitsHi: ["भूमि-भवन विवाद मुक्ति", "साहस व ऊर्जा वृद्धि", "रक्त व उदर रोग शांति", "मंगल दोष शांति"],
-    image: "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=800&q=80",
+    image: "/images/pujas/1000277465_mangal.jpg",
     tag: "Courage & Property",
     tagHi: "साहस व भूमि"
   },
@@ -417,7 +417,7 @@ export const PUJA_DATA: Puja[] = [
     includes: ["16,000 Shukra Mantra Jaap", "5 Pandit Seva", "Shukra Samagri", "Prasad"],
     benefits: ["Love & romance", "Luxury & comfort", "Artistic abilities", "Marriage harmony"],
     benefitsHi: ["दाम्पत्य सुख व प्रेम", "वैभव व भौतिक सुख", "कलात्मक क्षेत्र में उन्नति", "आकर्षण व प्रभाव"],
-    image: "https://images.unsplash.com/photo-1508615039623-a25605d2b022?w=800&q=80",
+    image: "/images/pujas/1000277462_shukra.jpg",
     tag: "Love & Luxury",
     tagHi: "वैभव व प्रेम"
   },
@@ -440,7 +440,7 @@ export const PUJA_DATA: Puja[] = [
     includes: ["18,000 Rahu Mantra Jaap", "5 Pandit Seva", "Rahu Samagri", "Prasad"],
     benefits: ["Rahu dosh removal", "Confusion clarity", "Obstacle removal", "Sudden luck boost"],
     benefitsHi: ["अचानक आए संकटों से रक्षा", "भ्रम व मानसिक द्वंद्व मुक्ति", "विदेश यात्रा सफलता", "राहु दोष शांति"],
-    image: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=800&q=80",
+    image: "/images/pujas/1000277466_rahu.jpg",
     tag: "Rahu Remedy",
     tagHi: "राहु शांति"
   },
@@ -463,7 +463,7 @@ export const PUJA_DATA: Puja[] = [
     includes: ["17,000 Ketu Mantra Jaap", "5 Pandit Seva", "Ketu Samagri", "Prasad"],
     benefits: ["Spiritual liberation", "Karmic cleansing", "Health protection", "Moksha path"],
     benefitsHi: ["आध्यात्मिक जागृति व ज्ञान", "अज्ञात रोगों से सुरक्षा", "कर्म बंधन मुक्ति", "केतु दोष शांति"],
-    image: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=800&q=80",
+    image: "/images/pujas/1000277467_ketu.jpg",
     tag: "Spiritual Liberation",
     tagHi: "आत्मिक शांति"
   },
