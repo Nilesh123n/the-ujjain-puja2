@@ -57,7 +57,7 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
     }
 
     return result;
-  }, [activeCategory, searchQuery, sortBy]);
+  }, [activeCategory, searchQuery, sortBy, pujas]);
 
   return (
     <div className="pt-24 pb-20 animate-in fade-in duration-300">

@@ -76,7 +76,7 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const addPuja = (newPuja: Puja) => {
-    setPujas((prev) => [newPuja, ...prev]);
+    setPujas((prev) => [...prev, newPuja]);
   };
 
   const deletePuja = (id: number) => {
