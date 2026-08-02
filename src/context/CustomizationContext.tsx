@@ -27,6 +27,7 @@ interface CustomizationContextType {
   addPuja: (newPuja: Puja) => void;
   deletePuja: (id: number) => void;
   resetToDefaults: () => void;
+  refreshCustomization: () => Promise<void>;
   uploadImageFile: (file: File) => Promise<{ url: string; success: boolean }>;
   isLoadingBackend: boolean;
 }
@@ -73,37 +74,57 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  // Fetch from backend API on initial mount
-  useEffect(() => {
-    let isMounted = true;
-    const fetchCustomization = async () => {
-      try {
-        const response = await fetch('/api/customization');
-        if (response.ok) {
-          const result = await response.json();
-          if (result.success && result.data && isMounted) {
-            if (result.data.heroContent) {
-              setHeroContent(result.data.heroContent);
-              localStorage.setItem('app_hero_content', JSON.stringify(result.data.heroContent));
-            }
-            if (Array.isArray(result.data.pujas) && result.data.pujas.length > 0) {
-              setPujas(result.data.pujas);
-              localStorage.setItem('app_pujas_data', JSON.stringify(result.data.pujas));
-            }
+  // Refresh method to re-fetch from backend API
+  const refreshCustomization = useCallback(async () => {
+    try {
+      const response = await fetch('/api/customization');
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.data) {
+          if (result.data.heroContent) {
+            setHeroContent(result.data.heroContent);
+            localStorage.setItem('app_hero_content', JSON.stringify(result.data.heroContent));
+          }
+          if (Array.isArray(result.data.pujas) && result.data.pujas.length > 0) {
+            setPujas(result.data.pujas);
+            localStorage.setItem('app_pujas_data', JSON.stringify(result.data.pujas));
           }
         }
-      } catch (err) {
-        console.warn('Could not load customization from backend database:', err);
+      }
+    } catch (err) {
+      console.warn('Could not refresh customization from backend database:', err);
+    }
+  }, []);
+
+  // Fetch from backend API on initial mount and set up periodic sync polling (every 8 seconds)
+  useEffect(() => {
+    let isMounted = true;
+    const initialFetch = async () => {
+      try {
+        await refreshCustomization();
       } finally {
         if (isMounted) setIsLoadingBackend(false);
       }
     };
 
-    fetchCustomization();
+    initialFetch();
+
+    // Live background polling for multi-session sync
+    const interval = setInterval(() => {
+      refreshCustomization();
+    }, 8000);
+
+    const handleFocus = () => {
+      refreshCustomization();
+    };
+    window.addEventListener('focus', handleFocus);
+
     return () => {
       isMounted = false;
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
     };
-  }, []);
+  }, [refreshCustomization]);
 
   // Save to localStorage whenever state changes
   useEffect(() => {
@@ -197,6 +218,7 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
         addPuja,
         deletePuja,
         resetToDefaults,
+        refreshCustomization,
         uploadImageFile,
         isLoadingBackend
       }}
