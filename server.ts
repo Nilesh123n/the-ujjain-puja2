@@ -34,7 +34,8 @@ app.use("/uploads", express.static(uploadsDir));
 // API: Image Upload Handler (Supabase Storage with local static fallback)
 app.post("/api/upload-image", async (req, res) => {
   try {
-    const { image, fileName } = req.body;
+    const { image, fileName, filename } = req.body;
+    const originalName = fileName || filename || "";
     if (!image || typeof image !== "string") {
       return res.status(400).json({ success: false, error: "No image data provided in request body" });
     }
@@ -46,21 +47,25 @@ app.post("/api/upload-image", async (req, res) => {
     const matches = image.match(/^data:(image\/[a-zA-Z0-9-+.]+);base64,(.+)$/);
     if (matches && matches.length === 3) {
       mimeType = matches[1];
-      extension = matches[1].split("/")[1] === "jpeg" ? "jpg" : matches[1].split("/")[1];
+      const subtype = matches[1].split("/")[1] || "png";
+      extension = subtype === "jpeg" ? "jpg" : subtype.replace(/[^a-zA-Z0-9]/g, "");
       base64Data = matches[2];
     } else if (image.includes(",")) {
       base64Data = image.split(",")[1];
     }
 
     const buffer = Buffer.from(base64Data, "base64");
-    const sanitizedFileName = fileName
-      ? `${Date.now()}_${fileName.replace(/[^a-zA-Z0-9_.-]/g, "_")}`
-      : `img_${Date.now()}_${Math.floor(Math.random() * 10000)}.${extension}`;
+    const randomHex = crypto.randomBytes(6).toString("hex");
+    const timeStamp = Date.now();
+    const sanitizedOriginal = originalName ? originalName.replace(/[^a-zA-Z0-9_.-]/g, "_") : "";
+    const uniqueFilename = sanitizedOriginal
+      ? `${timeStamp}_${randomHex}_${sanitizedOriginal}`
+      : `img_${timeStamp}_${randomHex}.${extension}`;
 
-    // Write to local disk as primary/backup storage
-    const targetPath = path.join(uploadsDir, sanitizedFileName);
+    // Write file securely into public/uploads/ directory
+    const targetPath = path.join(uploadsDir, uniqueFilename);
     fs.writeFileSync(targetPath, buffer);
-    const localUrl = `/uploads/${sanitizedFileName}`;
+    const localUrl = `/uploads/${uniqueFilename}`;
 
     let finalUrl = localUrl;
     let storedInSupabase = false;
@@ -72,7 +77,7 @@ app.post("/api/upload-image", async (req, res) => {
 
         let { error: uploadError } = await supabase.storage
           .from(bucketName)
-          .upload(sanitizedFileName, buffer, {
+          .upload(uniqueFilename, buffer, {
             contentType: mimeType,
             upsert: true,
           });
@@ -82,7 +87,7 @@ app.post("/api/upload-image", async (req, res) => {
           if (!createErr) {
             const retry = await supabase.storage
               .from(bucketName)
-              .upload(sanitizedFileName, buffer, {
+              .upload(uniqueFilename, buffer, {
                 contentType: mimeType,
                 upsert: true,
               });
@@ -93,7 +98,7 @@ app.post("/api/upload-image", async (req, res) => {
         if (!uploadError) {
           const { data: publicUrlData } = supabase.storage
             .from(bucketName)
-            .getPublicUrl(sanitizedFileName);
+            .getPublicUrl(uniqueFilename);
 
           if (publicUrlData && publicUrlData.publicUrl) {
             finalUrl = publicUrlData.publicUrl;
