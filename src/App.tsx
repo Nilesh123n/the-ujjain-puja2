@@ -15,9 +15,10 @@ import { ThankYouPage } from './pages/ThankYouPage';
 import { SecretAdminPortal } from './pages/SecretAdminPortal';
 
 import { Puja, BookingData } from './types';
-import { PUJA_DATA } from './data/pujaData';
+import { useCustomization } from './context/CustomizationContext';
 
 export default function App() {
+  const { pujas } = useCustomization();
   const [activeTab, setActiveTab] = useState<string>('home');
   const [selectedDetailPuja, setSelectedDetailPuja] = useState<Puja | null>(null);
   const [selectedBookingPuja, setSelectedBookingPuja] = useState<Puja | null>(null);
@@ -61,7 +62,7 @@ export default function App() {
     if (puja) {
       setSelectedBookingPuja(puja);
     } else {
-      setSelectedBookingPuja(PUJA_DATA[0]);
+      setSelectedBookingPuja(pujas[0]);
     }
     setIsBookingOpen(true);
   };

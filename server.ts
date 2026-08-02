@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import crypto from "crypto";
 import dotenv from "dotenv";
 import Razorpay from "razorpay";
@@ -10,7 +11,96 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: "25mb" }));
+app.use(express.urlencoded({ limit: "25mb", extended: true }));
+
+// Ensure upload & data directories exist
+const uploadsDir = path.join(process.cwd(), "public", "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const dataDir = path.join(process.cwd(), "data");
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+const customizationFilePath = path.join(dataDir, "customization.json");
+
+// Serve uploaded images statically
+app.use("/uploads", express.static(uploadsDir));
+
+// API: Image Upload Handler
+app.post("/api/upload-image", (req, res) => {
+  try {
+    const { image, fileName } = req.body;
+    if (!image || typeof image !== "string") {
+      return res.status(400).json({ error: "No image data provided" });
+    }
+
+    let extension = "png";
+    let base64Data = image;
+
+    const matches = image.match(/^data:image\/([a-zA-Z0-9-+.]+);base64,(.+)$/);
+    if (matches && matches.length === 3) {
+      extension = matches[1] === "jpeg" ? "jpg" : matches[1];
+      base64Data = matches[2];
+    } else if (image.includes(",")) {
+      base64Data = image.split(",")[1];
+    }
+
+    const buffer = Buffer.from(base64Data, "base64");
+    const sanitizedFileName = fileName
+      ? `${Date.now()}_${fileName.replace(/[^a-zA-Z0-9_.-]/g, "_")}`
+      : `img_${Date.now()}_${Math.floor(Math.random() * 10000)}.${extension}`;
+
+    const targetPath = path.join(uploadsDir, sanitizedFileName);
+    fs.writeFileSync(targetPath, buffer);
+
+    const imageUrl = `/uploads/${sanitizedFileName}`;
+    console.log(`Saved uploaded image: ${targetPath} -> ${imageUrl}`);
+
+    return res.json({
+      success: true,
+      url: imageUrl,
+      message: "Image uploaded and stored successfully",
+    });
+  } catch (error: any) {
+    console.error("Image upload server error:", error);
+    return res.status(500).json({ error: error.message || "Failed to upload image" });
+  }
+});
+
+// API: Customization Database GET
+app.get("/api/customization", (_req, res) => {
+  try {
+    if (fs.existsSync(customizationFilePath)) {
+      const rawData = fs.readFileSync(customizationFilePath, "utf-8");
+      const data = JSON.parse(rawData);
+      return res.json({ success: true, data });
+    }
+    return res.json({ success: true, data: null });
+  } catch (error: any) {
+    console.error("Error reading customization file:", error);
+    return res.status(500).json({ error: error.message || "Failed to read customization data" });
+  }
+});
+
+// API: Customization Database POST
+app.post("/api/customization", (req, res) => {
+  try {
+    const { heroContent, pujas } = req.body;
+    const payload = {
+      heroContent,
+      pujas,
+      updatedAt: new Date().toISOString(),
+    };
+    fs.writeFileSync(customizationFilePath, JSON.stringify(payload, null, 2), "utf-8");
+    return res.json({ success: true, message: "Customization saved to database" });
+  } catch (error: any) {
+    console.error("Error writing customization file:", error);
+    return res.status(500).json({ error: error.message || "Failed to save customization data" });
+  }
+});
 
 // API: Razorpay Config status
 app.get("/api/razorpay/config", (_req, res) => {

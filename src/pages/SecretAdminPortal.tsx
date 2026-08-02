@@ -111,7 +111,8 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
     updatePuja, 
     addPuja, 
     deletePuja, 
-    resetToDefaults 
+    resetToDefaults,
+    uploadImageFile
   } = useCustomization();
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -232,32 +233,36 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
     showToast('✅ Security PIN updated successfully', 'success');
   };
 
-  // HELPER TO VALIDATE IMAGE FILE SIZE (MIN 100KB, MAX 10MB) AND ASPECT RATIO (16:9, 4:3 SUPPORT)
-  const validateAndProcessImageFile = (
+  // HELPER TO VALIDATE AND UPLOAD IMAGE FILE TO BACKEND SERVER DATABASE
+  const validateAndProcessImageFile = async (
     file: File,
-    onSuccess: (base64: string, info: { ext: string; width: number; height: number; ratioStr: string }) => void
+    onSuccess: (serverUrl: string, info: { ext: string; width: number; height: number; ratioStr: string; isServerStored: boolean }) => void
   ) => {
-    // 1. Minimum 100KB check (100 * 1024 bytes)
-    if (file.size < 100 * 1024) {
+    // 1. Minimum size check (5 KB)
+    if (file.size < 5 * 1024) {
       const kb = (file.size / 1024).toFixed(1);
-      showToast(`⚠️ File size is too small (${kb} KB). Minimum 100 KB required!`, 'error');
+      showToast(`⚠️ File size is too small (${kb} KB). Minimum 5 KB required!`, 'error');
       return;
     }
 
-    // 2. Maximum 10MB check (10 * 1024 * 1024 bytes)
+    // 2. Maximum size check (10 MB)
     if (file.size > 10 * 1024 * 1024) {
       const mb = (file.size / (1024 * 1024)).toFixed(1);
       showToast(`⚠️ File size is too large (${mb} MB). Maximum 10 MB allowed!`, 'error');
       return;
     }
 
+    showToast('⏳ Uploading image to server backend database...', 'info');
+    const uploadRes = await uploadImageFile(file);
+    const imageUrl = uploadRes.url;
+
     const reader = new FileReader();
     reader.onload = (event) => {
-      const base64Str = event.target?.result as string;
-      if (!base64Str) return;
+      const tempSrc = event.target?.result as string;
+      if (!tempSrc) return;
 
       const img = new Image();
-      img.src = base64Str;
+      img.src = tempSrc;
       img.onload = () => {
         const width = img.width;
         const height = img.height;
@@ -273,22 +278,23 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
         }
 
         const ext = file.name.split('.').pop()?.toUpperCase() || 'PNG/JPG';
-        onSuccess(base64Str, { ext, width, height, ratioStr });
+        onSuccess(imageUrl, { ext, width, height, ratioStr, isServerStored: uploadRes.success });
       };
       img.onerror = () => {
-        showToast('⚠️ Failed to load image file. Please select a valid PNG or JPG file.', 'error');
+        const ext = file.name.split('.').pop()?.toUpperCase() || 'PNG/JPG';
+        onSuccess(imageUrl, { ext, width: 800, height: 600, ratioStr: 'Standard', isServerStored: uploadRes.success });
       };
     };
     reader.readAsDataURL(file);
   };
 
   // HERO SECTION FILE PICKER HANDLER
-  const handleHeroImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleHeroImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      validateAndProcessImageFile(file, (base64Str, info) => {
-        setHeroBgImage(base64Str);
-        showToast(`🖼️ ${info.ext} Image loaded! Aspect Ratio: ${info.ratioStr}. Click "Save Hero Changes" to apply.`, 'success');
+      await validateAndProcessImageFile(file, (serverUrl, info) => {
+        setHeroBgImage(serverUrl);
+        showToast(`🖼️ Hero banner uploaded to server storage! (${info.ratioStr}). Click "Save Hero Changes" to save to database.`, 'success');
       });
     }
   };
@@ -302,27 +308,27 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
       badge: heroBadge,
       bgImage: heroBgImage
     });
-    showToast('✨ Hero Section updated and reflected live on Home Page!', 'success');
+    showToast('✨ Hero Section saved to backend database and reflected live on Home Page!', 'success');
   };
 
   // EDIT PUJA CARD FILE PICKER HANDLER
-  const handleEditPujaImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEditPujaImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && editingPuja) {
-      validateAndProcessImageFile(file, (base64Str, info) => {
-        setEditingPuja({ ...editingPuja, image: base64Str });
-        showToast(`🖼️ ${info.ext} Image loaded! Aspect Ratio: ${info.ratioStr}.`, 'success');
+      await validateAndProcessImageFile(file, (serverUrl, info) => {
+        setEditingPuja({ ...editingPuja, image: serverUrl });
+        showToast(`🖼️ Puja image uploaded to server storage! (${info.ratioStr})`, 'success');
       });
     }
   };
 
   // NEW PUJA CARD FILE PICKER HANDLER
-  const handleNewPujaImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNewPujaImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      validateAndProcessImageFile(file, (base64Str, info) => {
-        setNewPujaImage(base64Str);
-        showToast(`🖼️ ${info.ext} Image loaded! Aspect Ratio: ${info.ratioStr}.`, 'success');
+      await validateAndProcessImageFile(file, (serverUrl, info) => {
+        setNewPujaImage(serverUrl);
+        showToast(`🖼️ New Puja image uploaded to server storage! (${info.ratioStr})`, 'success');
       });
     }
   };
