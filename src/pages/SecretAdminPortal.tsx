@@ -253,12 +253,13 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
     }
 
     showToast('⏳ Uploading image to Supabase Storage...', 'info');
-    const uploadRes = await uploadImageFile(file);
-    if (!uploadRes.success || !uploadRes.url) {
-      showToast(`❌ Supabase Upload Failed: ${uploadRes.error || 'Failed to store image in Supabase'}`, 'error');
+    let imageUrl = '';
+    try {
+      imageUrl = await uploadImageFile(file);
+    } catch (err: any) {
+      showToast(`❌ Supabase Upload Failed: ${err.message || 'Failed to store image in Supabase'}`, 'error');
       return;
     }
-    const imageUrl = uploadRes.url;
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -282,11 +283,11 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
         }
 
         const ext = file.name.split('.').pop()?.toUpperCase() || 'PNG/JPG';
-        onSuccess(imageUrl, { ext, width, height, ratioStr, isServerStored: uploadRes.success });
+        onSuccess(imageUrl, { ext, width, height, ratioStr, isServerStored: true });
       };
       img.onerror = () => {
         const ext = file.name.split('.').pop()?.toUpperCase() || 'PNG/JPG';
-        onSuccess(imageUrl, { ext, width: 800, height: 600, ratioStr: 'Standard', isServerStored: uploadRes.success });
+        onSuccess(imageUrl, { ext, width: 800, height: 600, ratioStr: 'Standard', isServerStored: true });
       };
     };
     reader.readAsDataURL(file);

@@ -29,7 +29,7 @@ interface CustomizationContextType {
   deletePuja: (id: number) => void;
   resetToDefaults: () => void;
   refreshCustomization: () => Promise<void>;
-  uploadImageFile: (file: File) => Promise<{ url: string; success: boolean; error?: string }>;
+  uploadImageFile: (file: File) => Promise<string>;
   isLoadingBackend: boolean;
 }
 
@@ -222,97 +222,53 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
     saveToBackend(DEFAULT_HERO_CONTENT, PUJA_DATA);
   };
 
-  const uploadImageFile = async (file: File): Promise<{ url: string; success: boolean; error?: string }> => {
-    // 1. First, try uploading directly using the frontend Supabase Client SDK
-    if (supabase) {
-      try {
-        const bucketName = 'pujas';
-        const sanitizedFileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
+  const uploadImageFile = async (file: File): Promise<string> => {
+    if (!supabase) {
+      throw new Error('Supabase client is not initialized. Please configure VITE_SUPABASE_URL and VITE_SUPABASE_API_KEY environment variables.');
+    }
 
-        let { data: uploadData, error: uploadError } = await supabase.storage
-          .from(bucketName)
-          .upload(sanitizedFileName, file, {
+    const timeStamp = Date.now();
+    const randomStr = Math.random().toString(36).substring(2, 9);
+    const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+    const filePath = `${timeStamp}_${randomStr}_${sanitizedFileName}`;
+
+    let { data: uploadData, error: uploadError } = await supabase.storage
+      .from('pujas')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true,
+        contentType: file.type || 'image/png',
+      });
+
+    if (uploadError && uploadError.message?.toLowerCase().includes('not found')) {
+      const { error: createErr } = await supabase.storage.createBucket('pujas', { public: true });
+      if (!createErr) {
+        const retry = await supabase.storage
+          .from('pujas')
+          .upload(filePath, file, {
             cacheControl: '3600',
             upsert: true,
             contentType: file.type || 'image/png',
           });
-
-        if (uploadError && uploadError.message?.toLowerCase().includes('not found')) {
-          await supabase.storage.createBucket(bucketName, { public: true });
-          const retry = await supabase.storage.from(bucketName).upload(sanitizedFileName, file, {
-            cacheControl: '3600',
-            upsert: true,
-            contentType: file.type || 'image/png',
-          });
-          uploadData = retry.data;
-          uploadError = retry.error;
-        }
-
-        if (!uploadError) {
-          const { data: publicUrlData } = supabase.storage
-            .from(bucketName)
-            .getPublicUrl(sanitizedFileName);
-
-          if (publicUrlData && publicUrlData.publicUrl) {
-            console.log('Direct Supabase SDK image upload successful:', publicUrlData.publicUrl);
-            return { url: publicUrlData.publicUrl, success: true };
-          }
-        } else {
-          console.warn('Frontend Supabase SDK upload notice:', uploadError.message);
-        }
-      } catch (sdkErr: any) {
-        console.warn('Frontend Supabase SDK upload exception:', sdkErr.message || sdkErr);
+        uploadData = retry.data;
+        uploadError = retry.error;
       }
     }
 
-    // 2. Fallback to Express backend endpoint /api/upload-image
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const base64Str = e.target?.result as string;
-        if (!base64Str) {
-          resolve({ url: '', success: false, error: 'Failed to read image file data' });
-          return;
-        }
+    if (uploadError) {
+      console.error('Supabase image upload failed:', uploadError);
+      throw new Error(`Supabase Storage upload failed: ${uploadError.message}`);
+    }
 
-        try {
-          const res = await fetch('/api/upload-image', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: base64Str, fileName: file.name }),
-          });
+    const { data: publicUrlData } = supabase.storage
+      .from('pujas')
+      .getPublicUrl(filePath);
 
-          const contentType = res.headers.get('content-type') || '';
-          if (!contentType.includes('application/json')) {
-            const rawText = await res.text();
-            console.error('Server returned non-JSON response:', rawText.substring(0, 150));
-            resolve({
-              url: '',
-              success: false,
-              error: `Server endpoint /api/upload-image returned non-JSON (${res.status} ${res.statusText})`,
-            });
-            return;
-          }
+    if (!publicUrlData || !publicUrlData.publicUrl) {
+      throw new Error('Failed to retrieve public URL from Supabase Storage.');
+    }
 
-          const data = await res.json();
-          if (res.ok && data.success && data.url) {
-            resolve({ url: data.url, success: true });
-            return;
-          } else {
-            const errStr = data.error || data.message || `Upload failed with HTTP ${res.status}`;
-            console.error('Supabase upload server error:', errStr);
-            resolve({ url: '', success: false, error: errStr });
-            return;
-          }
-        } catch (err: any) {
-          console.error('Upload image to server exception:', err);
-          resolve({ url: '', success: false, error: err.message || 'Network communication error' });
-          return;
-        }
-      };
-      reader.onerror = () => resolve({ url: '', success: false, error: 'File reader reading failed' });
-      reader.readAsDataURL(file);
-    });
+    return publicUrlData.publicUrl;
   };
 
   return (
