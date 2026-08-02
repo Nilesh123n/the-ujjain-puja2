@@ -85,11 +85,23 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     try {
-      await fetch('/api/customization', {
+      const response = await fetch('/api/customization', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ heroContent: hero, pujas: list }),
       });
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.data) {
+          // If server auto-converted any base64 images into clean /uploads/ URLs, update client state
+          if (result.data.heroContent && result.data.heroContent.bgImage !== hero.bgImage) {
+            setHeroContent(result.data.heroContent);
+          }
+          if (Array.isArray(result.data.pujas)) {
+            setPujas(result.data.pujas);
+          }
+        }
+      }
     } catch (err) {
       console.warn('Failed to sync customization with backend database:', err);
     }
@@ -107,11 +119,11 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
 
           if (fetchedHero) {
             setHeroContent(fetchedHero);
-            localStorage.setItem('app_hero_content', JSON.stringify(fetchedHero));
+            try { localStorage.setItem('app_hero_content', JSON.stringify(fetchedHero)); } catch (_) {}
           }
           if (Array.isArray(fetchedPujas) && fetchedPujas.length > 0) {
             setPujas(fetchedPujas);
-            localStorage.setItem('app_pujas_data', JSON.stringify(fetchedPujas));
+            try { localStorage.setItem('app_pujas_data', JSON.stringify(fetchedPujas)); } catch (_) {}
           }
           return;
         }
@@ -129,11 +141,11 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
           if (result.success && result.data) {
             if (result.data.heroContent) {
               setHeroContent(result.data.heroContent);
-              localStorage.setItem('app_hero_content', JSON.stringify(result.data.heroContent));
+              try { localStorage.setItem('app_hero_content', JSON.stringify(result.data.heroContent)); } catch (_) {}
             }
             if (Array.isArray(result.data.pujas) && result.data.pujas.length > 0) {
               setPujas(result.data.pujas);
-              localStorage.setItem('app_pujas_data', JSON.stringify(result.data.pujas));
+              try { localStorage.setItem('app_pujas_data', JSON.stringify(result.data.pujas)); } catch (_) {}
             }
           }
         }
@@ -173,13 +185,21 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [refreshCustomization]);
 
-  // Save to localStorage whenever state changes
+  // Save to localStorage whenever state changes with try-catch to prevent QuotaExceededError crashes
   useEffect(() => {
-    localStorage.setItem('app_hero_content', JSON.stringify(heroContent));
+    try {
+      localStorage.setItem('app_hero_content', JSON.stringify(heroContent));
+    } catch (e) {
+      console.warn('localStorage hero_content save notice (quota exceeded):', e);
+    }
   }, [heroContent]);
 
   useEffect(() => {
-    localStorage.setItem('app_pujas_data', JSON.stringify(pujas));
+    try {
+      localStorage.setItem('app_pujas_data', JSON.stringify(pujas));
+    } catch (e) {
+      console.warn('localStorage pujas_data save notice (quota exceeded):', e);
+    }
   }, [pujas]);
 
   const updateHeroContent = (newHero: Partial<HeroContent>) => {

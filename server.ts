@@ -198,71 +198,122 @@ app.get("/api/customization", async (_req, res) => {
   }
 });
 
-// API: Customization Database POST (Supabase + Local Cache with detailed error reporting)
+// API: Customization Database POST (Supabase + Local Cache with robust handling)
 app.post("/api/customization", async (req, res) => {
   try {
-    const { heroContent, pujas } = req.body;
+    let { heroContent, pujas } = req.body;
+
+    // Helper to auto-convert base64 image strings to server file URLs
+    const convertBase64ToFileUrl = (imgStr: string): string => {
+      if (!imgStr || typeof imgStr !== "string" || !imgStr.startsWith("data:image/")) {
+        return imgStr;
+      }
+      try {
+        let extension = "png";
+        let base64Data = imgStr;
+        let mimeType = "image/png";
+
+        const matches = imgStr.match(/^data:(image\/[a-zA-Z0-9-+.]+);base64,(.+)$/);
+        if (matches && matches.length === 3) {
+          mimeType = matches[1];
+          const subtype = matches[1].split("/")[1] || "png";
+          extension = subtype === "jpeg" ? "jpg" : subtype.replace(/[^a-zA-Z0-9]/g, "");
+          base64Data = matches[2];
+        } else if (imgStr.includes(",")) {
+          base64Data = imgStr.split(",")[1];
+        }
+
+        const buffer = Buffer.from(base64Data, "base64");
+        const randomHex = crypto.randomBytes(6).toString("hex");
+        const uniqueFilename = `auto_img_${Date.now()}_${randomHex}.${extension}`;
+        const targetPath = path.join(uploadsDir, uniqueFilename);
+        fs.writeFileSync(targetPath, buffer);
+        console.log(`Auto-converted base64 image to server file: /uploads/${uniqueFilename}`);
+        return `/uploads/${uniqueFilename}`;
+      } catch (err) {
+        console.warn("Error converting base64 image to file:", err);
+        return imgStr;
+      }
+    };
+
+    // Auto-sanitize heroContent bgImage if base64
+    if (heroContent && typeof heroContent.bgImage === "string") {
+      heroContent.bgImage = convertBase64ToFileUrl(heroContent.bgImage);
+    }
+
+    // Auto-sanitize pujas images if base64
+    if (Array.isArray(pujas)) {
+      pujas = pujas.map((p: any) => ({
+        ...p,
+        image: typeof p.image === "string" ? convertBase64ToFileUrl(p.image) : p.image,
+      }));
+    }
+
     const payload = {
       heroContent,
       pujas,
       updatedAt: new Date().toISOString(),
     };
 
-    // Save locally
+    // Always save locally to data/customization.json as primary fallback
     fs.writeFileSync(customizationFilePath, JSON.stringify(payload, null, 2), "utf-8");
 
-    if (!supabase) {
-      return res.status(500).json({
-        success: false,
-        error: "Supabase client is not initialized on the server. Please check SUPABASE_URL and SUPABASE_API_KEY environment variables.",
-      });
-    }
+    let supabaseSaved = false;
+    let supabaseNotice: string | null = null;
 
-    const errors: string[] = [];
+    if (supabase) {
+      try {
+        const errors: string[] = [];
+        const { error: customError } = await supabase
+          .from("customization")
+          .upsert(
+            {
+              id: 1,
+              hero_content: heroContent,
+              heroContent: heroContent,
+              pujas: pujas,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "id" }
+          );
 
-    // 1. Save to customization table
-    const { error: customError } = await supabase
-      .from("customization")
-      .upsert(
-        {
-          id: 1,
-          hero_content: heroContent,
-          heroContent: heroContent,
-          pujas: pujas,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "id" }
-      );
+        if (customError) {
+          console.warn("Supabase customization table error:", customError.message);
+          errors.push(`customization table: ${customError.message}`);
+        }
 
-    if (customError) {
-      console.error("Supabase customization table error:", customError);
-      errors.push(`'customization' table error: ${customError.message}${customError.details ? ' (' + customError.details + ')' : ''}`);
-    }
+        if (Array.isArray(pujas) && pujas.length > 0) {
+          const { error: pujaError } = await supabase
+            .from("puja")
+            .upsert(pujas, { onConflict: "id" });
 
-    // 2. Save to puja table if array provided
-    if (Array.isArray(pujas) && pujas.length > 0) {
-      const { error: pujaError } = await supabase
-        .from("puja")
-        .upsert(pujas, { onConflict: "id" });
+          if (pujaError) {
+            console.warn("Supabase puja table error:", pujaError.message);
+            errors.push(`puja table: ${pujaError.message}`);
+          }
+        }
 
-      if (pujaError) {
-        console.error("Supabase puja table error:", pujaError);
-        errors.push(`'puja' table error: ${pujaError.message}${pujaError.details ? ' (' + pujaError.details + ')' : ''}`);
+        if (errors.length === 0) {
+          supabaseSaved = true;
+        } else {
+          supabaseNotice = errors.join(" | ");
+        }
+      } catch (sbErr: any) {
+        console.warn("Supabase customization upsert exception:", sbErr);
+        supabaseNotice = sbErr.message || String(sbErr);
       }
-    }
-
-    if (errors.length > 0) {
-      return res.status(500).json({
-        success: false,
-        error: `Supabase database save failed: ${errors.join(" | ")}`,
-        details: errors,
-      });
+    } else {
+      supabaseNotice = "Supabase client not configured on server";
     }
 
     return res.json({
       success: true,
-      message: "Customization successfully saved to Supabase Database",
-      supabase: true,
+      data: payload,
+      supabase: supabaseSaved,
+      supabaseNotice: supabaseNotice,
+      message: supabaseSaved
+        ? "Customization successfully saved to Supabase Database"
+        : "Customization saved locally",
     });
   } catch (error: any) {
     console.error("Error writing customization data:", error);

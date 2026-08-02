@@ -193,7 +193,11 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
 
   // Sync bookings to localStorage
   useEffect(() => {
-    localStorage.setItem('admin_bookings_data', JSON.stringify(bookings));
+    try {
+      localStorage.setItem('admin_bookings_data', JSON.stringify(bookings));
+    } catch (e) {
+      console.warn('localStorage admin_bookings_data save error:', e);
+    }
   }, [bookings]);
 
   const handleLogin = (e: React.FormEvent) => {
