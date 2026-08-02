@@ -257,7 +257,7 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
         const filePath = `${timeStamp}_${randomStr}_${sanitizedFileName}`;
 
         let { error: uploadError } = await supabase.storage
-          .from('pujas')
+          .from('puja-images')
           .upload(filePath, file, {
             cacheControl: '3600',
             upsert: true,
@@ -265,10 +265,10 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
           });
 
         if (uploadError && uploadError.message?.toLowerCase().includes('not found')) {
-          const { error: createErr } = await supabase.storage.createBucket('pujas', { public: true });
+          const { error: createErr } = await supabase.storage.createBucket('puja-images', { public: true });
           if (!createErr) {
             const retry = await supabase.storage
-              .from('pujas')
+              .from('puja-images')
               .upload(filePath, file, {
                 cacheControl: '3600',
                 upsert: true,
@@ -280,7 +280,7 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
 
         if (!uploadError) {
           const { data: publicUrlData } = supabase.storage
-            .from('pujas')
+            .from('puja-images')
             .getPublicUrl(filePath);
 
           if (publicUrlData && publicUrlData.publicUrl) {

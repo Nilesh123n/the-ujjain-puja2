@@ -73,7 +73,7 @@ app.post("/api/upload-image", async (req, res) => {
     // Try uploading to Supabase Storage if client is available
     if (supabase) {
       try {
-        const bucketName = "pujas";
+        const bucketName = "puja-images";
 
         let { error: uploadError } = await supabase.storage
           .from(bucketName)
