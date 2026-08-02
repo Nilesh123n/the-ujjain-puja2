@@ -70,14 +70,19 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
           {
             id: 1,
             hero_content: hero,
-            heroContent: hero,
             pujas: list,
             updated_at: new Date().toISOString(),
           },
           { onConflict: 'id' }
         );
         if (Array.isArray(list) && list.length > 0) {
-          await supabase.from('puja').upsert(list, { onConflict: 'id' });
+          const sanitizedList = list.map((p) => ({
+            id: typeof p.id === 'number' ? p.id : parseInt(String(p.id)) || Date.now(),
+            title: p.name || (p as any).title || 'Puja Seva',
+            price: typeof p.price === 'number' ? p.price : parseInt(String(p.price).replace(/[^0-9]/g, '')) || 0,
+            description: p.description || '',
+          }));
+          await supabase.from('puja').upsert(sanitizedList, { onConflict: 'id' });
         }
       } catch (sbErr) {
         console.warn('Frontend Supabase client upsert notice:', sbErr);
@@ -310,9 +315,10 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
           const contentType = res.headers.get('content-type') || '';
           if (contentType.includes('application/json')) {
             const data = await res.json();
-            if (data.success && data.url) {
-              console.log('Successfully uploaded image via server API:', data.url);
-              return data.url;
+            if (data.success && (data.url || data.localUrl)) {
+              const serverUrl = data.url || data.localUrl;
+              console.log('Successfully uploaded image via server API:', serverUrl);
+              return serverUrl;
             }
           }
         }

@@ -264,13 +264,14 @@ app.post("/api/customization", async (req, res) => {
     if (supabase) {
       try {
         const errors: string[] = [];
+
+        // 1. Save to customization table if present in Supabase
         const { error: customError } = await supabase
           .from("customization")
           .upsert(
             {
               id: 1,
               hero_content: heroContent,
-              heroContent: heroContent,
               pujas: pujas,
               updated_at: new Date().toISOString(),
             },
@@ -278,17 +279,25 @@ app.post("/api/customization", async (req, res) => {
           );
 
         if (customError) {
-          console.warn("Supabase customization table error:", customError.message);
+          console.warn("Supabase customization table notice:", customError.message);
           errors.push(`customization table: ${customError.message}`);
         }
 
+        // 2. Save to puja table with sanitized schema (id, title, price, description)
         if (Array.isArray(pujas) && pujas.length > 0) {
+          const sanitizedPujaRows = pujas.map((p: any) => ({
+            id: typeof p.id === "number" ? p.id : parseInt(String(p.id)) || Date.now(),
+            title: p.name || p.title || "Puja Seva",
+            price: typeof p.price === "number" ? p.price : parseInt(String(p.price).replace(/[^0-9]/g, "")) || 0,
+            description: p.description || p.shortDesc || "",
+          }));
+
           const { error: pujaError } = await supabase
             .from("puja")
-            .upsert(pujas, { onConflict: "id" });
+            .upsert(sanitizedPujaRows, { onConflict: "id" });
 
           if (pujaError) {
-            console.warn("Supabase puja table error:", pujaError.message);
+            console.warn("Supabase puja table notice:", pujaError.message);
             errors.push(`puja table: ${pujaError.message}`);
           }
         }
