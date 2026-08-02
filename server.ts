@@ -5,6 +5,8 @@ import crypto from "crypto";
 import dotenv from "dotenv";
 import Razorpay from "razorpay";
 import { createServer as createViteServer } from "vite";
+// @ts-ignore
+import supabase from "./db.js";
 
 dotenv.config();
 
@@ -29,8 +31,8 @@ const customizationFilePath = path.join(dataDir, "customization.json");
 // Serve uploaded images statically
 app.use("/uploads", express.static(uploadsDir));
 
-// API: Image Upload Handler
-app.post("/api/upload-image", (req, res) => {
+// API: Image Upload Handler (Supabase Storage + Local Fallback)
+app.post("/api/upload-image", async (req, res) => {
   try {
     const { image, fileName } = req.body;
     if (!image || typeof image !== "string") {
@@ -39,10 +41,12 @@ app.post("/api/upload-image", (req, res) => {
 
     let extension = "png";
     let base64Data = image;
+    let mimeType = "image/png";
 
-    const matches = image.match(/^data:image\/([a-zA-Z0-9-+.]+);base64,(.+)$/);
+    const matches = image.match(/^data:(image\/[a-zA-Z0-9-+.]+);base64,(.+)$/);
     if (matches && matches.length === 3) {
-      extension = matches[1] === "jpeg" ? "jpg" : matches[1];
+      mimeType = matches[1];
+      extension = matches[1].split("/")[1] === "jpeg" ? "jpg" : matches[1].split("/")[1];
       base64Data = matches[2];
     } else if (image.includes(",")) {
       base64Data = image.split(",")[1];
@@ -53,16 +57,64 @@ app.post("/api/upload-image", (req, res) => {
       ? `${Date.now()}_${fileName.replace(/[^a-zA-Z0-9_.-]/g, "_")}`
       : `img_${Date.now()}_${Math.floor(Math.random() * 10000)}.${extension}`;
 
+    // Always save locally first as backup
     const targetPath = path.join(uploadsDir, sanitizedFileName);
     fs.writeFileSync(targetPath, buffer);
+    const localUrl = `/uploads/${sanitizedFileName}`;
 
-    const imageUrl = `/uploads/${sanitizedFileName}`;
-    console.log(`Saved uploaded image: ${targetPath} -> ${imageUrl}`);
+    let finalUrl = localUrl;
+    let storedInSupabase = false;
+
+    // Try uploading to Supabase Storage if client is available
+    if (supabase) {
+      try {
+        const bucketName = "pujas";
+
+        let { data: uploadData, error: uploadError } = await supabase.storage
+          .from(bucketName)
+          .upload(sanitizedFileName, buffer, {
+            contentType: mimeType,
+            upsert: true,
+          });
+
+        if (uploadError && uploadError.message?.toLowerCase().includes("not found")) {
+          // Attempt bucket creation if not exists
+          await supabase.storage.createBucket(bucketName, { public: true });
+          const retry = await supabase.storage
+            .from(bucketName)
+            .upload(sanitizedFileName, buffer, {
+              contentType: mimeType,
+              upsert: true,
+            });
+          uploadData = retry.data;
+          uploadError = retry.error;
+        }
+
+        if (!uploadError) {
+          const { data: publicUrlData } = supabase.storage
+            .from(bucketName)
+            .getPublicUrl(sanitizedFileName);
+
+          if (publicUrlData && publicUrlData.publicUrl) {
+            finalUrl = publicUrlData.publicUrl;
+            storedInSupabase = true;
+            console.log(`Saved image to Supabase Storage: ${finalUrl}`);
+          }
+        } else {
+          console.warn("Supabase Storage upload warning:", uploadError.message);
+        }
+      } catch (sbErr: any) {
+        console.warn("Supabase storage error, using local fallback:", sbErr.message || sbErr);
+      }
+    }
 
     return res.json({
       success: true,
-      url: imageUrl,
-      message: "Image uploaded and stored successfully",
+      url: finalUrl,
+      supabase: storedInSupabase,
+      message: storedInSupabase
+        ? "Image uploaded and stored in Supabase Storage"
+        : "Image stored locally",
     });
   } catch (error: any) {
     console.error("Image upload server error:", error);
@@ -70,14 +122,60 @@ app.post("/api/upload-image", (req, res) => {
   }
 });
 
-// API: Customization Database GET
-app.get("/api/customization", (_req, res) => {
+// API: Customization Database GET (Supabase + Local Cache)
+app.get("/api/customization", async (_req, res) => {
   try {
+    let supabaseData: any = null;
+
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from("customization")
+          .select("*")
+          .limit(1);
+
+        if (!error && data && data.length > 0) {
+          const record = data[0];
+          supabaseData = {
+            heroContent: record.hero_content || record.heroContent,
+            pujas: record.pujas,
+          };
+        } else {
+          const { data: pujaData, error: pujaError } = await supabase
+            .from("puja")
+            .select("*");
+
+          if (!pujaError && pujaData && pujaData.length > 0) {
+            let localHero = null;
+            if (fs.existsSync(customizationFilePath)) {
+              const raw = fs.readFileSync(customizationFilePath, "utf-8");
+              localHero = JSON.parse(raw)?.heroContent;
+            }
+            supabaseData = {
+              heroContent: localHero,
+              pujas: pujaData,
+            };
+          }
+        }
+      } catch (sbErr: any) {
+        console.warn("Supabase GET customization notice:", sbErr.message || sbErr);
+      }
+    }
+
+    if (
+      supabaseData &&
+      (supabaseData.heroContent ||
+        (Array.isArray(supabaseData.pujas) && supabaseData.pujas.length > 0))
+    ) {
+      return res.json({ success: true, data: supabaseData, source: "supabase" });
+    }
+
     if (fs.existsSync(customizationFilePath)) {
       const rawData = fs.readFileSync(customizationFilePath, "utf-8");
       const data = JSON.parse(rawData);
-      return res.json({ success: true, data });
+      return res.json({ success: true, data, source: "local" });
     }
+
     return res.json({ success: true, data: null });
   } catch (error: any) {
     console.error("Error reading customization file:", error);
@@ -85,8 +183,8 @@ app.get("/api/customization", (_req, res) => {
   }
 });
 
-// API: Customization Database POST
-app.post("/api/customization", (req, res) => {
+// API: Customization Database POST (Supabase + Local Cache)
+app.post("/api/customization", async (req, res) => {
   try {
     const { heroContent, pujas } = req.body;
     const payload = {
@@ -94,8 +192,52 @@ app.post("/api/customization", (req, res) => {
       pujas,
       updatedAt: new Date().toISOString(),
     };
+
     fs.writeFileSync(customizationFilePath, JSON.stringify(payload, null, 2), "utf-8");
-    return res.json({ success: true, message: "Customization saved to database" });
+
+    let savedToSupabase = false;
+
+    if (supabase) {
+      try {
+        const { error: upsertError } = await supabase
+          .from("customization")
+          .upsert(
+            {
+              id: 1,
+              hero_content: heroContent,
+              heroContent: heroContent,
+              pujas: pujas,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "id" }
+          );
+
+        if (!upsertError) {
+          savedToSupabase = true;
+          console.log("Customization saved to Supabase 'customization' table successfully.");
+        } else {
+          console.warn("Supabase customization table info:", upsertError.message);
+        }
+
+        if (Array.isArray(pujas) && pujas.length > 0) {
+          try {
+            await supabase.from("puja").upsert(pujas, { onConflict: "id" });
+          } catch (e) {
+            // Ignore if schema mismatch
+          }
+        }
+      } catch (sbErr: any) {
+        console.warn("Supabase POST error:", sbErr.message || sbErr);
+      }
+    }
+
+    return res.json({
+      success: true,
+      message: savedToSupabase
+        ? "Saved to Supabase Database"
+        : "Saved to local storage",
+      supabase: savedToSupabase,
+    });
   } catch (error: any) {
     console.error("Error writing customization file:", error);
     return res.status(500).json({ error: error.message || "Failed to save customization data" });

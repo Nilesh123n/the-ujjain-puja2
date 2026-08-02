@@ -109,10 +109,10 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
 
     initialFetch();
 
-    // Live background polling for multi-session sync
+    // Live background polling for instant multi-session global sync (every 3 seconds)
     const interval = setInterval(() => {
       refreshCustomization();
-    }, 8000);
+    }, 3000);
 
     const handleFocus = () => {
       refreshCustomization();

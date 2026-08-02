@@ -214,6 +214,10 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
                         <img
                           src={puja.image}
                           alt={puja.name}
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1609619385002-f40f1df5e9e2?w=800&q=80';
+                          }}
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
@@ -279,6 +283,10 @@ export const PujaPage: React.FC<PujaPageProps> = ({ onOpenBooking, onOpenDetail 
                       <img
                         src={puja.image}
                         alt={puja.name}
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1609619385002-f40f1df5e9e2?w=800&q=80';
+                        }}
                         className="w-20 h-20 rounded-2xl object-cover shrink-0 border border-[#2C1A0E]/10"
                       />
                       <div>

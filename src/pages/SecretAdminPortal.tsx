@@ -252,7 +252,7 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
       return;
     }
 
-    showToast('⏳ Uploading image to server backend database...', 'info');
+    showToast('⏳ Uploading image to Supabase Storage & database...', 'info');
     const uploadRes = await uploadImageFile(file);
     const imageUrl = uploadRes.url;
 
@@ -294,7 +294,7 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
     if (file) {
       await validateAndProcessImageFile(file, (serverUrl, info) => {
         setHeroBgImage(serverUrl);
-        showToast(`🖼️ Hero banner uploaded to server storage! (${info.ratioStr}). Click "Save Hero Changes" to save to database.`, 'success');
+        showToast(`🖼️ Hero banner uploaded to Supabase Storage! (${info.ratioStr}). Click "Save Hero Changes" to update database globally.`, 'success');
       });
     }
   };
@@ -308,7 +308,7 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
       badge: heroBadge,
       bgImage: heroBgImage
     });
-    showToast('✨ Hero Section saved to backend database and reflected live on Home Page!', 'success');
+    showToast('✨ Hero Section saved to Supabase Database & reflected globally in real time!', 'success');
   };
 
   // EDIT PUJA CARD FILE PICKER HANDLER
@@ -317,7 +317,7 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
     if (file && editingPuja) {
       await validateAndProcessImageFile(file, (serverUrl, info) => {
         setEditingPuja({ ...editingPuja, image: serverUrl });
-        showToast(`🖼️ Puja image uploaded to server storage! (${info.ratioStr})`, 'success');
+        showToast(`🖼️ Puja image uploaded to Supabase Storage! (${info.ratioStr})`, 'success');
       });
     }
   };
@@ -328,7 +328,7 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
     if (file) {
       await validateAndProcessImageFile(file, (serverUrl, info) => {
         setNewPujaImage(serverUrl);
-        showToast(`🖼️ New Puja image uploaded to server storage! (${info.ratioStr})`, 'success');
+        showToast(`🖼️ New Puja image uploaded to Supabase Storage! (${info.ratioStr})`, 'success');
       });
     }
   };
