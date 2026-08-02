@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { Puja } from '../types';
 import { PUJA_DATA } from '../data/pujaData';
 import mahakalBgImage from '../assets/images/mahakal_temple_bg_1785148009037.jpg';
+import { supabase } from '../lib/supabase';
 
 export interface HeroContent {
   title1: string;
@@ -63,6 +64,26 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Helper to persist customization to backend database
   const saveToBackend = useCallback(async (hero: HeroContent, list: Puja[]) => {
+    if (supabase) {
+      try {
+        await supabase.from('customization').upsert(
+          {
+            id: 1,
+            hero_content: hero,
+            heroContent: hero,
+            pujas: list,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'id' }
+        );
+        if (Array.isArray(list) && list.length > 0) {
+          await supabase.from('puja').upsert(list, { onConflict: 'id' });
+        }
+      } catch (sbErr) {
+        console.warn('Frontend Supabase client upsert notice:', sbErr);
+      }
+    }
+
     try {
       await fetch('/api/customization', {
         method: 'POST',
@@ -74,20 +95,46 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  // Refresh method to re-fetch from backend API
+  // Refresh method to re-fetch from backend API or Supabase SDK
   const refreshCustomization = useCallback(async () => {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('customization').select('*').limit(1);
+        if (!error && data && data.length > 0) {
+          const record = data[0];
+          const fetchedHero = record.hero_content || record.heroContent;
+          const fetchedPujas = record.pujas;
+
+          if (fetchedHero) {
+            setHeroContent(fetchedHero);
+            localStorage.setItem('app_hero_content', JSON.stringify(fetchedHero));
+          }
+          if (Array.isArray(fetchedPujas) && fetchedPujas.length > 0) {
+            setPujas(fetchedPujas);
+            localStorage.setItem('app_pujas_data', JSON.stringify(fetchedPujas));
+          }
+          return;
+        }
+      } catch (sbErr) {
+        console.warn('Frontend Supabase refresh notice:', sbErr);
+      }
+    }
+
     try {
       const response = await fetch('/api/customization');
       if (response.ok) {
-        const result = await response.json();
-        if (result.success && result.data) {
-          if (result.data.heroContent) {
-            setHeroContent(result.data.heroContent);
-            localStorage.setItem('app_hero_content', JSON.stringify(result.data.heroContent));
-          }
-          if (Array.isArray(result.data.pujas) && result.data.pujas.length > 0) {
-            setPujas(result.data.pujas);
-            localStorage.setItem('app_pujas_data', JSON.stringify(result.data.pujas));
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const result = await response.json();
+          if (result.success && result.data) {
+            if (result.data.heroContent) {
+              setHeroContent(result.data.heroContent);
+              localStorage.setItem('app_hero_content', JSON.stringify(result.data.heroContent));
+            }
+            if (Array.isArray(result.data.pujas) && result.data.pujas.length > 0) {
+              setPujas(result.data.pujas);
+              localStorage.setItem('app_pujas_data', JSON.stringify(result.data.pujas));
+            }
           }
         }
       }
@@ -176,6 +223,49 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const uploadImageFile = async (file: File): Promise<{ url: string; success: boolean; error?: string }> => {
+    // 1. First, try uploading directly using the frontend Supabase Client SDK
+    if (supabase) {
+      try {
+        const bucketName = 'pujas';
+        const sanitizedFileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
+
+        let { data: uploadData, error: uploadError } = await supabase.storage
+          .from(bucketName)
+          .upload(sanitizedFileName, file, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: file.type || 'image/png',
+          });
+
+        if (uploadError && uploadError.message?.toLowerCase().includes('not found')) {
+          await supabase.storage.createBucket(bucketName, { public: true });
+          const retry = await supabase.storage.from(bucketName).upload(sanitizedFileName, file, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: file.type || 'image/png',
+          });
+          uploadData = retry.data;
+          uploadError = retry.error;
+        }
+
+        if (!uploadError) {
+          const { data: publicUrlData } = supabase.storage
+            .from(bucketName)
+            .getPublicUrl(sanitizedFileName);
+
+          if (publicUrlData && publicUrlData.publicUrl) {
+            console.log('Direct Supabase SDK image upload successful:', publicUrlData.publicUrl);
+            return { url: publicUrlData.publicUrl, success: true };
+          }
+        } else {
+          console.warn('Frontend Supabase SDK upload notice:', uploadError.message);
+        }
+      } catch (sdkErr: any) {
+        console.warn('Frontend Supabase SDK upload exception:', sdkErr.message || sdkErr);
+      }
+    }
+
+    // 2. Fallback to Express backend endpoint /api/upload-image
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = async (e) => {
@@ -191,6 +281,19 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ image: base64Str, fileName: file.name }),
           });
+
+          const contentType = res.headers.get('content-type') || '';
+          if (!contentType.includes('application/json')) {
+            const rawText = await res.text();
+            console.error('Server returned non-JSON response:', rawText.substring(0, 150));
+            resolve({
+              url: '',
+              success: false,
+              error: `Server endpoint /api/upload-image returned non-JSON (${res.status} ${res.statusText})`,
+            });
+            return;
+          }
+
           const data = await res.json();
           if (res.ok && data.success && data.url) {
             resolve({ url: data.url, success: true });
