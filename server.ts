@@ -22,7 +22,7 @@ app.get("/api/razorpay/config", (_req, res) => {
     keyId: keyId,
     isConfigured: isConfigured,
     upiId: process.env.VITE_UPI_ID || "ramayentertainment@ybl",
-    upiName: process.env.VITE_UPI_NAME || "Mahakal Temple Puja Services",
+    upiName: process.env.VITE_UPI_NAME || "The Ujjain Puja Services",
   });
 });
 
