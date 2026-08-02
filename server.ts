@@ -31,19 +31,12 @@ const customizationFilePath = path.join(dataDir, "customization.json");
 // Serve uploaded images statically
 app.use("/uploads", express.static(uploadsDir));
 
-// API: Image Upload Handler (Supabase Storage with detailed error reporting)
+// API: Image Upload Handler (Supabase Storage with local static fallback)
 app.post("/api/upload-image", async (req, res) => {
   try {
     const { image, fileName } = req.body;
     if (!image || typeof image !== "string") {
       return res.status(400).json({ success: false, error: "No image data provided in request body" });
-    }
-
-    if (!supabase) {
-      return res.status(500).json({
-        success: false,
-        error: "Supabase client is not initialized on the server. Please check that SUPABASE_URL and SUPABASE_API_KEY environment variables are configured.",
-      });
     }
 
     let extension = "png";
@@ -64,62 +57,65 @@ app.post("/api/upload-image", async (req, res) => {
       ? `${Date.now()}_${fileName.replace(/[^a-zA-Z0-9_.-]/g, "_")}`
       : `img_${Date.now()}_${Math.floor(Math.random() * 10000)}.${extension}`;
 
-    // Write to local disk as backup
+    // Write to local disk as primary/backup storage
     const targetPath = path.join(uploadsDir, sanitizedFileName);
     fs.writeFileSync(targetPath, buffer);
+    const localUrl = `/uploads/${sanitizedFileName}`;
 
-    const bucketName = "pujas";
+    let finalUrl = localUrl;
+    let storedInSupabase = false;
 
-    let { data: uploadData, error: uploadError } = await supabase.storage
-      .from(bucketName)
-      .upload(sanitizedFileName, buffer, {
-        contentType: mimeType,
-        upsert: true,
-      });
+    // Try uploading to Supabase Storage if client is available
+    if (supabase) {
+      try {
+        const bucketName = "pujas";
 
-    if (uploadError && uploadError.message?.toLowerCase().includes("not found")) {
-      // Attempt bucket creation if not exists
-      const { error: createErr } = await supabase.storage.createBucket(bucketName, { public: true });
-      if (!createErr) {
-        const retry = await supabase.storage
+        let { error: uploadError } = await supabase.storage
           .from(bucketName)
           .upload(sanitizedFileName, buffer, {
             contentType: mimeType,
             upsert: true,
           });
-        uploadData = retry.data;
-        uploadError = retry.error;
+
+        if (uploadError && uploadError.message?.toLowerCase().includes("not found")) {
+          const { error: createErr } = await supabase.storage.createBucket(bucketName, { public: true });
+          if (!createErr) {
+            const retry = await supabase.storage
+              .from(bucketName)
+              .upload(sanitizedFileName, buffer, {
+                contentType: mimeType,
+                upsert: true,
+              });
+            uploadError = retry.error;
+          }
+        }
+
+        if (!uploadError) {
+          const { data: publicUrlData } = supabase.storage
+            .from(bucketName)
+            .getPublicUrl(sanitizedFileName);
+
+          if (publicUrlData && publicUrlData.publicUrl) {
+            finalUrl = publicUrlData.publicUrl;
+            storedInSupabase = true;
+            console.log(`Saved image to Supabase Storage: ${finalUrl}`);
+          }
+        } else {
+          console.warn("Supabase Storage upload notice, using local file URL:", uploadError.message);
+        }
+      } catch (sbErr: any) {
+        console.warn("Supabase storage server upload exception, using local fallback:", sbErr.message || sbErr);
       }
     }
-
-    if (uploadError) {
-      console.error("Supabase Storage upload error:", uploadError);
-      return res.status(500).json({
-        success: false,
-        error: `Supabase Storage Upload Failed: ${uploadError.message}${uploadError.details ? ' (' + uploadError.details + ')' : ''}`,
-        details: uploadError,
-      });
-    }
-
-    const { data: publicUrlData } = supabase.storage
-      .from(bucketName)
-      .getPublicUrl(sanitizedFileName);
-
-    if (!publicUrlData || !publicUrlData.publicUrl) {
-      return res.status(500).json({
-        success: false,
-        error: "Image uploaded to Supabase Storage, but failed to retrieve public URL.",
-      });
-    }
-
-    const finalUrl = publicUrlData.publicUrl;
-    console.log(`Saved image to Supabase Storage: ${finalUrl}`);
 
     return res.json({
       success: true,
       url: finalUrl,
-      supabase: true,
-      message: "Image uploaded and stored in Supabase Storage successfully",
+      localUrl: localUrl,
+      supabase: storedInSupabase,
+      message: storedInSupabase
+        ? "Image uploaded and stored in Supabase Storage"
+        : "Image stored locally on server",
     });
   } catch (error: any) {
     console.error("Image upload server error:", error);
