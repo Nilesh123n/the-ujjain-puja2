@@ -143,68 +143,67 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to create payment order. Please try again.');
+      }
+
       const orderData = await response.json();
 
-      if (orderData && orderData.orderId && typeof window !== 'undefined' && (window as any).Razorpay) {
-        const keyId = orderData.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_live_TKQ0HEnQP01Sze';
-
-        const options = {
-          key: keyId,
-          amount: orderData.amount || finalPrice * 100,
-          currency: orderData.currency || 'INR',
-          name: 'Mahakal Temple Puja Services',
-          description: `Sankalp Puja: ${selectedPuja.name}`,
-          image: selectedPuja.image || 'https://images.unsplash.com/photo-1609619385002-f40f1df5e9e2?w=200&q=80',
-          order_id: orderData.isTestFallback ? undefined : orderData.orderId,
-          prefill: {
-            name: fullName.trim(),
-            email: email.trim() || 'devotee@ujjainpuja.com',
-            contact: phone.trim(),
-          },
-          notes: {
-            bookingDate: pujaDate,
-            gotra: gotra.trim() || 'Kashyap',
-          },
-          theme: {
-            color: '#B5460F',
-          },
-          handler: function (res: any) {
-            setIsSubmitting(false);
-            const payId = res.razorpay_payment_id || ('RZP_' + Date.now().toString().slice(-8));
-            showToast('🎉 Razorpay Payment Successful!', 'success');
-            onConfirmBooking(createBookingData(payId, 'SUCCESS'));
-          },
-          modal: {
-            ondismiss: function () {
-              setIsSubmitting(false);
-              showToast('Payment window closed.', 'info');
-            },
-          },
-        };
-
-        const rzp = new (window as any).Razorpay(options);
-        rzp.on('payment.failed', function (res: any) {
-          setIsSubmitting(false);
-          showToast(`Payment failed: ${res.error?.description || 'Transaction declined'}`, 'error');
-        });
-        rzp.open();
-      } else {
-        // Fallback simulate payment completion if Razorpay checkout script is blocked
-        setTimeout(() => {
-          setIsSubmitting(false);
-          const mockPayId = 'RZP_MOCK_' + Date.now().toString().slice(-8);
-          showToast('🎉 Razorpay Test Payment Completed!', 'success');
-          onConfirmBooking(createBookingData(mockPayId, 'SUCCESS'));
-        }, 1200);
+      if (!orderData || !orderData.orderId) {
+        throw new Error(orderData?.error || 'Invalid order data received from server.');
       }
-    } catch (err) {
-      console.error('Razorpay payment error:', err);
-      setTimeout(() => {
+
+      if (typeof window === 'undefined' || !(window as any).Razorpay) {
+        throw new Error('Razorpay SDK failed to load in browser. Please refresh and try again.');
+      }
+
+      const keyId = orderData.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_live_TKQ0HEnQP01Sze';
+
+      const options = {
+        key: keyId,
+        amount: orderData.amount || finalPrice * 100,
+        currency: orderData.currency || 'INR',
+        name: 'Mahakal Temple Puja Services',
+        description: `Sankalp Puja: ${selectedPuja.name}`,
+        image: selectedPuja.image || 'https://images.unsplash.com/photo-1609619385002-f40f1df5e9e2?w=200&q=80',
+        order_id: orderData.isTestFallback ? undefined : orderData.orderId,
+        prefill: {
+          name: fullName.trim(),
+          email: email.trim() || 'devotee@ujjainpuja.com',
+          contact: phone.trim(),
+        },
+        notes: {
+          bookingDate: pujaDate,
+          gotra: gotra.trim() || 'Kashyap',
+        },
+        theme: {
+          color: '#B5460F',
+        },
+        handler: function (res: any) {
+          setIsSubmitting(false);
+          const payId = res.razorpay_payment_id || ('RZP_' + Date.now().toString().slice(-8));
+          showToast('🎉 Razorpay Payment Successful!', 'success');
+          onConfirmBooking(createBookingData(payId, 'SUCCESS'));
+        },
+        modal: {
+          ondismiss: function () {
+            setIsSubmitting(false);
+            showToast('Payment window closed.', 'info');
+          },
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', function (res: any) {
         setIsSubmitting(false);
-        const mockPayId = 'RZP_' + Date.now().toString().slice(-8);
-        showToast('Payment completed in test mode.', 'success');
-        onConfirmBooking(createBookingData(mockPayId, 'SUCCESS'));
-      }, 1000);
+        showToast(`Payment failed: ${res.error?.description || 'Transaction declined'}`, 'error');
+      });
+      rzp.open();
+    } catch (err: any) {
+      console.error('Razorpay payment error:', err);
+      setIsSubmitting(false);
+      showToast(err?.message || 'Payment initialization failed. Please try again.', 'error');
     }
   };
 
