@@ -283,18 +283,39 @@ app.post("/api/customization", async (req, res) => {
           errors.push(`customization table: ${customError.message}`);
         }
 
-        // 2. Save to puja table with sanitized schema (id, title, price, description)
+        // 2. Save to puja table with full and fallback schema
         if (Array.isArray(pujas) && pujas.length > 0) {
-          const sanitizedPujaRows = pujas.map((p: any) => ({
+          const fullPujaRows = pujas.map((p: any) => ({
             id: typeof p.id === "number" ? p.id : parseInt(String(p.id)) || Date.now(),
             title: p.name || p.title || "Puja Seva",
             price: typeof p.price === "number" ? p.price : parseInt(String(p.price).replace(/[^0-9]/g, "")) || 0,
             description: p.description || p.shortDesc || "",
+            image: p.image || "",
+            category: p.category || "",
+            location: p.location || "",
+            duration: p.duration || "",
+            pandits: p.pandits || "",
           }));
 
-          const { error: pujaError } = await supabase
+          let { error: pujaError } = await supabase
             .from("puja")
-            .upsert(sanitizedPujaRows, { onConflict: "id" });
+            .upsert(fullPujaRows, { onConflict: "id" });
+
+          // If full columns fail because table only has basic columns, retry with basic columns
+          if (pujaError && (pujaError.code === "PGRST204" || pujaError.message.includes("column"))) {
+            const basicPujaRows = pujas.map((p: any) => ({
+              id: typeof p.id === "number" ? p.id : parseInt(String(p.id)) || Date.now(),
+              title: p.name || p.title || "Puja Seva",
+              price: typeof p.price === "number" ? p.price : parseInt(String(p.price).replace(/[^0-9]/g, "")) || 0,
+              description: p.description || p.shortDesc || "",
+            }));
+
+            const retryResult = await supabase
+              .from("puja")
+              .upsert(basicPujaRows, { onConflict: "id" });
+
+            pujaError = retryResult.error;
+          }
 
           if (pujaError) {
             console.warn("Supabase puja table notice:", pujaError.message);

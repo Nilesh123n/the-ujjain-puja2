@@ -1,16 +1,14 @@
 {
   "heroContent": {
-    "title1": "Shree Mahakal Sanatan Sansthan",
-    "bgImage": "https://images.unsplash.com/photo-1609347744403-220be4713c23?auto=format&fit=crop&q=80"
+    "title1": "Test Title"
   },
   "pujas": [
     {
       "id": 1,
       "name": "Maha Mrityunjaya Puja",
       "price": 2100,
-      "description": "Sankalp & Samagri Puja",
-      "image": "https://images.unsplash.com/photo-1609347744403-220be4713c23?auto=format&fit=crop&q=80"
+      "description": "Test"
     }
   ],
-  "updatedAt": "2026-08-02T13:20:58.776Z"
+  "updatedAt": "2026-08-02T13:29:34.529Z"
 }
