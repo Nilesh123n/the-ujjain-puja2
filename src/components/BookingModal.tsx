@@ -596,6 +596,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           pujaName={selectedPuja.name}
           customerName={fullName}
           customerPhone={phone}
+          upiId={import.meta.env.VITE_UPI_ID || 'ramayentertainment@ybl'}
           onPaymentSuccess={handleUpiSuccess}
           onCancel={() => setShowUpiModal(false)}
         />

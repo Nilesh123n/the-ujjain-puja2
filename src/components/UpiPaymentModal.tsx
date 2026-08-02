@@ -19,7 +19,7 @@ export const UpiPaymentModal: React.FC<UpiPaymentModalProps> = ({
   pujaName,
   customerName,
   customerPhone,
-  upiId = '9876543210@paytm',
+  upiId = import.meta.env.VITE_UPI_ID || 'ramayentertainment@ybl',
   upiName = 'Mahakal Temple Puja Services',
   onPaymentSuccess,
   onCancel,

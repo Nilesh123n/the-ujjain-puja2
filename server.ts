@@ -21,7 +21,7 @@ app.get("/api/razorpay/config", (_req, res) => {
   res.json({
     keyId: keyId,
     isConfigured: isConfigured,
-    upiId: process.env.VITE_UPI_ID || "9876543210@paytm",
+    upiId: process.env.VITE_UPI_ID || "ramayentertainment@ybl",
     upiName: process.env.VITE_UPI_NAME || "Mahakal Temple Puja Services",
   });
 });
