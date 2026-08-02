@@ -31,12 +31,19 @@ const customizationFilePath = path.join(dataDir, "customization.json");
 // Serve uploaded images statically
 app.use("/uploads", express.static(uploadsDir));
 
-// API: Image Upload Handler (Supabase Storage + Local Fallback)
+// API: Image Upload Handler (Supabase Storage with detailed error reporting)
 app.post("/api/upload-image", async (req, res) => {
   try {
     const { image, fileName } = req.body;
     if (!image || typeof image !== "string") {
-      return res.status(400).json({ error: "No image data provided" });
+      return res.status(400).json({ success: false, error: "No image data provided in request body" });
+    }
+
+    if (!supabase) {
+      return res.status(500).json({
+        success: false,
+        error: "Supabase client is not initialized on the server. Please check that SUPABASE_URL and SUPABASE_API_KEY environment variables are configured.",
+      });
     }
 
     let extension = "png";
@@ -57,68 +64,69 @@ app.post("/api/upload-image", async (req, res) => {
       ? `${Date.now()}_${fileName.replace(/[^a-zA-Z0-9_.-]/g, "_")}`
       : `img_${Date.now()}_${Math.floor(Math.random() * 10000)}.${extension}`;
 
-    // Always save locally first as backup
+    // Write to local disk as backup
     const targetPath = path.join(uploadsDir, sanitizedFileName);
     fs.writeFileSync(targetPath, buffer);
-    const localUrl = `/uploads/${sanitizedFileName}`;
 
-    let finalUrl = localUrl;
-    let storedInSupabase = false;
+    const bucketName = "pujas";
 
-    // Try uploading to Supabase Storage if client is available
-    if (supabase) {
-      try {
-        const bucketName = "pujas";
+    let { data: uploadData, error: uploadError } = await supabase.storage
+      .from(bucketName)
+      .upload(sanitizedFileName, buffer, {
+        contentType: mimeType,
+        upsert: true,
+      });
 
-        let { data: uploadData, error: uploadError } = await supabase.storage
+    if (uploadError && uploadError.message?.toLowerCase().includes("not found")) {
+      // Attempt bucket creation if not exists
+      const { error: createErr } = await supabase.storage.createBucket(bucketName, { public: true });
+      if (!createErr) {
+        const retry = await supabase.storage
           .from(bucketName)
           .upload(sanitizedFileName, buffer, {
             contentType: mimeType,
             upsert: true,
           });
-
-        if (uploadError && uploadError.message?.toLowerCase().includes("not found")) {
-          // Attempt bucket creation if not exists
-          await supabase.storage.createBucket(bucketName, { public: true });
-          const retry = await supabase.storage
-            .from(bucketName)
-            .upload(sanitizedFileName, buffer, {
-              contentType: mimeType,
-              upsert: true,
-            });
-          uploadData = retry.data;
-          uploadError = retry.error;
-        }
-
-        if (!uploadError) {
-          const { data: publicUrlData } = supabase.storage
-            .from(bucketName)
-            .getPublicUrl(sanitizedFileName);
-
-          if (publicUrlData && publicUrlData.publicUrl) {
-            finalUrl = publicUrlData.publicUrl;
-            storedInSupabase = true;
-            console.log(`Saved image to Supabase Storage: ${finalUrl}`);
-          }
-        } else {
-          console.warn("Supabase Storage upload warning:", uploadError.message);
-        }
-      } catch (sbErr: any) {
-        console.warn("Supabase storage error, using local fallback:", sbErr.message || sbErr);
+        uploadData = retry.data;
+        uploadError = retry.error;
       }
     }
+
+    if (uploadError) {
+      console.error("Supabase Storage upload error:", uploadError);
+      return res.status(500).json({
+        success: false,
+        error: `Supabase Storage Upload Failed: ${uploadError.message}${uploadError.details ? ' (' + uploadError.details + ')' : ''}`,
+        details: uploadError,
+      });
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from(bucketName)
+      .getPublicUrl(sanitizedFileName);
+
+    if (!publicUrlData || !publicUrlData.publicUrl) {
+      return res.status(500).json({
+        success: false,
+        error: "Image uploaded to Supabase Storage, but failed to retrieve public URL.",
+      });
+    }
+
+    const finalUrl = publicUrlData.publicUrl;
+    console.log(`Saved image to Supabase Storage: ${finalUrl}`);
 
     return res.json({
       success: true,
       url: finalUrl,
-      supabase: storedInSupabase,
-      message: storedInSupabase
-        ? "Image uploaded and stored in Supabase Storage"
-        : "Image stored locally",
+      supabase: true,
+      message: "Image uploaded and stored in Supabase Storage successfully",
     });
   } catch (error: any) {
     console.error("Image upload server error:", error);
-    return res.status(500).json({ error: error.message || "Failed to upload image" });
+    return res.status(500).json({
+      success: false,
+      error: `Server upload exception: ${error.message || error}`,
+    });
   }
 });
 
@@ -126,6 +134,7 @@ app.post("/api/upload-image", async (req, res) => {
 app.get("/api/customization", async (_req, res) => {
   try {
     let supabaseData: any = null;
+    let lastError: string | null = null;
 
     if (supabase) {
       try {
@@ -141,6 +150,9 @@ app.get("/api/customization", async (_req, res) => {
             pujas: record.pujas,
           };
         } else {
+          if (error) {
+            lastError = `'customization' table error: ${error.message}`;
+          }
           const { data: pujaData, error: pujaError } = await supabase
             .from("puja")
             .select("*");
@@ -155,10 +167,12 @@ app.get("/api/customization", async (_req, res) => {
               heroContent: localHero,
               pujas: pujaData,
             };
+          } else if (pujaError) {
+            lastError = `${lastError ? lastError + ' | ' : ''}'puja' table error: ${pujaError.message}`;
           }
         }
       } catch (sbErr: any) {
-        console.warn("Supabase GET customization notice:", sbErr.message || sbErr);
+        lastError = sbErr.message || String(sbErr);
       }
     }
 
@@ -173,17 +187,17 @@ app.get("/api/customization", async (_req, res) => {
     if (fs.existsSync(customizationFilePath)) {
       const rawData = fs.readFileSync(customizationFilePath, "utf-8");
       const data = JSON.parse(rawData);
-      return res.json({ success: true, data, source: "local" });
+      return res.json({ success: true, data, source: "local", supabaseNotice: lastError });
     }
 
-    return res.json({ success: true, data: null });
+    return res.json({ success: true, data: null, supabaseNotice: lastError });
   } catch (error: any) {
     console.error("Error reading customization file:", error);
     return res.status(500).json({ error: error.message || "Failed to read customization data" });
   }
 });
 
-// API: Customization Database POST (Supabase + Local Cache)
+// API: Customization Database POST (Supabase + Local Cache with detailed error reporting)
 app.post("/api/customization", async (req, res) => {
   try {
     const { heroContent, pujas } = req.body;
@@ -193,54 +207,68 @@ app.post("/api/customization", async (req, res) => {
       updatedAt: new Date().toISOString(),
     };
 
+    // Save locally
     fs.writeFileSync(customizationFilePath, JSON.stringify(payload, null, 2), "utf-8");
 
-    let savedToSupabase = false;
+    if (!supabase) {
+      return res.status(500).json({
+        success: false,
+        error: "Supabase client is not initialized on the server. Please check SUPABASE_URL and SUPABASE_API_KEY environment variables.",
+      });
+    }
 
-    if (supabase) {
-      try {
-        const { error: upsertError } = await supabase
-          .from("customization")
-          .upsert(
-            {
-              id: 1,
-              hero_content: heroContent,
-              heroContent: heroContent,
-              pujas: pujas,
-              updated_at: new Date().toISOString(),
-            },
-            { onConflict: "id" }
-          );
+    const errors: string[] = [];
 
-        if (!upsertError) {
-          savedToSupabase = true;
-          console.log("Customization saved to Supabase 'customization' table successfully.");
-        } else {
-          console.warn("Supabase customization table info:", upsertError.message);
-        }
+    // 1. Save to customization table
+    const { error: customError } = await supabase
+      .from("customization")
+      .upsert(
+        {
+          id: 1,
+          hero_content: heroContent,
+          heroContent: heroContent,
+          pujas: pujas,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "id" }
+      );
 
-        if (Array.isArray(pujas) && pujas.length > 0) {
-          try {
-            await supabase.from("puja").upsert(pujas, { onConflict: "id" });
-          } catch (e) {
-            // Ignore if schema mismatch
-          }
-        }
-      } catch (sbErr: any) {
-        console.warn("Supabase POST error:", sbErr.message || sbErr);
+    if (customError) {
+      console.error("Supabase customization table error:", customError);
+      errors.push(`'customization' table error: ${customError.message}${customError.details ? ' (' + customError.details + ')' : ''}`);
+    }
+
+    // 2. Save to puja table if array provided
+    if (Array.isArray(pujas) && pujas.length > 0) {
+      const { error: pujaError } = await supabase
+        .from("puja")
+        .upsert(pujas, { onConflict: "id" });
+
+      if (pujaError) {
+        console.error("Supabase puja table error:", pujaError);
+        errors.push(`'puja' table error: ${pujaError.message}${pujaError.details ? ' (' + pujaError.details + ')' : ''}`);
       }
+    }
+
+    if (errors.length > 0) {
+      return res.status(500).json({
+        success: false,
+        error: `Supabase database save failed: ${errors.join(" | ")}`,
+        details: errors,
+      });
     }
 
     return res.json({
       success: true,
-      message: savedToSupabase
-        ? "Saved to Supabase Database"
-        : "Saved to local storage",
-      supabase: savedToSupabase,
+      message: "Customization successfully saved to Supabase Database",
+      supabase: true,
     });
   } catch (error: any) {
-    console.error("Error writing customization file:", error);
-    return res.status(500).json({ error: error.message || "Failed to save customization data" });
+    console.error("Error writing customization data:", error);
+    return res.status(500).json({
+      success: false,
+      error: `Server customization save exception: ${error.message || error}`,
+    });
   }
 });
 

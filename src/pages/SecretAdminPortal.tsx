@@ -252,8 +252,12 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
       return;
     }
 
-    showToast('⏳ Uploading image to Supabase Storage & database...', 'info');
+    showToast('⏳ Uploading image to Supabase Storage...', 'info');
     const uploadRes = await uploadImageFile(file);
+    if (!uploadRes.success || !uploadRes.url) {
+      showToast(`❌ Supabase Upload Failed: ${uploadRes.error || 'Failed to store image in Supabase'}`, 'error');
+      return;
+    }
     const imageUrl = uploadRes.url;
 
     const reader = new FileReader();

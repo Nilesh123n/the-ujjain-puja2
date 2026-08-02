@@ -28,7 +28,7 @@ interface CustomizationContextType {
   deletePuja: (id: number) => void;
   resetToDefaults: () => void;
   refreshCustomization: () => Promise<void>;
-  uploadImageFile: (file: File) => Promise<{ url: string; success: boolean }>;
+  uploadImageFile: (file: File) => Promise<{ url: string; success: boolean; error?: string }>;
   isLoadingBackend: boolean;
 }
 
@@ -175,13 +175,13 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
     saveToBackend(DEFAULT_HERO_CONTENT, PUJA_DATA);
   };
 
-  const uploadImageFile = async (file: File): Promise<{ url: string; success: boolean }> => {
+  const uploadImageFile = async (file: File): Promise<{ url: string; success: boolean; error?: string }> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = async (e) => {
         const base64Str = e.target?.result as string;
         if (!base64Str) {
-          resolve({ url: '', success: false });
+          resolve({ url: '', success: false, error: 'Failed to read image file data' });
           return;
         }
 
@@ -192,18 +192,22 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
             body: JSON.stringify({ image: base64Str, fileName: file.name }),
           });
           const data = await res.json();
-          if (res.ok && data.url) {
+          if (res.ok && data.success && data.url) {
             resolve({ url: data.url, success: true });
             return;
+          } else {
+            const errStr = data.error || data.message || `Upload failed with HTTP ${res.status}`;
+            console.error('Supabase upload server error:', errStr);
+            resolve({ url: '', success: false, error: errStr });
+            return;
           }
-        } catch (err) {
-          console.error('Upload image to server error:', err);
+        } catch (err: any) {
+          console.error('Upload image to server exception:', err);
+          resolve({ url: '', success: false, error: err.message || 'Network communication error' });
+          return;
         }
-
-        // Fallback to base64 if server upload fails
-        resolve({ url: base64Str, success: false });
       };
-      reader.onerror = () => resolve({ url: '', success: false });
+      reader.onerror = () => resolve({ url: '', success: false, error: 'File reader reading failed' });
       reader.readAsDataURL(file);
     });
   };
