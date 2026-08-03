@@ -6,6 +6,7 @@ const supabaseUrl =
   '';
 
 const supabaseApiKey =
+  (import.meta.env.VITE_SUPABASE_ANON_KEY as string) ||
   (import.meta.env.VITE_SUPABASE_API_KEY as string) ||
   (import.meta.env.SUPABASE_API_KEY as string) ||
   '';
