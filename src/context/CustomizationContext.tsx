@@ -60,7 +60,7 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
     return PUJA_DATA;
   });
 
-  const [isLoadingBackend, setIsLoadingBackend] = useState<boolean>(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Helper to persist customization to backend database
   const saveToBackend = useCallback(async (hero: HeroContent, list: Puja[]) => {
@@ -116,9 +116,13 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
   const refreshCustomization = useCallback(async () => {
     if (supabase) {
       try {
-        const { data, error } = await supabase.from('customization').select('*').limit(1);
-        if (!error && data && data.length > 0) {
-          const record = data[0];
+        const { data, error } = await supabase
+  .from('customization')
+  .select('*')
+  .eq('id', 1)
+  .single();
+       if (!error && data) {
+    const record = data;
           const fetchedHero = record.hero_content || record.heroContent;
           const fetchedPujas = record.pujas;
 
@@ -175,8 +179,10 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Live background polling for instant multi-session global sync (every 3 seconds)
     const interval = setInterval(() => {
-      refreshCustomization();
-    }, 3000);
+    if (!isSaving) {
+        refreshCustomization();
+    }
+}, 3000);
 
     const handleFocus = () => {
       refreshCustomization();
@@ -215,13 +221,22 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  const updatePuja = (updatedPuja: Puja) => {
-    setPujas((prev) => {
-      const updatedList = prev.map((p) => (p.id === updatedPuja.id ? updatedPuja : p));
-      saveToBackend(heroContent, updatedList);
-      return updatedList;
-    });
-  };
+  const updatePuja = async (updatedPuja: Puja) => {
+
+    setIsSaving(true);
+
+    const updatedList = pujas.map((p) =>
+        p.id === updatedPuja.id ? updatedPuja : p
+    );
+
+    setPujas(updatedList);
+
+    await saveToBackend(heroContent, updatedList);
+
+    await refreshCustomization();
+
+    setIsSaving(false);
+};
 
   const addPuja = (newPuja: Puja) => {
     setPujas((prev) => {
