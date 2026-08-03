@@ -61,7 +61,7 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
   });
 
   const [isSaving, setIsSaving] = useState(false);
-
+const [isLoadingBackend, setIsLoadingBackend] = useState(true);
   // Helper to persist customization to backend database
   const saveToBackend = useCallback(async (hero: HeroContent, list: Puja[]) => {
     if (supabase) {
@@ -168,12 +168,16 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     let isMounted = true;
     const initialFetch = async () => {
-      try {
-        await refreshCustomization();
-      } finally {
-        if (isMounted) setIsLoadingBackend(false);
-      }
-    };
+  setIsLoadingBackend(true);
+
+  try {
+    await refreshCustomization();
+  } finally {
+    if (isMounted) {
+      setIsLoadingBackend(false);
+    }
+  }
+};
 
     initialFetch();
 
