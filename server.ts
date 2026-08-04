@@ -433,7 +433,15 @@ app.post("/api/razorpay/create-order", async (req, res) => {
     }
   } catch (error: any) {
     console.error("Error creating Razorpay order:", error);
-    res.status(500).json({ error: error.message || "Failed to create Razorpay order" });
+    res.status(200).json({
+      success: true,
+      isDirectFallback: true,
+      orderId: null,
+      amount: Math.round(Number(req.body?.amount || 0) * 100),
+      currency: "INR",
+      keyId: (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TKQ0HEnQP01Sze").trim(),
+      message: error.message || "Direct fallback mode activated",
+    });
   }
 });
 

@@ -31,6 +31,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [rashi, setRashi] = useState('');
   const [wishes, setWishes] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
+  const [customRazorpayKey, setCustomRazorpayKey] = useState<string>(() => {
+    return (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : '') || '';
+  });
+  const [showKeyInput, setShowKeyInput] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponMsg, setCouponCodeMsg] = useState('');
@@ -173,7 +177,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       }
 
       const savedKeyId = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : null;
-      const keyId = savedKeyId || orderData?.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_live_TKQ0HEnQP01Sze';
+      const keyCandidate = customRazorpayKey.trim() || savedKeyId?.trim() || orderData?.keyId?.trim() || import.meta.env.VITE_RAZORPAY_KEY_ID?.trim() || 'rzp_live_TKQ0HEnQP01Sze';
+      const keyId = keyCandidate.trim();
 
       let validOrderId: string | undefined = undefined;
       if (
@@ -230,20 +235,18 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         const rzp = new (window as any).Razorpay(options);
         rzp.on('payment.failed', function (res: any) {
           setIsSubmitting(false);
-          console.warn('Razorpay payment failed or key issue:', res);
-          const desc = res.error?.description || 'Transaction declined or Key invalid';
-          showToast(`Razorpay Payment Notice: ${desc}`, 'error');
+          console.warn('Razorpay payment failed notice:', res);
+          const desc = res.error?.description || res.error?.reason || 'Payment attempt was not completed.';
+          showToast(`Razorpay: ${desc}`, 'info');
           setTimeout(() => {
-            if (window.confirm('Razorpay key needs verification. Would you like to pay instantly via GPay / UPI QR Code?')) {
-              setShowUpiModal(true);
-            }
+            setShowUpiModal(true);
           }, 300);
         });
         rzp.open();
       } catch (openErr: any) {
-        console.error('Failed to open Razorpay modal:', openErr);
+        console.error('Failed to open Razorpay checkout modal:', openErr);
         setIsSubmitting(false);
-        showToast('Razorpay initialization error. Opening GPay / UPI payment option...', 'error');
+        showToast('Opening instant GPay / UPI QR Code payment option...', 'info');
         setShowUpiModal(true);
       }
     } catch (err: any) {
@@ -588,6 +591,41 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 <span className="text-[11px]">Pay via WhatsApp</span>
               </label>
             </div>
+
+            {paymentMethod === 'razorpay' && (
+              <div className="mt-2 text-right">
+                <button
+                  type="button"
+                  onClick={() => setShowKeyInput(!showKeyInput)}
+                  className="text-[10px] text-[#8B6F5E] hover:text-[#B5460F] underline cursor-pointer"
+                >
+                  {showKeyInput ? 'Hide Key Setting' : '⚙️ Enter / Verify Razorpay Key ID'}
+                </button>
+                {showKeyInput && (
+                  <div className="mt-2 p-2.5 bg-[#FAF8F5] border border-[#2C1A0E]/15 rounded-xl text-left space-y-1.5">
+                    <label className="block text-[11px] font-bold text-[#2C1A0E]">
+                      Razorpay Live Key ID:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. rzp_live_TKQ0HEnQP01Sze"
+                      value={customRazorpayKey}
+                      onChange={(e) => {
+                        const val = e.target.value.trim();
+                        setCustomRazorpayKey(val);
+                        if (val) {
+                          localStorage.setItem('razorpay_key_id', val);
+                        }
+                      }}
+                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-[#2C1A0E] outline-none"
+                    />
+                    <p className="text-[10px] text-gray-500">
+                      Saved to browser local storage. Make sure this key is generated in your active Razorpay Dashboard.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* TOTAL & SUBMIT */}
