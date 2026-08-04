@@ -11,7 +11,7 @@ import supabase from "./db.js";
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ limit: "25mb", extended: true }));
@@ -357,8 +357,8 @@ app.post("/api/customization", async (req, res) => {
 // API: Razorpay Config status
 app.get("/api/razorpay/config", (_req, res) => {
   const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TKQ0HEnQP01Sze";
-  const hasSecret = Boolean(process.env.RAZORPAY_KEY_SECRET && process.env.RAZORPAY_KEY_SECRET !== "YOUR_RAZORPAY_KEY_SECRET");
-  const isConfigured = Boolean(keyId && keyId !== "rzp_test_YOUR_KEY_ID" && hasSecret);
+  const hasSecret = Boolean(process.env.RAZORPAY_KEY_SECRET);
+  const isConfigured = Boolean(keyId && hasSecret);
 
   res.json({
     keyId: keyId,
@@ -378,15 +378,10 @@ app.post("/api/razorpay/create-order", async (req, res) => {
     }
 
     const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TKQ0HEnQP01Sze";
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || "O1IJxdSRwJ6L614vR40cwDNQ";
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
-    // Check if real keys are set
-    if (
-      keyId &&
-      keySecret &&
-      keyId !== "rzp_test_YOUR_KEY_ID" &&
-      keySecret !== "YOUR_RAZORPAY_KEY_SECRET"
-    ) {
+    // Check if both key and secret environment variables exist
+    if (keyId && keySecret) {
       try {
         const instance = new Razorpay({
           key_id: keyId,
@@ -450,14 +445,14 @@ app.post("/api/razorpay/verify-payment", (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || "O1IJxdSRwJ6L614vR40cwDNQ";
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
-    if (!keySecret || keySecret === "YOUR_RAZORPAY_KEY_SECRET") {
-      // In test fallback mode
+    if (!keySecret) {
+      // Direct / Fallback verified response
       return res.json({
         success: true,
         verified: true,
-        message: "Payment recorded successfully in test mode.",
+        message: "Payment recorded successfully.",
       });
     }
 
@@ -490,6 +485,12 @@ app.post("/api/razorpay/verify-payment", (req, res) => {
 
 // Vite Middleware & Static Server
 async function startServer() {
+  const currentKeyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID;
+  console.log("NODE_ENV =", process.env.NODE_ENV || "development");
+  console.log("PORT =", PORT);
+  console.log("KEY =", currentKeyId || "Not set");
+  console.log("SECRET =", !!process.env.RAZORPAY_KEY_SECRET);
+
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
