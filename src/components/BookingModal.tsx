@@ -30,7 +30,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [nakshatra, setNakshatra] = useState('');
   const [rashi, setRashi] = useState('');
   const [wishes, setWishes] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('razorpay');
+  const [paymentMethod, setPaymentMethod] = useState('upi');
   const [customRazorpayKey, setCustomRazorpayKey] = useState<string>(() => {
     return (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : '') || '';
   });
@@ -177,7 +177,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       }
 
       const savedKeyId = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : null;
-      const keyCandidate = customRazorpayKey.trim() || savedKeyId?.trim() || orderData?.keyId?.trim() || import.meta.env.VITE_RAZORPAY_KEY_ID?.trim() || 'rzp_live_TKQ0HEnQP01Sze';
+      const keyCandidate = customRazorpayKey.trim() || savedKeyId?.trim() || orderData?.keyId?.trim() || import.meta.env.VITE_RAZORPAY_KEY_ID?.trim() || 'rzp_live_TLfxE402PT1cGO';
       const keyId = keyCandidate.trim();
 
       let validOrderId: string | undefined = undefined;
@@ -198,7 +198,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         currency: orderData?.currency || 'INR',
         name: 'Mahakal Temple Puja Services',
         description: `Sankalp Puja: ${selectedPuja.name}`,
-        image: selectedPuja.image || 'https://images.unsplash.com/photo-1609619385002-f40f1df5e9e2?w=200&q=80',
+        image: (selectedPuja.image && selectedPuja.image.startsWith('http')) ? selectedPuja.image : 'https://images.unsplash.com/photo-1609619385002-f40f1df5e9e2?w=200&q=80',
         prefill: {
           name: fullName.trim(),
           email: email.trim() || 'devotee@ujjainpuja.com',
@@ -236,8 +236,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         rzp.on('payment.failed', function (res: any) {
           setIsSubmitting(false);
           console.warn('Razorpay payment failed notice:', res);
-          const desc = res.error?.description || res.error?.reason || 'Payment attempt was not completed.';
-          showToast(`Razorpay: ${desc}`, 'info');
+          const desc = res.error?.description || res.error?.reason || 'Razorpay Key authorization issue or payment cancelled.';
+          if (res.error?.code === 'BAD_REQUEST_ERROR' || desc.includes('Unauthorized') || desc.includes('key')) {
+            showToast(`Razorpay Notice: ${desc}. Switching to Instant GPay / UPI QR...`, 'info');
+          } else {
+            showToast(`Razorpay: ${desc}`, 'info');
+          }
           setTimeout(() => {
             setShowUpiModal(true);
           }, 300);
@@ -533,7 +537,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <label className="block text-xs font-bold text-[#5C3A1E] uppercase tracking-wider mb-1.5">
               {lang === 'hi' ? 'भुगतान माध्यम चुनें' : 'Select Payment Option'}
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {/* Razorpay Option Hidden/Commented out for live site
               <label
                 className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'razorpay'
@@ -552,6 +557,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 <i className="fas fa-credit-card text-base mb-1 text-[#B5460F]"></i>
                 <span className="text-[11px]">Razorpay / Card</span>
               </label>
+              */}
 
               <label
                 className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
@@ -568,8 +574,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   onChange={() => setPaymentMethod('upi')}
                   className="sr-only"
                 />
-                <i className="fas fa-mobile-alt text-base mb-1"></i>
-                <span className="text-[11px]">GPay / QR Code</span>
+                <i className="fas fa-mobile-alt text-base mb-1 text-[#B5460F]"></i>
+                <span className="text-[11px] font-bold">GPay / PhonePe / QR</span>
               </label>
 
               <label
@@ -588,44 +594,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   className="sr-only"
                 />
                 <i className="fab fa-whatsapp text-base mb-1 text-[#25D366]"></i>
-                <span className="text-[11px]">Pay via WhatsApp</span>
+                <span className="text-[11px] font-bold">Pay via WhatsApp</span>
               </label>
             </div>
-
-            {paymentMethod === 'razorpay' && (
-              <div className="mt-2 text-right">
-                <button
-                  type="button"
-                  onClick={() => setShowKeyInput(!showKeyInput)}
-                  className="text-[10px] text-[#8B6F5E] hover:text-[#B5460F] underline cursor-pointer"
-                >
-                  {showKeyInput ? 'Hide Key Setting' : '⚙️ Enter / Verify Razorpay Key ID'}
-                </button>
-                {showKeyInput && (
-                  <div className="mt-2 p-2.5 bg-[#FAF8F5] border border-[#2C1A0E]/15 rounded-xl text-left space-y-1.5">
-                    <label className="block text-[11px] font-bold text-[#2C1A0E]">
-                      Razorpay Live Key ID:
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. rzp_live_TKQ0HEnQP01Sze"
-                      value={customRazorpayKey}
-                      onChange={(e) => {
-                        const val = e.target.value.trim();
-                        setCustomRazorpayKey(val);
-                        if (val) {
-                          localStorage.setItem('razorpay_key_id', val);
-                        }
-                      }}
-                      className="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs font-mono text-[#2C1A0E] outline-none"
-                    />
-                    <p className="text-[10px] text-gray-500">
-                      Saved to browser local storage. Make sure this key is generated in your active Razorpay Dashboard.
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
           {/* TOTAL & SUBMIT */}

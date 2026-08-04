@@ -16,6 +16,9 @@ const PORT = Number(process.env.PORT) || 3000;
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ limit: "25mb", extended: true }));
 
+// Serve static assets from public folder
+app.use(express.static(path.join(process.cwd(), "public")));
+
 // Ensure upload & data directories exist
 const uploadsDir = path.join(process.cwd(), "public", "uploads");
 if (!fs.existsSync(uploadsDir)) {
@@ -356,8 +359,8 @@ app.post("/api/customization", async (req, res) => {
 
 // API: Razorpay Config status
 app.get("/api/razorpay/config", (_req, res) => {
-  const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TKQ0HEnQP01Sze";
-  const hasSecret = Boolean(process.env.RAZORPAY_KEY_SECRET);
+  const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TLfxE402PT1cGO";
+  const hasSecret = Boolean(process.env.RAZORPAY_KEY_SECRET || "ywZ9PwaRiRpsZjGQwkI0Itbk");
   const isConfigured = Boolean(keyId && hasSecret);
 
   res.json({
@@ -377,10 +380,10 @@ app.post("/api/razorpay/create-order", async (req, res) => {
       return res.status(400).json({ error: "Invalid amount provided" });
     }
 
-    const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TKQ0HEnQP01Sze";
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    const keyId = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TLfxE402PT1cGO").trim();
+    const keySecret = (process.env.RAZORPAY_KEY_SECRET || "ywZ9PwaRiRpsZjGQwkI0Itbk").trim();
 
-    // Check if both key and secret environment variables exist
+    // Check if both key and secret credentials exist
     if (keyId && keySecret) {
       try {
         const instance = new Razorpay({
@@ -422,7 +425,7 @@ app.post("/api/razorpay/create-order", async (req, res) => {
         orderId: null,
         amount: Math.round(Number(amount) * 100),
         currency,
-        keyId: keyId || "rzp_live_TKQ0HEnQP01Sze",
+        keyId: keyId || "rzp_live_TLfxE402PT1cGO",
         message: "Direct SDK mode initialized",
       });
     }
@@ -434,7 +437,7 @@ app.post("/api/razorpay/create-order", async (req, res) => {
       orderId: null,
       amount: Math.round(Number(req.body?.amount || 0) * 100),
       currency: "INR",
-      keyId: (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TKQ0HEnQP01Sze").trim(),
+      keyId: (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TLfxE402PT1cGO").trim(),
       message: error.message || "Direct fallback mode activated",
     });
   }
@@ -445,7 +448,7 @@ app.post("/api/razorpay/verify-payment", (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || "ywZ9PwaRiRpsZjGQwkI0Itbk";
 
     if (!keySecret) {
       // Direct / Fallback verified response
@@ -477,9 +480,9 @@ app.post("/api/razorpay/verify-payment", (req, res) => {
         error: "Invalid Razorpay payment signature verification failed.",
       });
     }
-  } catch (error: any) {
-    console.error("Error verifying payment:", error);
-    res.status(500).json({ error: error.message || "Verification server error" });
+  } catch (err: any) {
+    console.error("Error verifying payment signature:", err);
+    res.status(500).json({ success: false, error: "Signature verification error: " + err.message });
   }
 });
 
