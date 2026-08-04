@@ -9,13 +9,18 @@ interface ThankYouPageProps {
 export const ThankYouPage: React.FC<ThankYouPageProps> = ({ booking, onGoHome }) => {
   const [countdown, setCountdown] = useState(7200); // 2 hours
 
-  useEffect(() => {
+useEffect(() => {
+    // Meta Pixel Lead Event Tracking
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'Lead');
+    }
+
     const timer = setInterval(() => {
       setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
+  
   const formatCountdown = (totalSecs: number) => {
     const hrs = Math.floor(totalSecs / 3600);
     const mins = Math.floor((totalSecs % 3600) / 60);
