@@ -172,7 +172,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         console.warn('Backend order creation fetch failed, proceeding with direct client payment mode:', fetchErr);
       }
 
-      const keyId = orderData?.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_live_TKQ0HEnQP01Sze';
+      const savedKeyId = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : null;
+      const keyId = savedKeyId || orderData?.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_live_TKQ0HEnQP01Sze';
 
       let validOrderId: string | undefined = undefined;
       if (
@@ -188,7 +189,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
       const options: any = {
         key: keyId,
-        amount: orderData?.amount || finalPrice * 100,
+        amount: orderData?.amount || Math.round(finalPrice * 100),
         currency: orderData?.currency || 'INR',
         name: 'Mahakal Temple Puja Services',
         description: `Sankalp Puja: ${selectedPuja.name}`,
@@ -216,6 +217,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             setIsSubmitting(false);
             showToast('Payment window closed.', 'info');
           },
+          escape: true,
+          backdropclose: false
         },
       };
 
@@ -223,12 +226,26 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         options.order_id = validOrderId;
       }
 
-      const rzp = new (window as any).Razorpay(options);
-      rzp.on('payment.failed', function (res: any) {
+      try {
+        const rzp = new (window as any).Razorpay(options);
+        rzp.on('payment.failed', function (res: any) {
+          setIsSubmitting(false);
+          console.warn('Razorpay payment failed or key issue:', res);
+          const desc = res.error?.description || 'Transaction declined or Key invalid';
+          showToast(`Razorpay Payment Notice: ${desc}`, 'error');
+          setTimeout(() => {
+            if (window.confirm('Razorpay key needs verification. Would you like to pay instantly via GPay / UPI QR Code?')) {
+              setShowUpiModal(true);
+            }
+          }, 300);
+        });
+        rzp.open();
+      } catch (openErr: any) {
+        console.error('Failed to open Razorpay modal:', openErr);
         setIsSubmitting(false);
-        showToast(`Payment failed: ${res.error?.description || 'Transaction declined'}`, 'error');
-      });
-      rzp.open();
+        showToast('Razorpay initialization error. Opening GPay / UPI payment option...', 'error');
+        setShowUpiModal(true);
+      }
     } catch (err: any) {
       console.error('Razorpay payment error:', err);
       setIsSubmitting(false);

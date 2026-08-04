@@ -191,6 +191,25 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
   const [oldPinInput, setOldPinInput] = useState('');
   const [newPinInput, setNewPinInput] = useState('');
 
+  // Payment Gateway Config State
+  const [razorpayKeyInput, setRazorpayKeyInput] = useState<string>(() => {
+    return localStorage.getItem('razorpay_key_id') || 'rzp_live_TKQ0HEnQP01Sze';
+  });
+  const [upiIdInput, setUpiIdInput] = useState<string>(() => {
+    return localStorage.getItem('upi_id') || 'ramayentertainment@ybl';
+  });
+
+  const handleSavePaymentConfig = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (razorpayKeyInput.trim()) {
+      localStorage.setItem('razorpay_key_id', razorpayKeyInput.trim());
+    }
+    if (upiIdInput.trim()) {
+      localStorage.setItem('upi_id', upiIdInput.trim());
+    }
+    showToast('✅ Payment gateway credentials updated successfully!', 'success');
+  };
+
   // Sync bookings to localStorage
   useEffect(() => {
     try {
@@ -1110,6 +1129,56 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
         {/* TAB 5: SETTINGS & RESET TO DEFAULTS */}
         {activeAdminTab === 'settings' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* PAYMENT GATEWAY CREDENTIALS */}
+            <div className="bg-white border-2 border-[#f2b705]/40 rounded-2xl p-6 shadow-sm space-y-5 lg:col-span-2">
+              <div className="flex items-center gap-3 border-b border-gray-100 pb-3">
+                <div className="w-10 h-10 bg-[#f2b705]/20 text-[#2C1A0E] rounded-xl flex items-center justify-center font-bold text-lg">
+                  💳
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-[#2C1A0E] font-cinzel">Razorpay & UPI Payment Gateway Settings</h2>
+                  <p className="text-xs text-gray-500">Configure live Razorpay Key ID and UPI VPA for devotee bookings</p>
+                </div>
+              </div>
+
+              <form onSubmit={handleSavePaymentConfig} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-[#2C1A0E]">Razorpay Live Key ID</label>
+                  <input
+                    type="text"
+                    value={razorpayKeyInput}
+                    onChange={(e) => setRazorpayKeyInput(e.target.value)}
+                    placeholder="e.g. rzp_live_TKQ0HEnQP01Sze"
+                    className="w-full bg-[#FAF8F5] border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono outline-none focus:border-[#ff5c00]"
+                    required
+                  />
+                  <p className="text-[11px] text-gray-500">Get this Key ID from your Razorpay Merchant Dashboard → API Keys.</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-[#2C1A0E]">Direct UPI VPA ID</label>
+                  <input
+                    type="text"
+                    value={upiIdInput}
+                    onChange={(e) => setUpiIdInput(e.target.value)}
+                    placeholder="e.g. ramayentertainment@ybl"
+                    className="w-full bg-[#FAF8F5] border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono outline-none focus:border-[#ff5c00]"
+                    required
+                  />
+                  <p className="text-[11px] text-gray-500">Used for generating direct GPay / PhonePe / Paytm QR codes.</p>
+                </div>
+
+                <div className="md:col-span-2 pt-2 flex justify-end">
+                  <button
+                    type="submit"
+                    className="bg-[#ff5c00] hover:bg-[#e05200] text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Save className="w-4 h-4" /> Save Payment Credentials
+                  </button>
+                </div>
+              </form>
+            </div>
+
             {/* CHANGE PIN */}
             <div className="bg-white border-2 border-[#2C1A0E]/10 rounded-2xl p-6 shadow-sm space-y-5">
               <div>
