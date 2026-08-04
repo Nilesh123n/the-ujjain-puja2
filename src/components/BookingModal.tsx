@@ -30,7 +30,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [nakshatra, setNakshatra] = useState('');
   const [rashi, setRashi] = useState('');
   const [wishes, setWishes] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('upi');
+  const [paymentMethod, setPaymentMethod] = useState('razorpay');
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponMsg, setCouponCodeMsg] = useState('');
@@ -484,13 +484,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <label className="block text-xs font-bold text-[#5C3A1E] uppercase tracking-wider mb-1.5">
               {lang === 'hi' ? 'भुगतान माध्यम चुनें' : 'Select Payment Option'}
             </label>
-            <div className="grid grid-cols-2 gap-2">
-              {/* Razorpay Payment Option (Commented Out)
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <label
                 className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'razorpay'
-                    ? 'border-[#ff5c00] bg-[#f2b705] text-[#2C1A0E] font-bold'
-                    : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E]'
+                    ? 'border-[#ff5c00] bg-[#f2b705] text-[#2C1A0E] font-bold shadow-sm'
+                    : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E] hover:border-[#f7ae62]'
                 }`}
               >
                 <input
@@ -501,16 +500,15 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   onChange={() => setPaymentMethod('razorpay')}
                   className="sr-only"
                 />
-                <i className="fas fa-credit-card text-base mb-1"></i>
+                <i className="fas fa-credit-card text-base mb-1 text-[#B5460F]"></i>
                 <span className="text-[11px]">Razorpay / Card</span>
               </label>
-              */}
 
               <label
                 className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'upi'
-                    ? 'border-[#ff5c00] bg-[#f2b705] text-[#2C1A0E] font-bold'
-                    : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E]'
+                    ? 'border-[#ff5c00] bg-[#f2b705] text-[#2C1A0E] font-bold shadow-sm'
+                    : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E] hover:border-[#f7ae62]'
                 }`}
               >
                 <input
@@ -522,14 +520,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   className="sr-only"
                 />
                 <i className="fas fa-mobile-alt text-base mb-1"></i>
-                <span className="text-[11px]">GPay / UPI</span>
+                <span className="text-[11px]">GPay / QR Code</span>
               </label>
 
               <label
                 className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'whatsapp'
-                    ? 'border-[#25D366] bg-emerald-50 text-emerald-800 font-bold'
-                    : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E]'
+                    ? 'border-[#25D366] bg-emerald-50 text-emerald-800 font-bold shadow-sm'
+                    : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E] hover:border-[#f7ae62]'
                 }`}
               >
                 <input
