@@ -125,49 +125,74 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     };
   };
 
+  const loadRazorpaySdk = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (typeof window !== 'undefined' && (window as any).Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handleRazorpayPayment = async () => {
     try {
       showToast('Initializing Razorpay secure payment...', 'info');
-      const response = await fetch('/api/razorpay/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: finalPrice,
-          currency: 'INR',
-          receipt: 'rcpt_' + Date.now(),
-          notes: {
-            pujaName: selectedPuja.name,
-            customerName: fullName.trim(),
-            customerPhone: phone.trim(),
-          },
-        }),
-      });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to create payment order. Please try again.');
+      const sdkLoaded = await loadRazorpaySdk();
+      if (!sdkLoaded || typeof window === 'undefined' || !(window as any).Razorpay) {
+        throw new Error('Razorpay SDK failed to load. Please check your internet connection.');
       }
 
-      const orderData = await response.json();
+      let orderData: any = null;
+      try {
+        const response = await fetch('/api/razorpay/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: finalPrice,
+            currency: 'INR',
+            receipt: 'rcpt_' + Date.now(),
+            notes: {
+              pujaName: selectedPuja.name,
+              customerName: fullName.trim(),
+              customerPhone: phone.trim(),
+            },
+          }),
+        });
 
-      if (!orderData || !orderData.orderId) {
-        throw new Error(orderData?.error || 'Invalid order data received from server.');
+        if (response.ok) {
+          orderData = await response.json();
+        }
+      } catch (fetchErr) {
+        console.warn('Backend order creation fetch failed, proceeding with direct client payment mode:', fetchErr);
       }
 
-      if (typeof window === 'undefined' || !(window as any).Razorpay) {
-        throw new Error('Razorpay SDK failed to load in browser. Please refresh and try again.');
+      const keyId = orderData?.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_live_TKQ0HEnQP01Sze';
+
+      let validOrderId: string | undefined = undefined;
+      if (
+        orderData?.orderId &&
+        typeof orderData.orderId === 'string' &&
+        orderData.orderId.startsWith('order_') &&
+        !orderData.orderId.startsWith('order_mock_') &&
+        !orderData.isTestFallback &&
+        !orderData.isDirectFallback
+      ) {
+        validOrderId = orderData.orderId;
       }
 
-      const keyId = orderData.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_live_TKQ0HEnQP01Sze';
-
-      const options = {
+      const options: any = {
         key: keyId,
-        amount: orderData.amount || finalPrice * 100,
-        currency: orderData.currency || 'INR',
+        amount: orderData?.amount || finalPrice * 100,
+        currency: orderData?.currency || 'INR',
         name: 'Mahakal Temple Puja Services',
         description: `Sankalp Puja: ${selectedPuja.name}`,
         image: selectedPuja.image || 'https://images.unsplash.com/photo-1609619385002-f40f1df5e9e2?w=200&q=80',
-        order_id: orderData.isTestFallback ? undefined : orderData.orderId,
         prefill: {
           name: fullName.trim(),
           email: email.trim() || 'devotee@ujjainpuja.com',
@@ -193,6 +218,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           },
         },
       };
+
+      if (validOrderId) {
+        options.order_id = validOrderId;
+      }
 
       const rzp = new (window as any).Razorpay(options);
       rzp.on('payment.failed', function (res: any) {
