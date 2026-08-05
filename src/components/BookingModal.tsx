@@ -65,6 +65,24 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const basePrice = selectedPuja.price * numPersons;
   const finalPrice = Math.max(0, basePrice - appliedDiscount);
 
+  const handleWhatsAppChat = () => {
+    const textMsg = encodeURIComponent(
+      `Jai Shree Mahakal! 🙏\n\n` +
+      `I would like to book / inquire about *${selectedPuja.name}*.\n\n` +
+      `📌 *Devotee Booking Details:*\n` +
+      `• *Name:* ${fullName.trim() || 'Not specified'}\n` +
+      `• *Phone:* ${phone.trim() || 'Not specified'}\n` +
+      `• *Gotra:* ${gotra.trim() || 'Kashyap'}\n` +
+      `• *Date:* ${pujaDate || 'Auspicious Upcoming Date'}\n` +
+      `• *Persons:* ${numPersons}\n` +
+      `• *Amount:* ₹${finalPrice.toLocaleString('en-IN')}\n` +
+      (wishes.trim() ? `• *Sankalp Wish:* ${wishes.trim()}\n` : '') +
+      `\nPlease assist me on WhatsApp with booking & Panditji coordination.`
+    );
+    showToast('Redirecting to WhatsApp Pandit Coordinator...', 'info');
+    window.open(`https://wa.me/919993540314?text=${textMsg}`, '_blank');
+  };
+
   const applyCoupon = () => {
     const code = couponCode.trim().toUpperCase();
     if (!code) {
@@ -636,6 +654,16 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   <i className="fas fa-lock text-sm"></i> Proceed to Pay ₹{finalPrice.toLocaleString('en-IN')}
                 </>
               )}
+            </button>
+
+            {/* CHAT ON WHATSAPP BUTTON */}
+            <button
+              type="button"
+              onClick={handleWhatsAppChat}
+              className="w-full bg-[#25D366] hover:bg-[#1EBE5A] text-white font-bold text-sm py-3 rounded-full shadow-md transition-all flex items-center justify-center gap-2.5 cursor-pointer hover:shadow-lg active:scale-[0.99]"
+            >
+              <i className="fab fa-whatsapp text-xl"></i>
+              <span>{lang === 'hi' ? 'WhatsApp पर बातचीत एवं सहायता लें' : 'Chat on WhatsApp for Help & Booking'}</span>
             </button>
             <p className="text-[11px] text-center text-[#8B6F5E]">
               🔒 256-Bit Encrypted Payment. Direct WhatsApp booking confirmation sent immediately.
