@@ -297,31 +297,6 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     const bId = 'UJP' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 900 + 100);
     setPendingBookingId(bId);
 
-    // 1. Auto-format form details and send to Senior Pandit Coordinator WhatsApp (+91 9993540314)
-    const waText = encodeURIComponent(
-      `Jai Shree Mahakal! 🙏\n\n` +
-      `*SACRED PUJA SANKALP BOOKING DETAILS*\n` +
-      `-----------------------------------\n` +
-      `📿 *Puja Name:* ${selectedPuja.name}\n` +
-      `👤 *Devotee Name:* ${fullName.trim()}\n` +
-      `📱 *Mobile Number:* ${phone.trim()}\n` +
-      `🌿 *Gotra:* ${gotra.trim() || 'Kashyap'}\n` +
-      `📅 *Puja Date:* ${pujaDate}\n` +
-      `👥 *No. of Devotees:* ${numPersons}\n` +
-      `💰 *Total Amount:* ₹${finalPrice.toLocaleString('en-IN')}\n` +
-      (wishes.trim() ? `✨ *Sankalp Wish:* ${wishes.trim()}\n` : '') +
-      `🆔 *Booking ID:* ${bId}\n\n` +
-      `Please register my sankalp details for Panditji coordination. Proceeding with payment.`
-    );
-    
-    try {
-      window.open(`https://wa.me/919993540314?text=${waText}`, '_blank');
-      showToast('Booking details sent to WhatsApp Coordinator! Opening payment window...', 'success');
-    } catch (waErr) {
-      console.warn('WhatsApp auto-open prevented:', waErr);
-    }
-
-    // 2. Simultaneously open payment screen / UPI QR Code / Payment Mode
     if (paymentMethod === 'upi') {
       setShowUpiModal(true);
       return;
