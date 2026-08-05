@@ -29,10 +29,24 @@ import {
   RotateCcw,
   Layout,
   FileImage,
-  Check
+  Check,
+  FileSpreadsheet,
+  ExternalLink,
+  Link2,
+  Download,
+  CheckCircle
 } from 'lucide-react';
 import { BookingData, Puja } from '../types';
 import { useCustomization } from '../context/CustomizationContext';
+import { User as FirebaseUser } from 'firebase/auth';
+import { 
+  initAuth, 
+  googleSignIn, 
+  googleLogout, 
+  getAccessToken, 
+  createBookingsSpreadsheet, 
+  readSheetData 
+} from '../lib/googleSheets';
 
 interface SecretAdminPortalProps {
   showToast: (text: string, type?: 'success' | 'error' | 'info') => void;
@@ -128,7 +142,122 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
   const [showPin, setShowPin] = useState<boolean>(false);
 
   // Admin Portal Navigation Tabs
-  const [activeAdminTab, setActiveAdminTab] = useState<'bookings' | 'hero' | 'pujas' | 'pandits' | 'settings'>('bookings');
+  const [activeAdminTab, setActiveAdminTab] = useState<'bookings' | 'hero' | 'pujas' | 'pandits' | 'sheets' | 'settings'>('bookings');
+  
+  // Google Sheets State
+  const [googleUser, setGoogleUser] = useState<FirebaseUser | null>(null);
+  const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
+  const [connectedSheetId, setConnectedSheetId] = useState<string>(() => {
+    return localStorage.getItem('connected_google_sheet_id') || '';
+  });
+  const [createdSheetUrl, setCreatedSheetUrl] = useState<string>('');
+  const [sheetDataPreview, setSheetDataPreview] = useState<string[][] | null>(null);
+  const [isExportingSheets, setIsExportingSheets] = useState<boolean>(false);
+  const [isReadingSheet, setIsReadingSheet] = useState<boolean>(false);
+
+  useEffect(() => {
+    const unsubscribe = initAuth(
+      (user) => {
+        setGoogleUser(user);
+      },
+      () => {
+        setGoogleUser(null);
+      }
+    );
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      const res = await googleSignIn();
+      if (res) {
+        setGoogleUser(res.user);
+        showToast(`✅ Google Account connected: ${res.user.email || res.user.displayName}`, 'success');
+      }
+    } catch (err: any) {
+      console.error('Google login error:', err);
+      showToast('❌ Google Sign-In failed: ' + (err.message || 'Popup closed or error'), 'error');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleGoogleSignOut = async () => {
+    await googleLogout();
+    setGoogleUser(null);
+    showToast('Signed out of Google Account', 'info');
+  };
+
+  const handleExportAllToSheets = async () => {
+    if (!getAccessToken()) {
+      showToast('Please sign in with Google first to export to Google Sheets', 'info');
+      setActiveAdminTab('sheets');
+      return;
+    }
+
+    setIsExportingSheets(true);
+    try {
+      const { spreadsheetId, spreadsheetUrl } = await createBookingsSpreadsheet(
+        'Ujjain Sacred Puja Bookings',
+        bookings
+      );
+      setCreatedSheetUrl(spreadsheetUrl);
+      setConnectedSheetId(spreadsheetId);
+      localStorage.setItem('connected_google_sheet_id', spreadsheetId);
+      showToast('🎉 Google Spreadsheet generated successfully!', 'success');
+    } catch (err: any) {
+      console.error('Export to Sheets Error:', err);
+      showToast('❌ Failed to export: ' + (err.message || 'Permission or API error'), 'error');
+    } finally {
+      setIsExportingSheets(false);
+    }
+  };
+
+  const handleSaveConnectedSheetId = (e: React.FormEvent) => {
+    e.preventDefault();
+    let cleanId = connectedSheetId.trim();
+    if (cleanId.includes('/d/')) {
+      const parts = cleanId.split('/d/');
+      if (parts[1]) {
+        cleanId = parts[1].split('/')[0];
+      }
+    }
+    setConnectedSheetId(cleanId);
+    if (cleanId) {
+      localStorage.setItem('connected_google_sheet_id', cleanId);
+      showToast('✅ Google Spreadsheet ID saved for live booking sync!', 'success');
+    } else {
+      localStorage.removeItem('connected_google_sheet_id');
+      showToast('Disconnected Google Sheet ID', 'info');
+    }
+  };
+
+  const handleReadSheetData = async () => {
+    if (!connectedSheetId) {
+      showToast('Please enter or create a Google Spreadsheet first', 'error');
+      return;
+    }
+    if (!getAccessToken()) {
+      showToast('Please sign in with Google to read sheet data', 'info');
+      setActiveAdminTab('sheets');
+      return;
+    }
+
+    setIsReadingSheet(true);
+    try {
+      const data = await readSheetData(connectedSheetId, 'A1:Z200');
+      setSheetDataPreview(data);
+      showToast('Fetched latest Google Sheet rows successfully!', 'success');
+    } catch (err: any) {
+      console.error('Read Sheet Error:', err);
+      showToast('❌ Could not read sheet: ' + (err.message || 'Access error'), 'error');
+    } finally {
+      setIsReadingSheet(false);
+    }
+  };
   
   // Bookings State
   const [bookings, setBookings] = useState<BookingData[]>(() => {
@@ -695,6 +824,17 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
           </button>
 
           <button
+            onClick={() => setActiveAdminTab('sheets')}
+            className={`px-5 py-2.5 rounded-t-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              activeAdminTab === 'sheets'
+                ? 'bg-[#0F9D58] text-white shadow-md'
+                : 'bg-emerald-50 text-emerald-900 hover:bg-emerald-100 border border-emerald-200'
+            }`}
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-400" /> Google Sheets Sync
+          </button>
+
+          <button
             onClick={() => setActiveAdminTab('settings')}
             className={`px-5 py-2.5 rounded-t-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
               activeAdminTab === 'settings'
@@ -722,7 +862,7 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                 />
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Filter className="w-4 h-4 text-gray-500" />
                 <span className="text-xs font-semibold text-[#2C1A0E]/70">Status:</span>
                 <select
@@ -735,6 +875,15 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                   <option value="PENDING">Pending Verification</option>
                   <option value="FAILED">Failed</option>
                 </select>
+
+                <button
+                  onClick={handleExportAllToSheets}
+                  disabled={isExportingSheets}
+                  className="bg-[#0F9D58] hover:bg-[#0B8043] text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  title="Export devotee bookings to Google Sheets"
+                >
+                  <FileSpreadsheet className="w-4 h-4" /> Export to Sheets
+                </button>
               </div>
             </div>
 
@@ -1251,6 +1400,202 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                 <RotateCcw className="w-4 h-4" /> Reset All Custom Content
               </button>
             </div>
+          </div>
+        )}
+
+        {/* TAB 5: GOOGLE SHEETS INTEGRATION */}
+        {activeAdminTab === 'sheets' && (
+          <div className="space-y-6">
+            {/* GOOGLE AUTH CARD */}
+            <div className="bg-white border-2 border-emerald-500/30 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 bg-emerald-100 text-emerald-800 rounded-2xl flex items-center justify-center font-bold text-2xl shadow-sm shrink-0">
+                  📊
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-[#2C1A0E] font-cinzel flex items-center gap-2">
+                    Google Sheets Real-Time Sync
+                  </h2>
+                  <p className="text-xs text-gray-600 mt-1 max-w-xl">
+                    Connect your Google Account to export all Ujjain Puja booking details to Google Sheets or enable automatic real-time sync for new devotee bookings.
+                  </p>
+                </div>
+              </div>
+
+              <div className="shrink-0 w-full md:w-auto">
+                {googleUser ? (
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-2.5">
+                      {googleUser.photoURL ? (
+                        <img src={googleUser.photoURL} alt="Google Avatar" className="w-9 h-9 rounded-full border border-emerald-400" />
+                      ) : (
+                        <div className="w-9 h-9 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-sm">
+                          {googleUser.displayName?.charAt(0) || 'G'}
+                        </div>
+                      )}
+                      <div>
+                        <div className="text-xs font-bold text-emerald-950 flex items-center gap-1">
+                          <CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> {googleUser.displayName || 'Google Account Connected'}
+                        </div>
+                        <div className="text-[11px] text-emerald-700">{googleUser.email}</div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleGoogleSignOut}
+                      className="px-3 py-1.5 bg-white border border-gray-300 hover:bg-red-50 hover:text-red-600 text-xs text-gray-700 rounded-lg transition-all cursor-pointer font-medium"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleGoogleSignIn}
+                    disabled={isGoogleLoading}
+                    className="gsi-material-button w-full sm:w-auto cursor-pointer shadow-md hover:shadow-lg transition-all"
+                  >
+                    <div className="gsi-material-button-state"></div>
+                    <div className="gsi-material-button-content-wrapper">
+                      <div className="gsi-material-button-icon">
+                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style={{ display: 'block' }}>
+                          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                          <path fill="none" d="M0 0h48v48H0z"></path>
+                        </svg>
+                      </div>
+                      <span className="gsi-material-button-contents">
+                        {isGoogleLoading ? 'Connecting...' : 'Sign in with Google'}
+                      </span>
+                    </div>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* ACTION CARDS GRID */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* CARD 1: 1-CLICK EXPORT */}
+              <div className="bg-white border-2 border-[#2C1A0E]/10 rounded-2xl p-6 shadow-sm space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-emerald-100 text-emerald-800 rounded-xl flex items-center justify-center font-bold">
+                    <Download className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[#2C1A0E] text-sm">Export All Bookings to Google Sheets</h3>
+                    <p className="text-xs text-gray-500">Create a new Google Spreadsheet with all {bookings.length} devotee records.</p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleExportAllToSheets}
+                  disabled={isExportingSheets}
+                  className="w-full bg-[#0F9D58] hover:bg-[#0B8043] text-white font-bold text-xs py-3 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isExportingSheets ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Generating Google Sheet...
+                    </>
+                  ) : (
+                    <>
+                      <FileSpreadsheet className="w-4 h-4" /> Export {bookings.length} Bookings to Google Sheets
+                    </>
+                  )}
+                </button>
+
+                {createdSheetUrl && (
+                  <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl flex items-center justify-between">
+                    <div className="text-xs text-emerald-900 font-semibold flex items-center gap-1.5">
+                      <CheckCircle className="w-4 h-4 text-emerald-600" /> Spreadsheet Created!
+                    </div>
+                    <a
+                      href={createdSheetUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-3 py-1.5 bg-[#0F9D58] hover:bg-[#0B8043] text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-xs transition-all"
+                    >
+                      Open Sheet <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* CARD 2: CONNECT SPREADSHEET ID FOR LIVE SYNC */}
+              <div className="bg-white border-2 border-[#2C1A0E]/10 rounded-2xl p-6 shadow-sm space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 text-blue-800 rounded-xl flex items-center justify-center font-bold">
+                    <Link2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[#2C1A0E] text-sm">Connect Active Google Sheet ID</h3>
+                    <p className="text-xs text-gray-500">Auto-sync every new website puja booking live to your spreadsheet.</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleSaveConnectedSheetId} className="space-y-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#2C1A0E] mb-1">
+                      Google Sheet ID or Full URL:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+                      value={connectedSheetId}
+                      onChange={(e) => setConnectedSheetId(e.target.value)}
+                      className="w-full bg-[#FAF8F5] border border-gray-300 rounded-xl px-3 py-2 text-xs font-mono text-[#2C1A0E] outline-none focus:border-[#2C1A0E]"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-[#2C1A0E] hover:bg-[#3d2413] text-[#f2b705] font-bold text-xs py-2.5 rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    >
+                      <Save className="w-4 h-4" /> Save Sheet ID for Live Sync
+                    </button>
+                    {connectedSheetId && (
+                      <button
+                        type="button"
+                        onClick={handleReadSheetData}
+                        disabled={isReadingSheet}
+                        className="px-3 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition-all cursor-pointer flex items-center gap-1"
+                        title="Preview live sheet rows"
+                      >
+                        <RefreshCw className={`w-3.5 h-3.5 ${isReadingSheet ? 'animate-spin' : ''}`} /> Preview
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            {/* PREVIEW LIVE SHEET DATA TABLE */}
+            {sheetDataPreview && (
+              <div className="bg-white border-2 border-[#2C1A0E]/10 rounded-2xl p-6 shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-[#2C1A0E] text-sm font-cinzel flex items-center gap-2">
+                    <FileSpreadsheet className="w-4 h-4 text-emerald-600" /> Live Google Sheet Data Preview
+                  </h3>
+                  <span className="text-xs text-gray-500 font-medium">{sheetDataPreview.length} rows loaded</span>
+                </div>
+
+                <div className="overflow-x-auto border border-gray-200 rounded-xl">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <tbody>
+                      {sheetDataPreview.map((row, rIdx) => (
+                        <tr key={rIdx} className={rIdx === 0 ? 'bg-[#2C1A0E] text-[#f2b705] font-bold' : 'hover:bg-amber-50/50 border-t border-gray-100'}>
+                          {row.map((cell, cIdx) => (
+                            <td key={cIdx} className="p-2.5 border-r border-gray-100 last:border-r-0 whitespace-nowrap">
+                              {cell}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

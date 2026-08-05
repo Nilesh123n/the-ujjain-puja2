@@ -16,6 +16,7 @@ import { SecretAdminPortal } from './pages/SecretAdminPortal';
 
 import { Puja, BookingData } from './types';
 import { useCustomization } from './context/CustomizationContext';
+import { appendBookingToSheet } from './lib/googleSheets';
 
 export default function App() {
   const { pujas } = useCustomization();
@@ -72,6 +73,26 @@ export default function App() {
     setIsBookingOpen(false);
     setActiveTab('thankyou');
     addToast('🎉 Puja Booking Confirmed Successfully!', 'success');
+
+    // Save to admin bookings history & sync to Google Sheet
+    try {
+      const saved = localStorage.getItem('admin_bookings_data');
+      const existingList: BookingData[] = saved ? JSON.parse(saved) : [];
+      const updatedList = [booking, ...existingList];
+      localStorage.setItem('admin_bookings_data', JSON.stringify(updatedList));
+
+      const activeSheetId = localStorage.getItem('connected_google_sheet_id');
+      if (activeSheetId) {
+        appendBookingToSheet(activeSheetId, booking).then((success) => {
+          if (success) {
+            addToast('📊 Booking synced live to Google Sheet!', 'info');
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('Google Sheet live sync notice:', e);
+    }
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
