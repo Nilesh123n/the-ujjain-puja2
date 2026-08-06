@@ -134,9 +134,18 @@ app.post("/api/upload-image", async (req, res) => {
   }
 });
 
+// Server In-Memory Cache for Customization to prevent Supabase Egress Overuse
+let serverCustomizationCache: { data: any; timestamp: number } | null = null;
+const SERVER_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
 // API: Customization Database GET (Supabase + Local Cache)
 app.get("/api/customization", async (_req, res) => {
   try {
+    const now = Date.now();
+    if (serverCustomizationCache && (now - serverCustomizationCache.timestamp < SERVER_CACHE_TTL_MS)) {
+      return res.json({ success: true, data: serverCustomizationCache.data, source: "memory_cache" });
+    }
+
     let supabaseData: any = null;
     let lastError: string | null = null;
 
@@ -185,12 +194,14 @@ app.get("/api/customization", async (_req, res) => {
       (supabaseData.heroContent ||
         (Array.isArray(supabaseData.pujas) && supabaseData.pujas.length > 0))
     ) {
+      serverCustomizationCache = { data: supabaseData, timestamp: Date.now() };
       return res.json({ success: true, data: supabaseData, source: "supabase" });
     }
 
     if (fs.existsSync(customizationFilePath)) {
       const rawData = fs.readFileSync(customizationFilePath, "utf-8");
       const data = JSON.parse(rawData);
+      serverCustomizationCache = { data, timestamp: Date.now() };
       return res.json({ success: true, data, source: "local", supabaseNotice: lastError });
     }
 
@@ -258,8 +269,9 @@ app.post("/api/customization", async (req, res) => {
       updatedAt: new Date().toISOString(),
     };
 
-    // Always save locally to data/customization.json as primary fallback
+    // Always save locally to data/customization.json as primary fallback and update server cache
     fs.writeFileSync(customizationFilePath, JSON.stringify(payload, null, 2), "utf-8");
+    serverCustomizationCache = { data: payload, timestamp: Date.now() };
 
     let supabaseSaved = false;
     let supabaseNotice: string | null = null;

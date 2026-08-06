@@ -20,6 +20,23 @@ const DEFAULT_HERO_CONTENT: HeroContent = {
   bgImage: mahakalBgImage
 };
 
+const CACHE_TTL_MS = 15 * 60 * 1000; // 15 Minutes Cache TTL to prevent Supabase Egress overuse
+
+const isCustomizationCacheValid = (): boolean => {
+  try {
+    const savedHero = localStorage.getItem('app_hero_content');
+    const savedPujas = localStorage.getItem('app_pujas_data');
+    const lastFetched = localStorage.getItem('app_customization_last_fetched');
+
+    if (!savedHero || !savedPujas || !lastFetched) return false;
+
+    const age = Date.now() - Number(lastFetched);
+    return age < CACHE_TTL_MS;
+  } catch (_) {
+    return false;
+  }
+};
+
 interface CustomizationContextType {
   heroContent: HeroContent;
   updateHeroContent: (newHero: Partial<HeroContent>) => void;
@@ -28,7 +45,7 @@ interface CustomizationContextType {
   addPuja: (newPuja: Puja) => void;
   deletePuja: (id: number) => void;
   resetToDefaults: () => void;
-  refreshCustomization: () => Promise<void>;
+  refreshCustomization: (force?: boolean) => Promise<void>;
   uploadImageFile: (file: File) => Promise<string>;
   isLoadingBackend: boolean;
 }
@@ -109,20 +126,31 @@ const [isLoadingBackend, setIsLoadingBackend] = useState(true);
       }
     } catch (err) {
       console.warn('Failed to sync customization with backend database:', err);
+    } finally {
+      try {
+        localStorage.setItem('app_customization_last_fetched', Date.now().toString());
+        localStorage.setItem('app_hero_content', JSON.stringify(hero));
+        localStorage.setItem('app_pujas_data', JSON.stringify(list));
+      } catch (_) {}
     }
   }, []);
 
-  // Refresh method to re-fetch from backend API or Supabase SDK
-  const refreshCustomization = useCallback(async () => {
+  // Refresh method to re-fetch from backend API or Supabase SDK with caching
+  const refreshCustomization = useCallback(async (force: boolean = false) => {
+    if (!force && isCustomizationCacheValid()) {
+      return; // Skip Supabase request as fresh cache exists in localStorage
+    }
+
     if (supabase) {
       try {
         const { data, error } = await supabase
-  .from('customization')
-  .select('*')
-  .eq('id', 1)
-  .single();
-       if (!error && data) {
-    const record = data;
+          .from('customization')
+          .select('*')
+          .eq('id', 1)
+          .single();
+
+        if (!error && data) {
+          const record = data;
           const fetchedHero = record.hero_content || record.heroContent;
           const fetchedPujas = record.pujas;
 
@@ -134,6 +162,7 @@ const [isLoadingBackend, setIsLoadingBackend] = useState(true);
             setPujas(fetchedPujas);
             try { localStorage.setItem('app_pujas_data', JSON.stringify(fetchedPujas)); } catch (_) {}
           }
+          try { localStorage.setItem('app_customization_last_fetched', Date.now().toString()); } catch (_) {}
           return;
         }
       } catch (sbErr) {
@@ -156,6 +185,7 @@ const [isLoadingBackend, setIsLoadingBackend] = useState(true);
               setPujas(result.data.pujas);
               try { localStorage.setItem('app_pujas_data', JSON.stringify(result.data.pujas)); } catch (_) {}
             }
+            try { localStorage.setItem('app_customization_last_fetched', Date.now().toString()); } catch (_) {}
           }
         }
       }
@@ -164,38 +194,31 @@ const [isLoadingBackend, setIsLoadingBackend] = useState(true);
     }
   }, []);
 
-  // Fetch from backend API on initial mount and set up periodic sync polling (every 8 seconds)
+  // Fetch on initial mount (uses cache if available) and remove continuous 3s polling
   useEffect(() => {
     let isMounted = true;
     const initialFetch = async () => {
-  setIsLoadingBackend(true);
-
-  try {
-    await refreshCustomization();
-  } finally {
-    if (isMounted) {
-      setIsLoadingBackend(false);
-    }
-  }
-};
+      setIsLoadingBackend(true);
+      try {
+        await refreshCustomization(false);
+      } finally {
+        if (isMounted) {
+          setIsLoadingBackend(false);
+        }
+      }
+    };
 
     initialFetch();
 
-    // Live background polling for instant multi-session global sync (every 3 seconds)
-    const interval = setInterval(() => {
-    if (!isSaving) {
-        refreshCustomization();
-    }
-}, 3000);
-
     const handleFocus = () => {
-      refreshCustomization();
+      if (!isCustomizationCacheValid()) {
+        refreshCustomization(false);
+      }
     };
     window.addEventListener('focus', handleFocus);
 
     return () => {
       isMounted = false;
-      clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
     };
   }, [refreshCustomization]);
