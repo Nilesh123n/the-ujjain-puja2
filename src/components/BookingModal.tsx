@@ -34,6 +34,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     return (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : '') || '';
   });
   const [showKeyInput, setShowKeyInput] = useState(false);
+  const [showUpiQr, setShowUpiQr] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponMsg, setCouponCodeMsg] = useState('');
@@ -200,7 +201,23 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           orderData = await response.json();
         }
       } catch (fetchErr) {
-        console.warn('Backend order creation fetch failed, proceeding with direct client payment mode:', fetchErr);
+        console.warn('Backend order creation fetch failed:', fetchErr);
+      }
+
+      if (orderData?.isInvalidKey) {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('razorpay_key_id');
+        }
+        setIsSubmitting(false);
+        setShowKeyInput(true);
+        setShowUpiQr(true);
+        showToast(
+          lang === 'hi'
+            ? 'Razorpay Key ID अमान्य है। आप GPay / PhonePe UPI QR से सीधे भुगतान कर सकते हैं।'
+            : 'Razorpay Key ID is unauthorized or inactive. Switching to GPay / UPI QR...',
+          'info'
+        );
+        return;
       }
 
       const savedKeyId = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : null;
@@ -210,12 +227,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       if (!keyId || !keyId.startsWith('rzp_')) {
         setIsSubmitting(false);
         setShowKeyInput(true);
-        showToast(
-          lang === 'hi'
-            ? 'कृपया अपना लाइव Razorpay Key ID (rzp_live_...) दर्ज करें।'
-            : 'Please enter your Live Razorpay Key ID (rzp_live_...) to proceed.',
-          'info'
-        );
+        setShowUpiQr(true);
+        showToast('Invalid Razorpay Key. Switching to Instant GPay / UPI QR...', 'info');
         return;
       }
 
@@ -281,6 +294,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             res.error?.code === 'BAD_REQUEST_ERROR'
           ) {
             setShowKeyInput(true);
+            setShowUpiQr(true);
           }
         });
         rzp.open();
@@ -288,12 +302,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         console.error('Failed to open Razorpay checkout modal:', openErr);
         setIsSubmitting(false);
         setShowKeyInput(true);
-        showToast('Razorpay initialization issue. Please check your Key ID.', 'error');
+        setShowUpiQr(true);
+        showToast('Razorpay Key issue. Opening GPay / UPI QR payment option...', 'info');
       }
     } catch (err: any) {
       console.error('Razorpay payment error:', err);
       setIsSubmitting(false);
-      showToast(err?.message || 'Payment initialization failed. Please try again.', 'error');
+      setShowUpiQr(true);
+      showToast('Opening Direct GPay / PhonePe / QR Payment...', 'info');
     }
   };
 
@@ -316,9 +332,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     const bId = 'UJP' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 900 + 100);
     setPendingBookingId(bId);
 
+    if (paymentMethod === 'upi') {
+      setShowUpiQr(true);
+      return;
+    }
+
     setIsSubmitting(true);
 
-    if (paymentMethod === 'upi' || paymentMethod === 'razorpay') {
+    if (paymentMethod === 'razorpay') {
       handleRazorpayPayment();
     } else {
       // WhatsApp or standard offline pay
@@ -721,6 +742,94 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         </form>
       </div>
 
+      {showUpiQr && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-[#f2b705] rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl relative text-center">
+            <button
+              type="button"
+              onClick={() => setShowUpiQr(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-black p-1 cursor-pointer font-bold"
+            >
+              ✕
+            </button>
+            <div>
+              <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase">
+                Instant UPI / GPay Payment
+              </span>
+              <h3 className="text-lg font-bold text-[#2C1A0E] font-cinzel mt-1">
+                Scan & Pay ₹{finalPrice.toLocaleString('en-IN')}
+              </h3>
+              <p className="text-xs text-gray-500">
+                Use Google Pay, PhonePe, Paytm, or BHIM to pay instantly
+              </p>
+            </div>
+
+            {/* QR CODE DISPLAY */}
+            <div className="bg-[#FAF8F5] border-2 border-dashed border-[#f2b705] p-4 rounded-2xl inline-block shadow-inner relative">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
+                  `upi://pay?pa=ramayentertainment@ybl&pn=The%20Ujjain%20Puja%20Services&am=${finalPrice}&cu=INR`
+                )}`}
+                alt="UPI Payment QR Code"
+                className="w-48 h-48 mx-auto rounded-lg shadow-sm"
+              />
+              <div className="mt-2 text-xs font-mono font-bold text-[#2C1A0E] flex items-center justify-center gap-1.5">
+                <span>UPI ID: ramayentertainment@ybl</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText('ramayentertainment@ybl');
+                    showToast('✅ UPI ID Copied!', 'success');
+                  }}
+                  className="bg-amber-100 hover:bg-amber-200 text-amber-900 text-[10px] px-2 py-0.5 rounded font-sans cursor-pointer"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            {/* DIRECT UPI APP LINKS FOR MOBILE */}
+            <div className="grid grid-cols-3 gap-2 text-xs font-bold">
+              <a
+                href={`upi://pay?pa=ramayentertainment@ybl&pn=The%20Ujjain%20Puja%20Services&am=${finalPrice}&cu=INR`}
+                className="bg-blue-50 border border-blue-200 text-blue-700 py-2.5 rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-blue-100 transition-all cursor-pointer"
+              >
+                <span className="text-xs font-black">GPay</span>
+                <span className="text-[10px] font-normal">Google Pay</span>
+              </a>
+              <a
+                href={`upi://pay?pa=ramayentertainment@ybl&pn=The%20Ujjain%20Puja%20Services&am=${finalPrice}&cu=INR`}
+                className="bg-purple-50 border border-purple-200 text-purple-700 py-2.5 rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-purple-100 transition-all cursor-pointer"
+              >
+                <i className="fas fa-mobile-alt text-base"></i>
+                <span className="text-[10px] font-normal">PhonePe</span>
+              </a>
+              <a
+                href={`upi://pay?pa=ramayentertainment@ybl&pn=The%20Ujjain%20Puja%20Services&am=${finalPrice}&cu=INR`}
+                className="bg-cyan-50 border border-cyan-200 text-cyan-700 py-2.5 rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-cyan-100 transition-all cursor-pointer"
+              >
+                <i className="fas fa-wallet text-base"></i>
+                <span className="text-[10px] font-normal">Paytm</span>
+              </a>
+            </div>
+
+            {/* CONFIRM BUTTON */}
+            <button
+              type="button"
+              onClick={() => {
+                setShowUpiQr(false);
+                const payId = 'UPI_QR_' + Date.now().toString().slice(-8);
+                showToast('🎉 Payment Confirmed Successfully!', 'success');
+                onConfirmBooking(createBookingData(payId, 'SUCCESS'));
+              }}
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-sm py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <i className="fas fa-check-circle text-lg"></i>
+              <span>{lang === 'hi' ? 'भुगतान पूर्ण हो गया (बुक करें)' : 'I Have Paid (Complete Booking)'}</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

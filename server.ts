@@ -443,15 +443,18 @@ app.post("/api/razorpay/create-order", async (req, res) => {
           keyId: keyId,
         });
       } catch (rzpApiError: any) {
-        console.warn("Razorpay API order creation warning:", rzpApiError?.description || rzpApiError?.message || rzpApiError);
+        const errMsg = String(rzpApiError?.description || rzpApiError?.message || rzpApiError || "").toLowerCase();
+        const isAuthError = errMsg.includes("authentication") || errMsg.includes("invalid key") || errMsg.includes("unauthorized") || rzpApiError?.statusCode === 401;
+        console.warn("Razorpay API order creation note:", rzpApiError?.description || rzpApiError?.message || rzpApiError);
         return res.json({
-          success: true,
+          success: !isAuthError,
+          isInvalidKey: isAuthError,
           isDirectFallback: true,
           orderId: null,
           amount: Math.round(Number(amount) * 100),
           currency,
           keyId: keyId,
-          message: rzpApiError?.description || rzpApiError?.message || "Direct SDK mode",
+          error: rzpApiError?.description || rzpApiError?.message || "Razorpay Key ID is unauthorized or invalid (401).",
         });
       }
     } else {
