@@ -30,7 +30,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [nakshatra, setNakshatra] = useState('');
   const [rashi, setRashi] = useState('');
   const [wishes, setWishes] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('upi');
+  const [paymentMethod, setPaymentMethod] = useState('razorpay');
   const [customRazorpayKey, setCustomRazorpayKey] = useState<string>(() => {
     return (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : '') || '';
   });
@@ -563,8 +563,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <label className="block text-xs font-bold text-[#5C3A1E] uppercase tracking-wider mb-1.5">
               {lang === 'hi' ? 'भुगतान माध्यम चुनें' : 'Select Payment Option'}
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {/* Razorpay Option Hidden/Commented out for live site
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <label
                 className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'razorpay'
@@ -581,9 +580,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   className="sr-only"
                 />
                 <i className="fas fa-credit-card text-base mb-1 text-[#B5460F]"></i>
-                <span className="text-[11px]">Razorpay / Card</span>
+                <span className="text-[11px] font-bold">Razorpay / Card</span>
               </label>
-              */}
 
               <label
                 className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
