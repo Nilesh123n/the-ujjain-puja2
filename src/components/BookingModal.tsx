@@ -332,12 +332,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       Math.floor(Math.random() * 900 + 100);
     bookingIdRef.current = bId;
 
-    if (paymentMethod === 'upi') {
-      setShowUpiQr(true);
-      return;
-    }
-
-    // ✅ FIX 10: Set submitting true, then call async payment with bookingId directly
+    // Direct payment via Razorpay window
     setIsSubmitting(true);
     handleRazorpayPayment(bId);
   };
@@ -595,52 +590,6 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 </button>
               </div>
             )}
-          </div>
-
-          {/* PAYMENT METHOD */}
-          <div>
-            <label className="block text-xs font-bold text-[#5C3A1E] uppercase tracking-wider mb-1.5">
-              {lang === 'hi' ? 'भुगतान माध्यम चुनें' : 'Select Payment Option'}
-            </label>
-            <div className="grid grid-cols-2 gap-2.5">
-              <label
-                className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                  paymentMethod === 'razorpay'
-                    ? 'border-[#ff5c00] bg-[#f2b705] text-[#2C1A0E] font-bold shadow-sm'
-                    : 'border-[#2C1A0E]/10 bg-white text-[#8B6F5E] hover:border-[#f7ae62]'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payMethod"
-                  value="razorpay"
-                  checked={paymentMethod === 'razorpay'}
-                  onChange={() => setPaymentMethod('razorpay')}
-                  className="sr-only"
-                />
-                <i className="fas fa-credit-card text-lg mb-1 text-[#B5460F]"></i>
-                <span className="text-xs font-bold">Razorpay / Online Pay</span>
-              </label>
-
-              <label
-                className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                  paymentMethod === 'upi'
-                    ? 'border-[#ff5c00] bg-[#f2b705] text-[#2C1A0E] font-bold shadow-sm'
-                    : 'border-[#2C1A0E]/10 bg-white text-[#8B6F5E] hover:border-[#f7ae62]'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payMethod"
-                  value="upi"
-                  checked={paymentMethod === 'upi'}
-                  onChange={() => setPaymentMethod('upi')}
-                  className="sr-only"
-                />
-                <i className="fas fa-mobile-alt text-lg mb-1 text-[#B5460F]"></i>
-                <span className="text-xs font-bold">GPay / PhonePe / QR</span>
-              </label>
-            </div>
           </div>
 
           {/* TOTAL & SUBMIT */}
