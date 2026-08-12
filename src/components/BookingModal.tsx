@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Puja, BookingData } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { useCustomization } from '../context/CustomizationContext';
-import { UpiPaymentModal } from './UpiPaymentModal';
 
 interface BookingModalProps {
   puja: Puja | null;
@@ -39,7 +38,6 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponMsg, setCouponCodeMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showUpiModal, setShowUpiModal] = useState(false);
   const [pendingBookingId, setPendingBookingId] = useState('');
   const { lang, t } = useLanguage();
 
@@ -262,22 +260,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         rzp.on('payment.failed', function (res: any) {
           setIsSubmitting(false);
           console.warn('Razorpay payment failed notice:', res);
-          const desc = res.error?.description || res.error?.reason || 'Razorpay Key authorization issue or payment cancelled.';
-          if (res.error?.code === 'BAD_REQUEST_ERROR' || desc.includes('Unauthorized') || desc.includes('key')) {
-            showToast(`Razorpay Notice: ${desc}. Switching to Instant GPay / UPI QR...`, 'info');
-          } else {
-            showToast(`Razorpay: ${desc}`, 'info');
-          }
-          setTimeout(() => {
-            setShowUpiModal(true);
-          }, 300);
+          const desc = res.error?.description || res.error?.reason || 'Payment cancelled or failed.';
+          showToast(`Payment Error: ${desc}`, 'error');
         });
         rzp.open();
       } catch (openErr: any) {
         console.error('Failed to open Razorpay checkout modal:', openErr);
         setIsSubmitting(false);
-        showToast('Opening instant GPay / UPI QR Code payment option...', 'info');
-        setShowUpiModal(true);
+        showToast('Failed to open payment gateway. Please check connection and try again.', 'error');
       }
     } catch (err: any) {
       console.error('Razorpay payment error:', err);
@@ -305,14 +295,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     const bId = 'UJP' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 900 + 100);
     setPendingBookingId(bId);
 
-    if (paymentMethod === 'upi') {
-      setShowUpiModal(true);
-      return;
-    }
-
     setIsSubmitting(true);
 
-    if (paymentMethod === 'razorpay') {
+    if (paymentMethod === 'upi' || paymentMethod === 'razorpay') {
       handleRazorpayPayment();
     } else {
       // WhatsApp or standard offline pay
@@ -321,12 +306,6 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         onConfirmBooking(createBookingData('PAY_WA_' + Date.now().toString().slice(-6), 'PENDING_CONFIRMATION'));
       }, 800);
     }
-  };
-
-  const handleUpiSuccess = (utrNumber: string) => {
-    setShowUpiModal(false);
-    showToast('🎉 UPI Payment Submitted with UTR: ' + utrNumber, 'success');
-    onConfirmBooking(createBookingData('UPI_UTR_' + utrNumber, 'SUCCESS'));
   };
 
   const name = lang === 'hi' && selectedPuja.nameHi ? selectedPuja.nameHi : selectedPuja.name;
@@ -678,19 +657,6 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         </form>
       </div>
 
-      {showUpiModal && (
-        <UpiPaymentModal
-          amount={finalPrice}
-          bookingId={pendingBookingId}
-          pujaName={selectedPuja.name}
-          customerName={fullName}
-          customerPhone={phone}
-          upiId={import.meta.env.VITE_UPI_ID || 'ramayentertainment@ybl'}
-          upiName={import.meta.env.VITE_UPI_NAME || 'The Ujjain Puja Services'}
-          onPaymentSuccess={handleUpiSuccess}
-          onCancel={() => setShowUpiModal(false)}
-        />
-      )}
     </div>
   );
 };
