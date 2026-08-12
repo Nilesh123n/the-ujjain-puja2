@@ -206,19 +206,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       }
 
       if (orderData?.isInvalidKey) {
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('razorpay_key_id');
-        }
-        setIsSubmitting(false);
-        setShowKeyInput(true);
-        setShowUpiQr(true);
-        showToast(
-          lang === 'hi'
-            ? 'Razorpay Key ID अमान्य है। आप GPay / PhonePe UPI QR से सीधे भुगतान कर सकते हैं।'
-            : 'Razorpay Key ID is unauthorized or inactive. Switching to GPay / UPI QR...',
-          'info'
-        );
-        return;
+        console.warn('Server Razorpay key/secret warning:', orderData.error);
       }
 
       const savedKeyId = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : null;
@@ -228,40 +216,32 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       if (!keyId || !keyId.startsWith('rzp_')) {
         setIsSubmitting(false);
         setShowKeyInput(true);
-        setShowUpiQr(true);
-        showToast('Invalid Razorpay Key. Switching to Instant GPay / UPI QR...', 'info');
+        showToast('Please enter your Razorpay Key ID (rzp_live_... or rzp_test_...) to proceed.', 'info');
         return;
       }
 
-      let validOrderId: string | undefined = undefined;
-      if (
-        orderData?.orderId &&
-        typeof orderData.orderId === 'string' &&
-        orderData.orderId.startsWith('order_') &&
-        !orderData.orderId.startsWith('order_mock_') &&
-        !orderData.isTestFallback &&
-        !orderData.isDirectFallback
-      ) {
-        validOrderId = orderData.orderId;
-      }
-
-      if (!validOrderId) {
-        // Prevent opening Razorpay JS SDK with an invalid/unauthorized key to avoid 401 Unauthorized errors from api.razorpay.com
-        setIsSubmitting(false);
-        setShowKeyInput(true);
-        setShowUpiQr(true);
-        showToast(
-          lang === 'hi'
-            ? 'Razorpay Key अमान्य है। तुरंत GPay / PhonePe / QR से भुगतान करें।'
-            : 'Razorpay key unauthorized. Opening Instant GPay / PhonePe / QR Payment...',
-          'info'
-        );
-        return;
+      // Dynamically load Razorpay SDK script if not already present
+      if (typeof (window as any).Razorpay === 'undefined') {
+        try {
+          await new Promise<void>((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.async = true;
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load Razorpay Checkout SDK'));
+            document.head.appendChild(script);
+          });
+        } catch (scriptErr) {
+          console.error('Razorpay script loading error:', scriptErr);
+          setIsSubmitting(false);
+          setShowUpiQr(true);
+          showToast('Failed to load Razorpay SDK. You can pay via GPay / PhonePe UPI QR.', 'error');
+          return;
+        }
       }
 
       const options: any = {
         key: keyId,
-        order_id: validOrderId,
         amount: orderData?.amount || Math.round(finalPrice * 100),
         currency: orderData?.currency || 'INR',
         name: 'Mahakal Temple Puja Services',
@@ -291,6 +271,17 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           backdropclose: false
         },
       };
+
+      if (
+        orderData?.orderId &&
+        typeof orderData.orderId === 'string' &&
+        orderData.orderId.startsWith('order_') &&
+        !orderData.orderId.startsWith('order_mock_') &&
+        !orderData.isTestFallback &&
+        !orderData.isDirectFallback
+      ) {
+        options.order_id = orderData.orderId;
+      }
 
       try {
         const rzp = new (window as any).Razorpay(options);
