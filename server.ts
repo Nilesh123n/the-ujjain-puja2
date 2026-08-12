@@ -31,6 +31,26 @@ if (!fs.existsSync(dataDir)) {
 }
 const customizationFilePath = path.join(dataDir, "customization.json");
 
+function getStoredCustomization(): any {
+  try {
+    if (fs.existsSync(customizationFilePath)) {
+      const raw = fs.readFileSync(customizationFilePath, "utf-8");
+      return JSON.parse(raw);
+    }
+  } catch (err) {
+    console.warn("Error reading stored customization:", err);
+  }
+  return {};
+}
+
+function saveCustomizationData(data: any): void {
+  try {
+    fs.writeFileSync(customizationFilePath, JSON.stringify(data, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("Error writing customization data:", err);
+  }
+}
+
 // Serve uploaded images statically
 app.use("/uploads", express.static(uploadsDir));
 
@@ -371,32 +391,36 @@ app.post("/api/customization", async (req, res) => {
 
 // API: Razorpay Config status
 app.get("/api/razorpay/config", (_req, res) => {
-  const keyId = process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TLfxE402PT1cGO";
-  const hasSecret = Boolean(process.env.RAZORPAY_KEY_SECRET || "ywZ9PwaRiRpsZjGQwkI0Itbk");
-  const isConfigured = Boolean(keyId && hasSecret);
+  const cust = getStoredCustomization() || {};
+  const keyId = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || cust.razorpayKeyId || "").trim();
+  const hasSecret = Boolean((process.env.RAZORPAY_KEY_SECRET || cust.razorpayKeySecret || "").trim());
+  const upiId = (process.env.VITE_UPI_ID || cust.upiId || "ramayentertainment@ybl").trim();
+  const upiName = (process.env.VITE_UPI_NAME || cust.upiName || "The Ujjain Puja Services").trim();
 
   res.json({
     keyId: keyId,
-    isConfigured: isConfigured,
-    upiId: process.env.VITE_UPI_ID || "ramayentertainment@ybl",
-    upiName: process.env.VITE_UPI_NAME || "The Ujjain Puja Services",
+    isConfigured: Boolean(keyId),
+    hasSecret: hasSecret,
+    upiId: upiId,
+    upiName: upiName,
   });
 });
 
 // API: Create Razorpay Order
 app.post("/api/razorpay/create-order", async (req, res) => {
   try {
-    const { amount, currency = "INR", receipt = "receipt_" + Date.now(), notes = {} } = req.body;
+    const { amount, currency = "INR", receipt = "receipt_" + Date.now(), notes = {}, clientKeyId } = req.body;
 
     if (!amount || isNaN(amount)) {
       return res.status(400).json({ error: "Invalid amount provided" });
     }
 
-    const keyId = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TLfxE402PT1cGO").trim();
-    const keySecret = (process.env.RAZORPAY_KEY_SECRET || "ywZ9PwaRiRpsZjGQwkI0Itbk").trim();
+    const cust = getStoredCustomization() || {};
+    const keyId = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || cust.razorpayKeyId || clientKeyId || "").trim();
+    const keySecret = (process.env.RAZORPAY_KEY_SECRET || cust.razorpayKeySecret || "").trim();
 
     // Check if both key and secret credentials exist
-    if (keyId && keySecret) {
+    if (keyId && keySecret && keyId.startsWith("rzp_")) {
       try {
         const instance = new Razorpay({
           key_id: keyId,
@@ -419,7 +443,7 @@ app.post("/api/razorpay/create-order", async (req, res) => {
           keyId: keyId,
         });
       } catch (rzpApiError: any) {
-        console.warn("Razorpay API order creation note (switching to direct SDK mode):", rzpApiError?.description || rzpApiError?.message || rzpApiError);
+        console.warn("Razorpay API order creation warning:", rzpApiError?.description || rzpApiError?.message || rzpApiError);
         return res.json({
           success: true,
           isDirectFallback: true,
@@ -427,18 +451,18 @@ app.post("/api/razorpay/create-order", async (req, res) => {
           amount: Math.round(Number(amount) * 100),
           currency,
           keyId: keyId,
-          message: rzpApiError?.description || rzpApiError?.message || "Direct SDK checkout mode",
+          message: rzpApiError?.description || rzpApiError?.message || "Direct SDK mode",
         });
       }
     } else {
       return res.json({
         success: true,
-        isTestFallback: true,
+        isDirectFallback: true,
         orderId: null,
         amount: Math.round(Number(amount) * 100),
         currency,
-        keyId: keyId || "rzp_live_TLfxE402PT1cGO",
-        message: "Direct SDK mode initialized",
+        keyId: keyId,
+        message: "Key/Secret not configured on server",
       });
     }
   } catch (error: any) {
@@ -449,8 +473,8 @@ app.post("/api/razorpay/create-order", async (req, res) => {
       orderId: null,
       amount: Math.round(Number(req.body?.amount || 0) * 100),
       currency: "INR",
-      keyId: (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TLfxE402PT1cGO").trim(),
-      message: error.message || "Direct fallback mode activated",
+      keyId: "",
+      message: error.message || "Fallback mode activated",
     });
   }
 });

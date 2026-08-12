@@ -351,7 +351,10 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
 
   // Payment Gateway Config State
   const [razorpayKeyInput, setRazorpayKeyInput] = useState<string>(() => {
-    return localStorage.getItem('razorpay_key_id') || 'rzp_live_TKQ0HEnQP01Sze';
+    return localStorage.getItem('razorpay_key_id') || '';
+  });
+  const [razorpaySecretInput, setRazorpaySecretInput] = useState<string>(() => {
+    return localStorage.getItem('razorpay_key_secret') || '';
   });
   const [upiIdInput, setUpiIdInput] = useState<string>(() => {
     return localStorage.getItem('upi_id') || 'ramayentertainment@ybl';
@@ -362,10 +365,31 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
     if (razorpayKeyInput.trim()) {
       localStorage.setItem('razorpay_key_id', razorpayKeyInput.trim());
     }
+    if (razorpaySecretInput.trim()) {
+      localStorage.setItem('razorpay_key_secret', razorpaySecretInput.trim());
+    }
     if (upiIdInput.trim()) {
       localStorage.setItem('upi_id', upiIdInput.trim());
     }
-    showToast('✅ Payment gateway credentials updated successfully!', 'success');
+
+    // Save to server customization settings
+    fetch('/api/admin/customization', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        razorpayKeyId: razorpayKeyInput.trim(),
+        razorpayKeySecret: razorpaySecretInput.trim(),
+        upiId: upiIdInput.trim(),
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        showToast('✅ Payment gateway credentials updated and saved on server!', 'success');
+      })
+      .catch((err) => {
+        console.warn('Server payment config save notice:', err);
+        showToast('✅ Payment credentials updated locally!', 'success');
+      });
   };
 
   // Sync bookings to localStorage
@@ -1319,7 +1343,7 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                 </div>
               </div>
 
-              <form onSubmit={handleSavePaymentConfig} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <form onSubmit={handleSavePaymentConfig} className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-[#2C1A0E]">Razorpay Live Key ID</label>
                   <input
@@ -1328,9 +1352,20 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                     onChange={(e) => setRazorpayKeyInput(e.target.value)}
                     placeholder="e.g. rzp_live_TKQ0HEnQP01Sze"
                     className="w-full bg-[#FAF8F5] border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono outline-none focus:border-[#ff5c00]"
-                    required
                   />
-                  <p className="text-[11px] text-gray-500">Get this Key ID from your Razorpay Merchant Dashboard → API Keys.</p>
+                  <p className="text-[11px] text-gray-500">Key ID from Razorpay Merchant Dashboard → API Keys.</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-[#2C1A0E]">Razorpay Live Key Secret</label>
+                  <input
+                    type="password"
+                    value={razorpaySecretInput}
+                    onChange={(e) => setRazorpaySecretInput(e.target.value)}
+                    placeholder="e.g. ywZ9PwaRiRpsZjGQwkI0Itbk"
+                    className="w-full bg-[#FAF8F5] border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono outline-none focus:border-[#ff5c00]"
+                  />
+                  <p className="text-[11px] text-gray-500">Key Secret from Razorpay Dashboard (for auto order creation).</p>
                 </div>
 
                 <div className="space-y-1.5">
@@ -1346,7 +1381,7 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                   <p className="text-[11px] text-gray-500">Used for generating direct GPay / PhonePe / Paytm QR codes.</p>
                 </div>
 
-                <div className="md:col-span-2 pt-2 flex justify-end">
+                <div className="md:col-span-3 pt-2 flex justify-end">
                   <button
                     type="submit"
                     className="bg-[#ff5c00] hover:bg-[#e05200] text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-1.5"

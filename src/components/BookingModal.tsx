@@ -204,8 +204,20 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       }
 
       const savedKeyId = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : null;
-      const keyCandidate = customRazorpayKey.trim() || savedKeyId?.trim() || orderData?.keyId?.trim() || import.meta.env.VITE_RAZORPAY_KEY_ID?.trim() || 'rzp_live_TLfxE402PT1cGO';
-      const keyId = keyCandidate.trim();
+      const keyCandidate = (customRazorpayKey.trim() || savedKeyId?.trim() || orderData?.keyId?.trim() || import.meta.env.VITE_RAZORPAY_KEY_ID?.trim() || '').trim();
+      const keyId = keyCandidate;
+
+      if (!keyId || !keyId.startsWith('rzp_')) {
+        setIsSubmitting(false);
+        setShowKeyInput(true);
+        showToast(
+          lang === 'hi'
+            ? 'कृपया अपना लाइव Razorpay Key ID (rzp_live_...) दर्ज करें।'
+            : 'Please enter your Live Razorpay Key ID (rzp_live_...) to proceed.',
+          'info'
+        );
+        return;
+      }
 
       let validOrderId: string | undefined = undefined;
       if (
@@ -261,13 +273,22 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           setIsSubmitting(false);
           console.warn('Razorpay payment failed notice:', res);
           const desc = res.error?.description || res.error?.reason || 'Payment cancelled or failed.';
-          showToast(`Payment Error: ${desc}`, 'error');
+          showToast(`Razorpay Notice: ${desc}`, 'error');
+          if (
+            desc.toLowerCase().includes('key') ||
+            desc.toLowerCase().includes('invalid') ||
+            desc.toLowerCase().includes('unauthorized') ||
+            res.error?.code === 'BAD_REQUEST_ERROR'
+          ) {
+            setShowKeyInput(true);
+          }
         });
         rzp.open();
       } catch (openErr: any) {
         console.error('Failed to open Razorpay checkout modal:', openErr);
         setIsSubmitting(false);
-        showToast('Failed to open payment gateway. Please check connection and try again.', 'error');
+        setShowKeyInput(true);
+        showToast('Razorpay initialization issue. Please check your Key ID.', 'error');
       }
     } catch (err: any) {
       console.error('Razorpay payment error:', err);
@@ -600,6 +621,49 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 <span className="text-[11px] font-bold">Pay via WhatsApp</span>
               </label>
             </div>
+
+            {showKeyInput && (
+              <div className="mt-3 p-3 bg-amber-50 border border-amber-300 rounded-xl space-y-2 text-xs">
+                <div className="flex items-center justify-between font-bold text-[#2C1A0E]">
+                  <span>🔑 {lang === 'hi' ? 'Razorpay Live Key ID दर्ज करें' : 'Enter Razorpay Live Key ID'}</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowKeyInput(false)}
+                    className="text-gray-400 hover:text-gray-600 font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={customRazorpayKey}
+                    onChange={(e) => setCustomRazorpayKey(e.target.value)}
+                    placeholder="rzp_live_TKQ0HEnQP01Sze"
+                    className="flex-1 bg-white border border-amber-300 rounded-lg px-3 py-1.5 font-mono text-xs outline-none focus:border-[#ff5c00]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (customRazorpayKey.trim() && customRazorpayKey.trim().startsWith('rzp_')) {
+                        localStorage.setItem('razorpay_key_id', customRazorpayKey.trim());
+                        showToast('✅ Razorpay Key Updated! Resuming payment...', 'success');
+                        setShowKeyInput(false);
+                        handleRazorpayPayment();
+                      } else {
+                        showToast('Please enter a valid key ID starting with rzp_live_ or rzp_test_', 'error');
+                      }
+                    }}
+                    className="bg-[#ff5c00] hover:bg-[#e05200] text-white px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer"
+                  >
+                    Save & Retry
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-500">
+                  Get your key from Razorpay Dashboard → Settings → API Keys.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* TOTAL & SUBMIT */}
