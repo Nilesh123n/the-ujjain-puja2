@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Puja, BookingData } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { useCustomization } from '../context/CustomizationContext';
@@ -30,19 +30,24 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [rashi, setRashi] = useState('');
   const [wishes, setWishes] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
-  const [customRazorpayKey, setCustomRazorpayKey] = useState<string>(() => {
+
+  const [customRazorpayKey] = useState<string>(() => {
     return (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : '') || 'rzp_live_TLfxE402PT1cGO';
   });
-  const [customRazorpaySecret, setCustomRazorpaySecret] = useState<string>(() => {
+  const [customRazorpaySecret] = useState<string>(() => {
     return (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_secret') : '') || 'ywZ9PwaRiRpsZjGQwkI0Itbk';
   });
+
   const [showUpiQr, setShowUpiQr] = useState(false);
   const [utrNumber, setUtrNumber] = useState('');
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponMsg, setCouponCodeMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pendingBookingId, setPendingBookingId] = useState('');
+
+  // ✅ FIX 1: Use a ref instead of state for bookingId to avoid stale closure issues
+  const bookingIdRef = useRef<string>('');
+
   const { lang, t } = useLanguage();
 
   useEffect(() => {
@@ -58,9 +63,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
   const handlePujaChange = (pujaId: number) => {
     const found = pujas.find((p) => p.id === pujaId);
-    if (found) {
-      setSelectedPuja(found);
-    }
+    if (found) setSelectedPuja(found);
   };
 
   // Price calculations
@@ -91,7 +94,6 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       showToast('Please enter a valid coupon code.', 'error');
       return;
     }
-
     if (code === 'MAHAKAL10') {
       const disc = Math.round(basePrice * 0.1);
       setAppliedDiscount(disc);
@@ -124,10 +126,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     showToast('Coupon removed', 'info');
   };
 
-  const createBookingData = (payId: string, payStatus: string = 'SUCCESS'): BookingData => {
-    const bookingId = pendingBookingId || ('UJP' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 900 + 100));
+  // ✅ FIX 2: Accept bookingId as parameter — no stale state closure
+  const createBookingData = (payId: string, bId: string, payStatus: string = 'SUCCESS'): BookingData => {
     return {
-      bookingId,
+      bookingId: bId,
       pujaId: selectedPuja.id,
       pujaName: selectedPuja.name,
       pujaPrice: finalPrice,
@@ -151,19 +153,29 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
   const loadRazorpaySdk = (): Promise<boolean> => {
     return new Promise((resolve) => {
+      // ✅ FIX 3: Check if already loaded first
       if (typeof window !== 'undefined' && (window as any).Razorpay) {
         resolve(true);
         return;
       }
+      // Check if script already added but not yet loaded
+      const existingScript = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+      if (existingScript) {
+        existingScript.addEventListener('load', () => resolve(true));
+        existingScript.addEventListener('error', () => resolve(false));
+        return;
+      }
       const script = document.createElement('script');
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
       script.onload = () => resolve(true);
       script.onerror = () => resolve(false);
       document.body.appendChild(script);
     });
   };
 
-  const handleRazorpayPayment = async () => {
+  // ✅ FIX 4: Accept bookingId as parameter to avoid stale state
+  const handleRazorpayPayment = async (generatedBookingId: string) => {
     try {
       showToast('Initializing Razorpay secure payment...', 'info');
 
@@ -172,7 +184,18 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         throw new Error('Razorpay SDK failed to load. Please check your internet connection.');
       }
 
-      const generatedBookingId = pendingBookingId || ('UJP' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 900 + 100));
+      const keyId = (
+        customRazorpayKey.trim() ||
+        (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : null) ||
+        (import.meta as any).env?.VITE_RAZORPAY_KEY_ID ||
+        'rzp_live_TLfxE402PT1cGO'
+      ).trim();
+
+      const keySecret = (
+        customRazorpaySecret.trim() ||
+        (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_secret') : null) ||
+        'ywZ9PwaRiRpsZjGQwkI0Itbk'
+      ).trim();
 
       const sharedNotes = {
         bookingId: generatedBookingId,
@@ -187,16 +210,15 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         pujaType: selectedPuja.category || 'Special Seva',
       };
 
-      const savedKeyId = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : null;
-      const savedKeySecret = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_secret') : null;
-      const keyId = (customRazorpayKey.trim() || savedKeyId?.trim() || import.meta.env.VITE_RAZORPAY_KEY_ID?.trim() || 'rzp_live_TLfxE402PT1cGO').trim();
-      const keySecret = (customRazorpaySecret.trim() || savedKeySecret?.trim() || 'ywZ9PwaRiRpsZjGQwkI0Itbk').trim();
-
+      // ✅ FIX 5: Try backend order creation but never block Razorpay opening on failure
       let orderData: any = null;
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
         const response = await fetch('/api/razorpay/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify({
             amount: finalPrice,
             currency: 'INR',
@@ -206,37 +228,27 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             clientKeySecret: keySecret,
           }),
         });
-
+        clearTimeout(timeoutId);
         if (response.ok) {
           orderData = await response.json();
         }
       } catch (fetchErr) {
-        console.warn('Backend order creation fetch failed:', fetchErr);
+        console.warn('Backend order creation skipped (no server or timeout):', fetchErr);
+        // Continue without order_id — Razorpay supports this
       }
 
-      const activeKeyId = orderData?.keyId || keyId;
-
-      // Check if order creation failed
-      if (!orderData?.orderId) {
-        setIsSubmitting(false);
-        showToast(
-          lang === 'hi'
-            ? 'Razorpay ऑर्डर सृजन विफल रहा। कृपया GPay / UPI QR से भुगतान करें।'
-            : 'Razorpay payment unavailable. Redirecting to GPay / UPI QR payment...',
-          'info'
-        );
-        setShowUpiQr(true);
-        return;
-      }
+      const activeKeyId = (orderData?.keyId || keyId).trim();
 
       const options: any = {
         key: activeKeyId,
-        order_id: orderData.orderId,
-        amount: orderData?.amount || Math.round(finalPrice * 100),
-        currency: orderData?.currency || 'INR',
+        amount: Math.round(finalPrice * 100),
+        currency: 'INR',
         name: 'Mahakal Temple Puja Services',
         description: `Sankalp Puja: ${selectedPuja.name}`,
-        image: (selectedPuja.image && selectedPuja.image.startsWith('http')) ? selectedPuja.image : 'https://images.unsplash.com/photo-1609619385002-f40f1df5e9e2?w=200&q=80',
+        image:
+          selectedPuja.image && selectedPuja.image.startsWith('http')
+            ? selectedPuja.image
+            : 'https://images.unsplash.com/photo-1609619385002-f40f1df5e9e2?w=200&q=80',
         prefill: {
           name: fullName.trim(),
           email: email.trim() || 'devotee@ujjainpuja.com',
@@ -246,11 +258,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         theme: {
           color: '#B5460F',
         },
+       // ✅ FIX 6: handler uses passed bookingId directly — no stale state
         handler: function (res: any) {
           setIsSubmitting(false);
           const payId = res.razorpay_payment_id || ('RZP_' + Date.now().toString().slice(-8));
           showToast('🎉 Razorpay Payment Successful!', 'success');
-          onConfirmBooking(createBookingData(payId, 'SUCCESS'));
+          onConfirmBooking(createBookingData(payId, generatedBookingId, 'SUCCESS'));
         },
         modal: {
           ondismiss: function () {
@@ -258,36 +271,44 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             showToast('Payment window closed.', 'info');
           },
           escape: true,
-          backdropclose: false
+          backdropclose: false,
         },
       };
 
+      // ✅ FIX 7: Only attach order_id if backend returned a valid one
+      if (orderData?.orderId) {
+        options.order_id = orderData.orderId;
+      }
+
+      // ✅ FIX 8: Wrap rzp.open() in try/catch properly
       try {
         const rzp = new (window as any).Razorpay(options);
         rzp.on('payment.failed', function (res: any) {
           setIsSubmitting(false);
-          console.warn('Razorpay payment failed notice:', res);
-          const desc = res.error?.description || res.error?.reason || 'Payment cancelled or failed.';
-          showToast(`Razorpay Notice: ${desc}`, 'error');
-          setShowKeyInput(true);
-          setShowUpiQr(true);
+          console.warn('Razorpay payment failed:', res);
+          const desc =
+            res?.error?.description ||
+            res?.error?.reason ||
+            'Payment cancelled or failed.';
+          showToast(`Payment Failed: ${desc}`, 'error');
         });
-        rzp.open();
+        rzp.open(); // ✅ This is the actual line that opens the Razorpay window
       } catch (openErr: any) {
-        console.error('Failed to open Razorpay checkout modal:', openErr);
+        console.error('Failed to open Razorpay modal:', openErr);
         setIsSubmitting(false);
-        setShowKeyInput(true);
-        setShowUpiQr(true);
-        showToast('Razorpay Key issue. Opening GPay / UPI QR payment option...', 'info');
+        showToast('Could not launch Razorpay window. Please try again.', 'error');
       }
     } catch (err: any) {
       console.error('Razorpay payment error:', err);
       setIsSubmitting(false);
-      setShowUpiQr(true);
-      showToast('Opening Direct GPay / PhonePe / QR Payment...', 'info');
+      showToast(
+        err?.message || 'Razorpay initialization error. Please try again.',
+        'error'
+      );
     }
   };
 
+  // ✅ FIX 9: handleSubmit — generate bookingId first, store in ref, THEN call payment
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -304,19 +325,27 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       return;
     }
 
-    const bId = 'UJP' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 900 + 100);
-    setPendingBookingId(bId);
+    // ✅ Generate bookingId and store in ref (not state) — instantly available
+    const bId =
+      'UJP' +
+      Date.now().toString().slice(-6) +
+      Math.floor(Math.random() * 900 + 100);
+    bookingIdRef.current = bId;
 
     if (paymentMethod === 'upi') {
       setShowUpiQr(true);
       return;
     }
 
+    // ✅ FIX 10: Set submitting true, then call async payment with bookingId directly
     setIsSubmitting(true);
-    handleRazorpayPayment();
+    handleRazorpayPayment(bId);
   };
 
-  const name = lang === 'hi' && selectedPuja.nameHi ? selectedPuja.nameHi : selectedPuja.name;
+  const name =
+    lang === 'hi' && selectedPuja.nameHi
+      ? selectedPuja.nameHi
+      : selectedPuja.name;
 
   return (
     <div
@@ -330,7 +359,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         {/* CLOSE BUTTON */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#ffffff] border border-[#f7ae62] text-[#5C3A1E] font-bold text-lg hover:bg-[#f7ae62] hover:text-white transition-all flex items-center justify-center z-10 cursor-pointer"
+          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white border border-[#f7ae62] text-[#5C3A1E] font-bold text-lg hover:bg-[#f7ae62] hover:text-white transition-all flex items-center justify-center z-10 cursor-pointer"
         >
           ✕
         </button>
@@ -356,11 +385,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <select
               value={selectedPuja.id}
               onChange={(e) => handlePujaChange(Number(e.target.value))}
-              className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#2C1A0E] outline-none"
+              className="w-full bg-white border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#2C1A0E] outline-none"
             >
               {pujas.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {lang === 'hi' && p.nameHi ? p.nameHi : p.name} ({p.priceDisplay})
+                  {lang === 'hi' && p.nameHi ? p.nameHi : p.name} (
+                  {p.priceDisplay})
                 </option>
               ))}
             </select>
@@ -375,23 +405,29 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <input
                 type="text"
                 required
-                placeholder={lang === 'hi' ? 'अपना नाम दर्ज करें' : 'Enter your full name'}
+                placeholder={
+                  lang === 'hi' ? 'अपना नाम दर्ज करें' : 'Enter your full name'
+                }
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
+                className="w-full bg-white border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
               />
             </div>
             <div>
               <label className="block text-xs font-bold text-[#5C3A1E] uppercase tracking-wider mb-1">
-                {lang === 'hi' ? 'व्हाट्सएप / मोबाइल *' : 'WhatsApp / Phone *'}
+                {lang === 'hi'
+                  ? 'व्हाट्सएप / मोबाइल *'
+                  : 'WhatsApp / Phone *'}
               </label>
               <input
                 type="tel"
                 required
                 placeholder="+91 98765 43210"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
+                onChange={(e) =>
+                  setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))
+                }
+                className="w-full bg-white border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
               />
             </div>
           </div>
@@ -407,7 +443,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
+                className="w-full bg-white border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
               />
             </div>
             <div>
@@ -420,7 +456,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 min={minDateStr}
                 value={pujaDate}
                 onChange={(e) => setPujaDate(e.target.value)}
-                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
+                className="w-full bg-white border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
               />
             </div>
           </div>
@@ -436,7 +472,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 placeholder="e.g. Mumbai, Delhi, Ujjain"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] focus:bg-white rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
+                className="w-full bg-white border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm text-[#2C1A0E] outline-none transition-all"
               />
             </div>
             <div>
@@ -446,7 +482,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <select
                 value={numPersons}
                 onChange={(e) => setNumPersons(Number(e.target.value))}
-                className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#2C1A0E] outline-none"
+                className="w-full bg-white border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[#2C1A0E] outline-none"
               >
                 <option value={1}>1 Person</option>
                 <option value={2}>2 Persons (Family)</option>
@@ -460,31 +496,37 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           {/* GOTRA, NAKSHATRA, RASHI */}
           <div className="grid grid-cols-3 gap-2">
             <div>
-              <label className="block text-[11px] font-bold text-[#5C3A1E] uppercase mb-1">Gotra</label>
+              <label className="block text-[11px] font-bold text-[#5C3A1E] uppercase mb-1">
+                Gotra
+              </label>
               <input
                 type="text"
                 placeholder="e.g. Kashyap"
                 value={gotra}
                 onChange={(e) => setGotra(e.target.value)}
-                className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 rounded-xl px-2.5 py-2 text-xs text-[#2C1A0E] outline-none"
+                className="w-full bg-white border border-[#2C1A0E]/10 rounded-xl px-2.5 py-2 text-xs text-[#2C1A0E] outline-none"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold text-[#5C3A1E] uppercase mb-1">Nakshatra</label>
+              <label className="block text-[11px] font-bold text-[#5C3A1E] uppercase mb-1">
+                Nakshatra
+              </label>
               <input
                 type="text"
                 placeholder="Optional"
                 value={nakshatra}
                 onChange={(e) => setNakshatra(e.target.value)}
-                className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 rounded-xl px-2.5 py-2 text-xs text-[#2C1A0E] outline-none"
+                className="w-full bg-white border border-[#2C1A0E]/10 rounded-xl px-2.5 py-2 text-xs text-[#2C1A0E] outline-none"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold text-[#5C3A1E] uppercase mb-1">Rashi</label>
+              <label className="block text-[11px] font-bold text-[#5C3A1E] uppercase mb-1">
+                Rashi
+              </label>
               <select
                 value={rashi}
                 onChange={(e) => setRashi(e.target.value)}
-                className="w-full bg-[#ffffff] border border-[#2C1A0E]/10 rounded-xl px-2 py-2 text-xs text-[#2C1A0E] outline-none"
+                className="w-full bg-white border border-[#2C1A0E]/10 rounded-xl px-2 py-2 text-xs text-[#2C1A0E] outline-none"
               >
                 <option value="">Rashi</option>
                 <option value="Mesh">Mesh (Aries)</option>
@@ -506,19 +548,25 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           {/* SANKALP MESSAGE */}
           <div>
             <label className="block text-xs font-bold text-[#5C3A1E] uppercase tracking-wider mb-1">
-              {lang === 'hi' ? 'विशेष मनोकामना / संकल्प' : 'Sankalp Message / Special Prayer (Optional)'}
-            </label>
+              {lang === 'hi'
+                ? 'विशेष मनोकामना / संकल्प'
+                : 'Sankalp Message / Special Prayer (Optional)'}
+  </label>
             <textarea
               rows={2}
-              placeholder={lang === 'hi' ? 'संकल्प हेतु विशेष प्रार्थना एवं इच्छा लिख सकते हैं...' : 'Any specific prayer or family wish for panditji during sankalp...'}
+              placeholder={
+                lang === 'hi'
+                  ? 'संकल्प हेतु विशेष प्रार्थना एवं इच्छा लिख सकते हैं...'
+                  : 'Any specific prayer or family wish for panditji during sankalp...'
+              }
               value={wishes}
               onChange={(e) => setWishes(e.target.value)}
-              className="w-full bg-[#ffffff] border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2 text-xs text-[#2C1A0E] outline-none resize-none"
+              className="w-full bg-white border-2 border-[#2C1A0E]/10 focus:border-[#f7ae62] rounded-xl px-3.5 py-2 text-xs text-[#2C1A0E] outline-none resize-none"
             />
           </div>
 
           {/* COUPON SECTION */}
-          <div className="bg-[#ffffff] p-3 rounded-xl border border-[#2C1A0E]/10 flex flex-col gap-2">
+          <div className="bg-white p-3 rounded-xl border border-[#2C1A0E]/10 flex flex-col gap-2">
             <div className="flex gap-2">
               <input
                 type="text"
@@ -538,7 +586,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             {couponMsg && (
               <div className="flex items-center justify-between text-xs text-emerald-700 font-medium">
                 <span>{couponMsg}</span>
-                <button type="button" onClick={removeCoupon} className="text-red-500 font-bold hover:underline cursor-pointer">
+                <button
+                  type="button"
+                  onClick={removeCoupon}
+                  className="text-red-500 font-bold hover:underline cursor-pointer"
+                >
                   Remove
                 </button>
               </div>
@@ -555,7 +607,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'razorpay'
                     ? 'border-[#ff5c00] bg-[#f2b705] text-[#2C1A0E] font-bold shadow-sm'
-                    : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E] hover:border-[#f7ae62]'
+                    : 'border-[#2C1A0E]/10 bg-white text-[#8B6F5E] hover:border-[#f7ae62]'
                 }`}
               >
                 <input
@@ -574,7 +626,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'upi'
                     ? 'border-[#ff5c00] bg-[#f2b705] text-[#2C1A0E] font-bold shadow-sm'
-                    : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E] hover:border-[#f7ae62]'
+                    : 'border-[#2C1A0E]/10 bg-white text-[#8B6F5E] hover:border-[#f7ae62]'
                 }`}
               >
                 <input
@@ -599,7 +651,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   {lang === 'hi' ? 'कुल देय राशि' : 'Total Payable Amount'}
                 </span>
                 <span className="text-[10px] text-[#8B6F5E]">
-                  {lang === 'hi' ? 'सामग्री, दक्षिणा एवं प्रसाद सहित' : 'Includes Samagri, Pandit Seva & Prasad'}
+                  {lang === 'hi'
+                    ? 'सामग्री, दक्षिणा एवं प्रसाद सहित'
+                    : 'Includes Samagri, Pandit Seva & Prasad'}
                 </span>
               </div>
               <div className="text-right">
@@ -617,45 +671,54 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-base py-3.5 rounded-full shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full bg-[#B5460F] hover:bg-[#8E350A] text-white font-bold text-base py-3.5 rounded-full shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
-                  <i className="fas fa-spinner fa-spin"></i> Processing Booking...
+                  <i className="fas fa-spinner fa-spin"></i> Processing...
                 </>
               ) : (
                 <>
-                  <i className="fas fa-lock text-sm"></i> Proceed to Pay ₹{finalPrice.toLocaleString('en-IN')}
+                  <i className="fas fa-lock text-sm"></i> Proceed to Pay ₹
+                  {finalPrice.toLocaleString('en-IN')}
                 </>
               )}
             </button>
 
-            {/* CHAT ON WHATSAPP BUTTON */}
+            {/* WHATSAPP BUTTON */}
             <button
               type="button"
               onClick={handleWhatsAppChat}
               className="w-full bg-[#25D366] hover:bg-[#1EBE5A] text-white font-bold text-sm py-3 rounded-full shadow-md transition-all flex items-center justify-center gap-2.5 cursor-pointer hover:shadow-lg active:scale-[0.99]"
             >
               <i className="fab fa-whatsapp text-xl"></i>
-              <span>{lang === 'hi' ? 'WhatsApp पर बातचीत एवं सहायता लें' : 'Chat on WhatsApp for Help & Booking'}</span>
+              <span>
+                {lang === 'hi'
+                  ? 'WhatsApp पर बातचीत एवं सहायता लें'
+                  : 'Chat on WhatsApp for Help & Booking'}
+              </span>
             </button>
+
             <p className="text-[11px] text-center text-[#8B6F5E]">
-              🔒 256-Bit Encrypted Payment. Direct WhatsApp booking confirmation sent immediately.
+              🔒 256-Bit Encrypted Payment. Direct WhatsApp booking confirmation
+              sent immediately.
             </p>
           </div>
         </form>
       </div>
 
+      {/* ✅ UPI QR MODAL */}
       {showUpiQr && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
           <div className="bg-white border-2 border-[#f2b705] rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl relative text-center">
             <button
               type="button"
               onClick={() => setShowUpiQr(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-black p-1 cursor-pointer font-bold"
+              className="absolute top-4 right-4 text-gray-400 hover:text-black p-1 cursor-pointer font-bold text-lg"
             >
               ✕
             </button>
+
             <div>
               <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase">
                 Instant UPI / GPay Payment
@@ -668,8 +731,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               </p>
             </div>
 
-            {/* QR CODE DISPLAY */}
-            <div className="bg-[#FAF8F5] border-2 border-dashed border-[#f2b705] p-4 rounded-2xl inline-block shadow-inner relative">
+            {/* QR CODE */}
+            <div className="bg-[#FAF8F5] border-2 border-dashed border-[#f2b705] p-4 rounded-2xl inline-block shadow-inner">
               <img
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
                   `upi://pay?pa=ramayentertainment@ybl&pn=The%20Ujjain%20Puja%20Services&am=${finalPrice}&cu=INR`
@@ -692,41 +755,49 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               </div>
             </div>
 
-            {/* DIRECT UPI APP LINKS FOR MOBILE */}
+            {/* DIRECT UPI APP LINKS */}
             <div className="grid grid-cols-3 gap-2 text-xs font-bold">
               <a
                 href={`upi://pay?pa=ramayentertainment@ybl&pn=The%20Ujjain%20Puja%20Services&am=${finalPrice}&cu=INR`}
-                className="bg-blue-50 border border-blue-200 text-blue-700 py-2.5 rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-blue-100 transition-all cursor-pointer"
+                className="bg-blue-50 border border-blue-200 text-blue-700 py-2.5 rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-blue-100 transition-all"
               >
                 <span className="text-xs font-black">GPay</span>
                 <span className="text-[10px] font-normal">Google Pay</span>
               </a>
               <a
                 href={`upi://pay?pa=ramayentertainment@ybl&pn=The%20Ujjain%20Puja%20Services&am=${finalPrice}&cu=INR`}
-                className="bg-purple-50 border border-purple-200 text-purple-700 py-2.5 rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-purple-100 transition-all cursor-pointer"
+                className="bg-purple-50 border border-purple-200 text-purple-700 py-2.5 rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-purple-100 transition-all"
               >
                 <i className="fas fa-mobile-alt text-base"></i>
                 <span className="text-[10px] font-normal">PhonePe</span>
               </a>
               <a
                 href={`upi://pay?pa=ramayentertainment@ybl&pn=The%20Ujjain%20Puja%20Services&am=${finalPrice}&cu=INR`}
-                className="bg-cyan-50 border border-cyan-200 text-cyan-700 py-2.5 rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-cyan-100 transition-all cursor-pointer"
+                className="bg-cyan-50 border border-cyan-200 text-cyan-700 py-2.5 rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-cyan-100 transition-all"
               >
                 <i className="fas fa-wallet text-base"></i>
                 <span className="text-[10px] font-normal">Paytm</span>
               </a>
             </div>
 
-            {/* UTR TRANSACTION REF INPUT */}
+            {/* UTR INPUT */}
             <div className="bg-amber-50 border border-amber-300 p-3.5 rounded-2xl text-left space-y-2 shadow-sm">
               <label className="text-xs font-bold text-[#2C1A0E] flex items-center justify-between">
-                <span>{lang === 'hi' ? '12-अंकों का UPI UTR / Transaction No.' : 'Enter 12-Digit UPI UTR / Ref No.'}</span>
-                <span className="text-[10px] text-amber-800 font-bold bg-amber-200/80 px-2 py-0.5 rounded-full">* Required</span>
+                <span>
+                  {lang === 'hi'
+                    ? '12-अंकों का UPI UTR / Transaction No.'
+                    : 'Enter 12-Digit UPI UTR / Ref No.'}
+                </span>
+                <span className="text-[10px] text-amber-800 font-bold bg-amber-200/80 px-2 py-0.5 rounded-full">
+                  * Required
+                </span>
               </label>
               <input
                 type="text"
                 value={utrNumber}
-                onChange={(e) => setUtrNumber(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
+                onChange={(e) =>
+                  setUtrNumber(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))
+                }
                 placeholder="e.g. 423456789012"
                 maxLength={20}
                 className="w-full bg-white border border-amber-300 rounded-xl px-3 py-2 text-sm font-mono tracking-widest font-bold text-[#2C1A0E] outline-none focus:border-[#ff5c00] focus:ring-2 focus:ring-[#ff5c00]/30 transition-all"
@@ -738,7 +809,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               </p>
             </div>
 
-            {/* CONFIRM BUTTON WITH UTR */}
+            {/* CONFIRM UTR BUTTON */}
             <button
               type="button"
               onClick={() => {
@@ -746,13 +817,19 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 if (!cleanUtr || cleanUtr.length < 6) {
                   showToast(
                     lang === 'hi'
-                      ? 'कृपया सही 12-अंकों का UPI UTR / Transaction No. दर्ज करें।'
+                     ? 'कृपया सही 12-अंकों का UPI UTR / Transaction No. दर्ज करें।'
                       : 'Please enter a valid 12-digit UPI UTR / Transaction Reference Number.',
                     'error'
                   );
                   return;
                 }
                 setShowUpiQr(false);
+                // ✅ FIX 11: Use bookingIdRef.current for UPI path too — no stale state
+                const bId =
+                  bookingIdRef.current ||
+                  'UJP' +
+                    Date.now().toString().slice(-6) +
+                    Math.floor(Math.random() * 900 + 100);
                 const payId = 'UPI_UTR_' + cleanUtr;
                 showToast(
                   lang === 'hi'
@@ -760,12 +837,16 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     : '🎉 UTR Submitted! Puja Booking Confirmed Successfully.',
                   'success'
                 );
-                onConfirmBooking(createBookingData(payId, 'SUCCESS'));
+                onConfirmBooking(createBookingData(payId, bId, 'SUCCESS'));
               }}
-              className="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-sm py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-sm py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
             >
               <i className="fas fa-check-circle text-lg"></i>
-              <span>{lang === 'hi' ? 'UTR जमा करें एवं बुकिंग कन्फर्म करें' : 'Submit UTR & Confirm Booking'}</span>
+              <span>
+                {lang === 'hi'
+                  ? 'UTR जमा करें एवं बुकिंग कन्फर्म करें'
+                  : 'Submit UTR & Confirm Booking'}
+              </span>
             </button>
           </div>
         </div>
