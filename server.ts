@@ -455,6 +455,69 @@ app.post("/api/razorpay/create-order", async (req, res) => {
   }
 });
 
+// Helper for server-side bookings persistence
+const bookingsFilePath = path.join(dataDir, "bookings.json");
+
+function getStoredBookings(): any[] {
+  if (!fs.existsSync(bookingsFilePath)) return [];
+  try {
+    const raw = fs.readFileSync(bookingsFilePath, "utf-8");
+    return JSON.parse(raw) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveBookingRecord(booking: any) {
+  try {
+    const existing = getStoredBookings();
+    const index = existing.findIndex((b: any) => 
+      (b.bookingId && b.bookingId === booking.bookingId) || 
+      (b.paymentId && b.paymentId === booking.paymentId)
+    );
+
+    if (index >= 0) {
+      existing[index] = { ...existing[index], ...booking };
+    } else {
+      existing.unshift(booking);
+    }
+
+    fs.writeFileSync(bookingsFilePath, JSON.stringify(existing, null, 2), "utf-8");
+    console.log(`Saved booking ${booking.bookingId} (${booking.paymentId}) to data/bookings.json`);
+
+    // Try saving to Supabase if available
+    if (supabase) {
+      supabase.from("bookings").upsert([{
+        booking_id: booking.bookingId,
+        full_name: booking.fullName,
+        phone: booking.phone,
+        email: booking.email,
+        puja_name: booking.pujaName,
+        puja_date: booking.pujaDate,
+        amount: booking.pujaPrice,
+        payment_id: booking.paymentId,
+        payment_status: booking.paymentStatus,
+        raw_notes: JSON.stringify(booking),
+        created_at: new Date().toISOString()
+      }], { onConflict: "booking_id" })
+      .then(({ error }: any) => {
+        if (error) {
+          console.warn("Supabase bookings table notice (webhook save):", error.message);
+        } else {
+          console.log("Booking saved to Supabase 'bookings' table");
+        }
+      }).catch((sbErr: any) => {
+        console.warn("Supabase bookings save exception:", sbErr.message || sbErr);
+      });
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Error saving booking record:", err);
+    return false;
+  }
+}
+
 // API: Verify Razorpay Payment Signature
 app.post("/api/razorpay/verify-payment", (req, res) => {
   try {
@@ -495,6 +558,114 @@ app.post("/api/razorpay/verify-payment", (req, res) => {
   } catch (err: any) {
     console.error("Error verifying payment signature:", err);
     res.status(500).json({ success: false, error: "Signature verification error: " + err.message });
+  }
+});
+
+// API: Razorpay Webhook Endpoint (/api/webhooks/razorpay)
+app.post("/api/webhooks/razorpay", async (req, res) => {
+  console.log("🔔 Received Razorpay Webhook Event:", req.body?.event);
+
+  try {
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    const signature = req.headers["x-razorpay-signature"] as string;
+
+    // Verify webhook signature if secret is provided in env
+    if (webhookSecret && signature) {
+      try {
+        const bodyStr = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
+        const expectedSignature = crypto
+          .createHmac("sha256", webhookSecret)
+          .update(bodyStr)
+          .digest("hex");
+
+        if (expectedSignature !== signature) {
+          console.warn("⚠️ Webhook signature mismatch! Please check RAZORPAY_WEBHOOK_SECRET.");
+        } else {
+          console.log("✅ Razorpay Webhook Signature verified successfully.");
+        }
+      } catch (sigErr) {
+        console.warn("Webhook signature check error:", sigErr);
+      }
+    }
+
+    const event = req.body?.event;
+    const payload = req.body?.payload;
+
+    // Process payment.captured or order.paid
+    if (event === "payment.captured" || event === "order.paid") {
+      const payment = payload?.payment?.entity || payload?.order?.entity;
+
+      if (payment) {
+        const paymentId = payment.id || payment.payment_id || `pay_${Date.now()}`;
+        const orderId = payment.order_id || `order_${Date.now()}`;
+        const rawAmount = payment.amount ? Math.round(payment.amount / 100) : 0;
+        const notes = payment.notes || {};
+
+        const bookingId = notes.bookingId || orderId || `UJP_${Date.now().toString().slice(-6)}`;
+        const customerName = notes.customerName || notes.fullName || notes.name || payment.email?.split("@")[0] || "Devotee";
+        const customerPhone = notes.customerPhone || notes.phone || payment.contact || "N/A";
+        const customerEmail = payment.email || notes.email || "";
+        const pujaName = notes.pujaName || notes.puja || "Ujjain Mahakal Puja Seva";
+        const pujaDate = notes.bookingDate || notes.pujaDate || new Date().toISOString().split("T")[0];
+        const gotra = notes.gotra || "Kashyap";
+        const pujaType = notes.pujaType || "Special Seva";
+
+        const newBookingRecord = {
+          bookingId: bookingId,
+          pujaId: notes.pujaId || 1,
+          pujaName: pujaName,
+          pujaPrice: rawAmount,
+          priceDisplay: `₹${rawAmount.toLocaleString("en-IN")}`,
+          fullName: customerName,
+          phone: customerPhone,
+          email: customerEmail,
+          pujaDate: pujaDate,
+          pujaType: pujaType,
+          city: notes.city || "Ujjain",
+          gotra: gotra,
+          paymentMethod: payment.method ? `Razorpay (${payment.method.toUpperCase()})` : "Razorpay Online / UPI",
+          paymentId: paymentId,
+          orderId: orderId,
+          paymentStatus: "SUCCESS",
+          timestamp: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+          notes: notes
+        };
+
+        // Save booking to server data storage and Supabase
+        saveBookingRecord(newBookingRecord);
+
+        console.log(`🎉 Webhook payment.captured handled: ${paymentId} for ${customerName} (${bookingId})`);
+      }
+    }
+
+    // Always respond promptly with 200 OK so Razorpay doesn't consider webhook failed
+    return res.status(200).json({ status: "ok", message: "Razorpay webhook received successfully" });
+  } catch (err: any) {
+    console.error("Error processing Razorpay Webhook:", err);
+    return res.status(200).json({ status: "ok", warning: err.message });
+  }
+});
+
+// API: Get and Post Admin Bookings
+app.get("/api/admin/bookings", async (_req, res) => {
+  try {
+    const bookings = getStoredBookings();
+    return res.json({ success: true, data: bookings });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post("/api/admin/bookings", async (req, res) => {
+  try {
+    const booking = req.body;
+    if (!booking || (!booking.bookingId && !booking.paymentId)) {
+      return res.status(400).json({ success: false, error: "Invalid booking data" });
+    }
+    saveBookingRecord(booking);
+    return res.json({ success: true, message: "Booking recorded on server" });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, error: err.message });
   }
 });
 

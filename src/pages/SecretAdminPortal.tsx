@@ -272,6 +272,35 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
     return MOCK_ADMIN_BOOKINGS;
   });
 
+  // Fetch server-stored bookings (including webhook captured payments)
+  useEffect(() => {
+    fetch('/api/admin/bookings')
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData && resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+          setBookings((prevList) => {
+            const mergedMap = new Map<string, BookingData>();
+            resData.data.forEach((b: BookingData) => {
+              const key = b.bookingId || b.paymentId || String(Math.random());
+              mergedMap.set(key, b);
+            });
+            prevList.forEach((b) => {
+              const key = b.bookingId || b.paymentId || String(Math.random());
+              if (!mergedMap.has(key)) {
+                mergedMap.set(key, b);
+              }
+            });
+            const mergedList = Array.from(mergedMap.values());
+            try {
+              localStorage.setItem('admin_bookings_data', JSON.stringify(mergedList));
+            } catch (_) {}
+            return mergedList;
+          });
+        }
+      })
+      .catch((err) => console.warn('Server bookings fetch notice:', err));
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'SUCCESS' | 'PENDING' | 'FAILED'>('ALL');
   const [selectedBooking, setSelectedBooking] = useState<BookingData | null>(null);

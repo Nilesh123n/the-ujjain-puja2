@@ -170,6 +170,21 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         throw new Error('Razorpay SDK failed to load. Please check your internet connection.');
       }
 
+      const generatedBookingId = pendingBookingId || ('UJP' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 900 + 100));
+
+      const sharedNotes = {
+        bookingId: generatedBookingId,
+        pujaId: selectedPuja.id,
+        pujaName: selectedPuja.name,
+        customerName: fullName.trim(),
+        customerPhone: phone.trim(),
+        email: email.trim(),
+        bookingDate: pujaDate,
+        gotra: gotra.trim() || 'Kashyap',
+        city: city.trim() || 'Ujjain / Online',
+        pujaType: selectedPuja.category || 'Special Seva',
+      };
+
       let orderData: any = null;
       try {
         const response = await fetch('/api/razorpay/create-order', {
@@ -179,11 +194,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             amount: finalPrice,
             currency: 'INR',
             receipt: 'rcpt_' + Date.now(),
-            notes: {
-              pujaName: selectedPuja.name,
-              customerName: fullName.trim(),
-              customerPhone: phone.trim(),
-            },
+            notes: sharedNotes,
           }),
         });
 
@@ -222,10 +233,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           email: email.trim() || 'devotee@ujjainpuja.com',
           contact: phone.trim(),
         },
-        notes: {
-          bookingDate: pujaDate,
-          gotra: gotra.trim() || 'Kashyap',
-        },
+        notes: sharedNotes,
         theme: {
           color: '#B5460F',
         },

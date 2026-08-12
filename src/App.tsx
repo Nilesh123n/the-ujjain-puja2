@@ -81,6 +81,13 @@ export default function App() {
       const updatedList = [booking, ...existingList];
       localStorage.setItem('admin_bookings_data', JSON.stringify(updatedList));
 
+      // Save to backend server
+      fetch('/api/admin/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(booking),
+      }).catch(err => console.warn('Server booking save note:', err));
+
       const activeSheetId = localStorage.getItem('connected_google_sheet_id');
       if (activeSheetId) {
         appendBookingToSheet(activeSheetId, booking).then((success) => {
