@@ -35,6 +35,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   });
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [showUpiQr, setShowUpiQr] = useState(false);
+  const [utrNumber, setUtrNumber] = useState('');
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponMsg, setCouponCodeMsg] = useState('');
@@ -244,8 +245,23 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         validOrderId = orderData.orderId;
       }
 
+      if (!validOrderId) {
+        // Prevent opening Razorpay JS SDK with an invalid/unauthorized key to avoid 401 Unauthorized errors from api.razorpay.com
+        setIsSubmitting(false);
+        setShowKeyInput(true);
+        setShowUpiQr(true);
+        showToast(
+          lang === 'hi'
+            ? 'Razorpay Key अमान्य है। तुरंत GPay / PhonePe / QR से भुगतान करें।'
+            : 'Razorpay key unauthorized. Opening Instant GPay / PhonePe / QR Payment...',
+          'info'
+        );
+        return;
+      }
+
       const options: any = {
         key: keyId,
+        order_id: validOrderId,
         amount: orderData?.amount || Math.round(finalPrice * 100),
         currency: orderData?.currency || 'INR',
         name: 'Mahakal Temple Puja Services',
@@ -276,10 +292,6 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         },
       };
 
-      if (validOrderId) {
-        options.order_id = validOrderId;
-      }
-
       try {
         const rzp = new (window as any).Razorpay(options);
         rzp.on('payment.failed', function (res: any) {
@@ -287,15 +299,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           console.warn('Razorpay payment failed notice:', res);
           const desc = res.error?.description || res.error?.reason || 'Payment cancelled or failed.';
           showToast(`Razorpay Notice: ${desc}`, 'error');
-          if (
-            desc.toLowerCase().includes('key') ||
-            desc.toLowerCase().includes('invalid') ||
-            desc.toLowerCase().includes('unauthorized') ||
-            res.error?.code === 'BAD_REQUEST_ERROR'
-          ) {
-            setShowKeyInput(true);
-            setShowUpiQr(true);
-          }
+          setShowKeyInput(true);
+          setShowUpiQr(true);
         });
         rzp.open();
       } catch (openErr: any) {
@@ -660,7 +665,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     type="text"
                     value={customRazorpayKey}
                     onChange={(e) => setCustomRazorpayKey(e.target.value)}
-                    placeholder="rzp_live_TKQ0HEnQP01Sze"
+                    placeholder="rzp_live_xxxxxxxxxxxxxx"
                     className="flex-1 bg-white border border-amber-300 rounded-lg px-3 py-1.5 font-mono text-xs outline-none focus:border-[#ff5c00]"
                   />
                   <button
@@ -813,19 +818,55 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               </a>
             </div>
 
-            {/* CONFIRM BUTTON */}
+            {/* UTR TRANSACTION REF INPUT */}
+            <div className="bg-amber-50 border border-amber-300 p-3.5 rounded-2xl text-left space-y-2 shadow-sm">
+              <label className="text-xs font-bold text-[#2C1A0E] flex items-center justify-between">
+                <span>{lang === 'hi' ? '12-अंकों का UPI UTR / Transaction No.' : 'Enter 12-Digit UPI UTR / Ref No.'}</span>
+                <span className="text-[10px] text-amber-800 font-bold bg-amber-200/80 px-2 py-0.5 rounded-full">* Required</span>
+              </label>
+              <input
+                type="text"
+                value={utrNumber}
+                onChange={(e) => setUtrNumber(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
+                placeholder="e.g. 423456789012"
+                maxLength={20}
+                className="w-full bg-white border border-amber-300 rounded-xl px-3 py-2 text-sm font-mono tracking-widest font-bold text-[#2C1A0E] outline-none focus:border-[#ff5c00] focus:ring-2 focus:ring-[#ff5c00]/30 transition-all"
+              />
+              <p className="text-[10px] text-gray-600 leading-tight">
+                {lang === 'hi'
+                  ? 'GPay / PhonePe / Paytm से भुगतान के बाद दिखने वाला 12-अंकों का UTR / Txn ID यहाँ लिखें।'
+                  : 'After payment, enter the 12-digit UTR / Ref ID shown in Google Pay or PhonePe.'}
+              </p>
+            </div>
+
+            {/* CONFIRM BUTTON WITH UTR */}
             <button
               type="button"
               onClick={() => {
+                const cleanUtr = utrNumber.trim();
+                if (!cleanUtr || cleanUtr.length < 6) {
+                  showToast(
+                    lang === 'hi'
+                      ? 'कृपया सही 12-अंकों का UPI UTR / Transaction No. दर्ज करें।'
+                      : 'Please enter a valid 12-digit UPI UTR / Transaction Reference Number.',
+                    'error'
+                  );
+                  return;
+                }
                 setShowUpiQr(false);
-                const payId = 'UPI_QR_' + Date.now().toString().slice(-8);
-                showToast('🎉 Payment Confirmed Successfully!', 'success');
+                const payId = 'UPI_UTR_' + cleanUtr;
+                showToast(
+                  lang === 'hi'
+                    ? '🎉 UTR दर्ज हो गया! पूजा बुकिंग सफलतापूर्वक कन्फर्म हुई।'
+                    : '🎉 UTR Submitted! Puja Booking Confirmed Successfully.',
+                  'success'
+                );
                 onConfirmBooking(createBookingData(payId, 'SUCCESS'));
               }}
-              className="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-sm py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-sm py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
             >
               <i className="fas fa-check-circle text-lg"></i>
-              <span>{lang === 'hi' ? 'भुगतान पूर्ण हो गया (बुक करें)' : 'I Have Paid (Complete Booking)'}</span>
+              <span>{lang === 'hi' ? 'UTR जमा करें एवं बुकिंग कन्फर्म करें' : 'Submit UTR & Confirm Booking'}</span>
             </button>
           </div>
         </div>

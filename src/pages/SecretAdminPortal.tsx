@@ -1350,7 +1350,7 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                     type="text"
                     value={razorpayKeyInput}
                     onChange={(e) => setRazorpayKeyInput(e.target.value)}
-                    placeholder="e.g. rzp_live_TKQ0HEnQP01Sze"
+                    placeholder="e.g. rzp_live_xxxxxxxxxxxxxx"
                     className="w-full bg-[#FAF8F5] border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono outline-none focus:border-[#ff5c00]"
                   />
                   <p className="text-[11px] text-gray-500">Key ID from Razorpay Merchant Dashboard → API Keys.</p>
