@@ -409,15 +409,15 @@ app.get("/api/razorpay/config", (_req, res) => {
 // API: Create Razorpay Order
 app.post("/api/razorpay/create-order", async (req, res) => {
   try {
-    const { amount, currency = "INR", receipt = "receipt_" + Date.now(), notes = {}, clientKeyId } = req.body;
+    const { amount, currency = "INR", receipt = "receipt_" + Date.now(), notes = {}, clientKeyId, clientKeySecret } = req.body;
 
     if (!amount || isNaN(amount)) {
       return res.status(400).json({ error: "Invalid amount provided" });
     }
 
     const cust = getStoredCustomization() || {};
-    const keyId = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || cust.razorpayKeyId || clientKeyId || "").trim();
-    const keySecret = (process.env.RAZORPAY_KEY_SECRET || cust.razorpayKeySecret || "").trim();
+    const keyId = (clientKeyId || process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || cust.razorpayKeyId || "").trim();
+    const keySecret = (clientKeySecret || process.env.RAZORPAY_KEY_SECRET || cust.razorpayKeySecret || "").trim();
 
     // Check if both key and secret credentials exist
     if (keyId && keySecret && keyId.startsWith("rzp_")) {
@@ -441,37 +441,41 @@ app.post("/api/razorpay/create-order", async (req, res) => {
           amount: order.amount,
           currency: order.currency,
           keyId: keyId,
+          hasSecret: true,
         });
       } catch (rzpApiError: any) {
         const errMsg = String(rzpApiError?.description || rzpApiError?.message || rzpApiError || "").toLowerCase();
         const isAuthError = errMsg.includes("authentication") || errMsg.includes("invalid key") || errMsg.includes("unauthorized") || rzpApiError?.statusCode === 401;
         console.warn("Razorpay API order creation note:", rzpApiError?.description || rzpApiError?.message || rzpApiError);
         return res.json({
-          success: !isAuthError,
+          success: false,
           isInvalidKey: isAuthError,
           isDirectFallback: true,
           orderId: null,
           amount: Math.round(Number(amount) * 100),
           currency,
           keyId: keyId,
-          error: rzpApiError?.description || rzpApiError?.message || "Razorpay Key ID is unauthorized or invalid (401).",
+          hasSecret: true,
+          error: rzpApiError?.description || rzpApiError?.message || "Razorpay Key/Secret authentication failed (401).",
         });
       }
     } else {
       return res.json({
-        success: true,
+        success: false,
+        requiresSecret: true,
         isDirectFallback: true,
         orderId: null,
         amount: Math.round(Number(amount) * 100),
         currency,
         keyId: keyId,
-        message: "Key/Secret not configured on server",
+        hasSecret: false,
+        message: "Razorpay Key Secret is required on server to create orders.",
       });
     }
   } catch (error: any) {
     console.error("Error creating Razorpay order:", error);
     res.status(200).json({
-      success: true,
+      success: false,
       isDirectFallback: true,
       orderId: null,
       amount: Math.round(Number(req.body?.amount || 0) * 100),
@@ -588,15 +592,16 @@ app.post("/api/razorpay/verify-payment", (req, res) => {
   }
 });
 
-// API: Razorpay Webhook Endpoint (/api/webhooks/razorpay)
-app.post("/api/webhooks/razorpay", async (req, res) => {
+// API: Razorpay Webhook Endpoint (/api/webhooks/razorpay & /api/razorpay/webhook)
+app.post(["/api/webhooks/razorpay", "/api/razorpay/webhook"], async (req, res) => {
   console.log("🔔 Received Razorpay Webhook Event:", req.body?.event);
 
   try {
-    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    const cust = getStoredCustomization() || {};
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET || cust.razorpayWebhookSecret || process.env.RAZORPAY_KEY_SECRET || cust.razorpayKeySecret;
     const signature = req.headers["x-razorpay-signature"] as string;
 
-    // Verify webhook signature if secret is provided in env
+    // Verify webhook signature if secret is provided
     if (webhookSecret && signature) {
       try {
         const bodyStr = typeof req.body === "string" ? req.body : JSON.stringify(req.body);

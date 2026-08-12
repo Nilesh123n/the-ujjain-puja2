@@ -356,6 +356,9 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
   const [razorpaySecretInput, setRazorpaySecretInput] = useState<string>(() => {
     return localStorage.getItem('razorpay_key_secret') || '';
   });
+  const [razorpayWebhookSecretInput, setRazorpayWebhookSecretInput] = useState<string>(() => {
+    return localStorage.getItem('razorpay_webhook_secret') || '';
+  });
   const [upiIdInput, setUpiIdInput] = useState<string>(() => {
     return localStorage.getItem('upi_id') || 'ramayentertainment@ybl';
   });
@@ -368,6 +371,9 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
     if (razorpaySecretInput.trim()) {
       localStorage.setItem('razorpay_key_secret', razorpaySecretInput.trim());
     }
+    if (razorpayWebhookSecretInput.trim()) {
+      localStorage.setItem('razorpay_webhook_secret', razorpayWebhookSecretInput.trim());
+    }
     if (upiIdInput.trim()) {
       localStorage.setItem('upi_id', upiIdInput.trim());
     }
@@ -379,6 +385,7 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
       body: JSON.stringify({
         razorpayKeyId: razorpayKeyInput.trim(),
         razorpayKeySecret: razorpaySecretInput.trim(),
+        razorpayWebhookSecret: razorpayWebhookSecretInput.trim(),
         upiId: upiIdInput.trim(),
       }),
     })
@@ -1369,6 +1376,18 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                 </div>
 
                 <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-[#2C1A0E]">Razorpay Webhook Secret (Optional)</label>
+                  <input
+                    type="password"
+                    value={razorpayWebhookSecretInput}
+                    onChange={(e) => setRazorpayWebhookSecretInput(e.target.value)}
+                    placeholder="e.g. my_webhook_secret_123"
+                    className="w-full bg-[#FAF8F5] border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono outline-none focus:border-[#ff5c00]"
+                  />
+                  <p className="text-[11px] text-gray-500">Secret key set in Razorpay Dashboard → Account & Settings → Webhooks.</p>
+                </div>
+
+                <div className="space-y-1.5">
                   <label className="text-xs font-bold text-[#2C1A0E]">Direct UPI VPA ID</label>
                   <input
                     type="text"
@@ -1390,6 +1409,39 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
                   </button>
                 </div>
               </form>
+
+              {/* WEBHOOK URL SETUP GUIDE */}
+              <div className="mt-6 pt-5 border-t border-gray-200 space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="p-1.5 bg-emerald-100 text-emerald-800 rounded-lg text-sm">🔔</span>
+                  <div>
+                    <h3 className="font-bold text-xs text-[#2C1A0E]">Razorpay Webhook Endpoint URLs for Automatic Instant Confirmation</h3>
+                    <p className="text-[11px] text-gray-500">Copy any of these webhook URLs into Razorpay Dashboard → Account & Settings → Webhooks</p>
+                  </div>
+                </div>
+
+                <div className="bg-[#FAF8F5] border border-emerald-300/80 rounded-xl p-3.5 space-y-2 text-xs">
+                  <div className="flex items-center justify-between bg-white p-2.5 rounded-lg border border-gray-200">
+                    <span className="font-mono text-[11px] text-[#2C1A0E] select-all truncate">
+                      {typeof window !== 'undefined' ? `${window.location.origin}/api/razorpay/webhook` : 'https://your-domain.com/api/razorpay/webhook'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const url = `${window.location.origin}/api/razorpay/webhook`;
+                        navigator.clipboard.writeText(url);
+                        showToast('📋 Webhook URL copied to clipboard!', 'success');
+                      }}
+                      className="text-xs bg-[#2C1A0E] hover:bg-black text-[#f2b705] font-bold px-3 py-1 rounded-lg transition-all cursor-pointer"
+                    >
+                      Copy URL
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-emerald-900 leading-relaxed font-medium">
+                    ⚡ <strong>Active Events to Enable in Razorpay:</strong> Select <code>payment.captured</code> and <code>order.paid</code> events. When a payment completes, Razorpay will automatically trigger this webhook and log the booking instantly into this Admin Panel!
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* CHANGE PIN */}

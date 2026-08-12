@@ -33,6 +33,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [customRazorpayKey, setCustomRazorpayKey] = useState<string>(() => {
     return (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : '') || '';
   });
+  const [customRazorpaySecret, setCustomRazorpaySecret] = useState<string>(() => {
+    return (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_secret') : '') || '';
+  });
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [showUpiQr, setShowUpiQr] = useState(false);
   const [utrNumber, setUtrNumber] = useState('');
@@ -185,6 +188,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         pujaType: selectedPuja.category || 'Special Seva',
       };
 
+      const savedKeyId = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : null;
+      const savedKeySecret = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_secret') : null;
+      const keyId = (customRazorpayKey.trim() || savedKeyId?.trim() || import.meta.env.VITE_RAZORPAY_KEY_ID?.trim() || '').trim();
+      const keySecret = (customRazorpaySecret.trim() || savedKeySecret?.trim() || '').trim();
+
       let orderData: any = null;
       try {
         const response = await fetch('/api/razorpay/create-order', {
@@ -195,6 +203,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             currency: 'INR',
             receipt: 'rcpt_' + Date.now(),
             notes: sharedNotes,
+            clientKeyId: keyId,
+            clientKeySecret: keySecret,
           }),
         });
 
@@ -205,43 +215,40 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         console.warn('Backend order creation fetch failed:', fetchErr);
       }
 
-      if (orderData?.isInvalidKey) {
-        console.warn('Server Razorpay key/secret warning:', orderData.error);
-      }
+      const activeKeyId = orderData?.keyId || keyId;
 
-      const savedKeyId = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : null;
-      const keyCandidate = (customRazorpayKey.trim() || savedKeyId?.trim() || orderData?.keyId?.trim() || import.meta.env.VITE_RAZORPAY_KEY_ID?.trim() || '').trim();
-      const keyId = keyCandidate;
-
-      if (!keyId || !keyId.startsWith('rzp_')) {
+      if (!activeKeyId || !activeKeyId.startsWith('rzp_')) {
         setIsSubmitting(false);
         setShowKeyInput(true);
-        showToast('Please enter your Razorpay Key ID (rzp_live_... or rzp_test_...) to proceed.', 'info');
+        showToast('Please enter your Razorpay Key ID & Key Secret to proceed.', 'info');
         return;
       }
 
-      // Dynamically load Razorpay SDK script if not already present
-      if (typeof (window as any).Razorpay === 'undefined') {
-        try {
-          await new Promise<void>((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-            script.async = true;
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Failed to load Razorpay Checkout SDK'));
-            document.head.appendChild(script);
-          });
-        } catch (scriptErr) {
-          console.error('Razorpay script loading error:', scriptErr);
-          setIsSubmitting(false);
-          setShowUpiQr(true);
-          showToast('Failed to load Razorpay SDK. You can pay via GPay / PhonePe UPI QR.', 'error');
-          return;
+      // Check if order creation requires Secret or failed
+      if (!orderData?.orderId) {
+        setIsSubmitting(false);
+        setShowKeyInput(true);
+        if (orderData?.requiresSecret) {
+          showToast(
+            lang === 'hi'
+              ? 'Razorpay Order बनाने के लिए Key Secret आवश्यक है। कृपया दर्ज करें या GPay / UPI QR से भुगतान करें।'
+              : 'Razorpay Key Secret is required to create live orders. Enter Key Secret below or pay via GPay / UPI QR.',
+            'info'
+          );
+        } else {
+          showToast(
+            lang === 'hi'
+              ? 'Razorpay ऑर्डर सृजन विफल रहा। नीचे सही Key Secret दर्ज करें या GPay / QR चुनें।'
+              : 'Razorpay order creation failed. Please enter valid Key Secret or pay via GPay / QR.',
+            'info'
+          );
         }
+        return;
       }
 
       const options: any = {
-        key: keyId,
+        key: activeKeyId,
+        order_id: orderData.orderId,
         amount: orderData?.amount || Math.round(finalPrice * 100),
         currency: orderData?.currency || 'INR',
         name: 'Mahakal Temple Puja Services',
@@ -271,17 +278,6 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           backdropclose: false
         },
       };
-
-      if (
-        orderData?.orderId &&
-        typeof orderData.orderId === 'string' &&
-        orderData.orderId.startsWith('order_') &&
-        !orderData.orderId.startsWith('order_mock_') &&
-        !orderData.isTestFallback &&
-        !orderData.isDirectFallback
-      ) {
-        options.order_id = orderData.orderId;
-      }
 
       try {
         const rzp = new (window as any).Razorpay(options);
@@ -334,16 +330,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     }
 
     setIsSubmitting(true);
-
-    if (paymentMethod === 'razorpay') {
-      handleRazorpayPayment();
-    } else {
-      // WhatsApp or standard offline pay
-      setTimeout(() => {
-        setIsSubmitting(false);
-        onConfirmBooking(createBookingData('PAY_WA_' + Date.now().toString().slice(-6), 'PENDING_CONFIRMATION'));
-      }, 800);
-    }
+    handleRazorpayPayment();
   };
 
   const name = lang === 'hi' && selectedPuja.nameHi ? selectedPuja.nameHi : selectedPuja.name;
@@ -580,9 +567,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <label className="block text-xs font-bold text-[#5C3A1E] uppercase tracking-wider mb-1.5">
               {lang === 'hi' ? 'भुगतान माध्यम चुनें' : 'Select Payment Option'}
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               <label
-                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
+                className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'razorpay'
                     ? 'border-[#ff5c00] bg-[#f2b705] text-[#2C1A0E] font-bold shadow-sm'
                     : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E] hover:border-[#f7ae62]'
@@ -596,12 +583,12 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   onChange={() => setPaymentMethod('razorpay')}
                   className="sr-only"
                 />
-                <i className="fas fa-credit-card text-base mb-1 text-[#B5460F]"></i>
-                <span className="text-[11px] font-bold">Razorpay / Card</span>
+                <i className="fas fa-credit-card text-lg mb-1 text-[#B5460F]"></i>
+                <span className="text-xs font-bold">Razorpay / Online Pay</span>
               </label>
 
               <label
-                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
+                className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 cursor-pointer transition-all ${
                   paymentMethod === 'upi'
                     ? 'border-[#ff5c00] bg-[#f2b705] text-[#2C1A0E] font-bold shadow-sm'
                     : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E] hover:border-[#f7ae62]'
@@ -615,34 +602,15 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   onChange={() => setPaymentMethod('upi')}
                   className="sr-only"
                 />
-                <i className="fas fa-mobile-alt text-base mb-1 text-[#B5460F]"></i>
-                <span className="text-[11px] font-bold">GPay / PhonePe / QR</span>
-              </label>
-
-              <label
-                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border-2 cursor-pointer transition-all ${
-                  paymentMethod === 'whatsapp'
-                    ? 'border-[#25D366] bg-emerald-50 text-emerald-800 font-bold shadow-sm'
-                    : 'border-[#2C1A0E]/10 bg-[#ffffff] text-[#8B6F5E] hover:border-[#f7ae62]'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payMethod"
-                  value="whatsapp"
-                  checked={paymentMethod === 'whatsapp'}
-                  onChange={() => setPaymentMethod('whatsapp')}
-                  className="sr-only"
-                />
-                <i className="fab fa-whatsapp text-base mb-1 text-[#25D366]"></i>
-                <span className="text-[11px] font-bold">Pay via WhatsApp</span>
+                <i className="fas fa-mobile-alt text-lg mb-1 text-[#B5460F]"></i>
+                <span className="text-xs font-bold">GPay / PhonePe / QR</span>
               </label>
             </div>
 
             {showKeyInput && (
-              <div className="mt-3 p-3 bg-amber-50 border border-amber-300 rounded-xl space-y-2 text-xs">
+              <div className="mt-3 p-3.5 bg-amber-50 border border-amber-300 rounded-xl space-y-2.5 text-xs shadow-sm">
                 <div className="flex items-center justify-between font-bold text-[#2C1A0E]">
-                  <span>🔑 {lang === 'hi' ? 'Razorpay Live Key ID दर्ज करें' : 'Enter Razorpay Live Key ID'}</span>
+                  <span>🔑 {lang === 'hi' ? 'Razorpay Key ID एवं Key Secret दर्ज करें' : 'Enter Razorpay Key ID & Key Secret'}</span>
                   <button
                     type="button"
                     onClick={() => setShowKeyInput(false)}
@@ -651,33 +619,61 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     ✕
                   </button>
                 </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={customRazorpayKey}
-                    onChange={(e) => setCustomRazorpayKey(e.target.value)}
-                    placeholder="rzp_live_xxxxxxxxxxxxxx"
-                    className="flex-1 bg-white border border-amber-300 rounded-lg px-3 py-1.5 font-mono text-xs outline-none focus:border-[#ff5c00]"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (customRazorpayKey.trim() && customRazorpayKey.trim().startsWith('rzp_')) {
-                        localStorage.setItem('razorpay_key_id', customRazorpayKey.trim());
-                        showToast('✅ Razorpay Key Updated! Resuming payment...', 'success');
+                <div className="space-y-2">
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#5C3A1E] mb-1">Razorpay Key ID</label>
+                    <input
+                      type="text"
+                      value={customRazorpayKey}
+                      onChange={(e) => setCustomRazorpayKey(e.target.value)}
+                      placeholder="e.g. rzp_live_TKQ0HEnQP01SZE"
+                      className="w-full bg-white border border-amber-300 rounded-lg px-3 py-1.5 font-mono text-xs outline-none focus:border-[#ff5c00]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-[#5C3A1E] mb-1">Razorpay Key Secret</label>
+                    <input
+                      type="password"
+                      value={customRazorpaySecret}
+                      onChange={(e) => setCustomRazorpaySecret(e.target.value)}
+                      placeholder="e.g. ywZ9PwaRiRpsZjGQwkI0Itbk"
+                      className="w-full bg-white border border-amber-300 rounded-lg px-3 py-1.5 font-mono text-xs outline-none focus:border-[#ff5c00]"
+                    />
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (customRazorpayKey.trim() && customRazorpayKey.trim().startsWith('rzp_')) {
+                          localStorage.setItem('razorpay_key_id', customRazorpayKey.trim());
+                          if (customRazorpaySecret.trim()) {
+                            localStorage.setItem('razorpay_key_secret', customRazorpaySecret.trim());
+                          }
+                          showToast('✅ Credentials saved! Retrying Razorpay order...', 'success');
+                          setShowKeyInput(false);
+                          handleRazorpayPayment();
+                        } else {
+                          showToast('Please enter a valid Razorpay Key ID starting with rzp_live_ or rzp_test_', 'error');
+                        }
+                      }}
+                      className="flex-1 bg-[#ff5c00] hover:bg-[#e05200] text-white py-2 rounded-lg font-bold transition-all cursor-pointer text-center text-xs shadow-sm"
+                    >
+                      Save Credentials & Pay with Razorpay
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
                         setShowKeyInput(false);
-                        handleRazorpayPayment();
-                      } else {
-                        showToast('Please enter a valid key ID starting with rzp_live_ or rzp_test_', 'error');
-                      }
-                    }}
-                    className="bg-[#ff5c00] hover:bg-[#e05200] text-white px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer"
-                  >
-                    Save & Retry
-                  </button>
+                        setShowUpiQr(true);
+                      }}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-bold transition-all cursor-pointer text-xs shadow-sm"
+                    >
+                      Pay via GPay / QR
+                    </button>
+                  </div>
                 </div>
-                <p className="text-[10px] text-gray-500">
-                  Get your key from Razorpay Dashboard → Settings → API Keys.
+                <p className="text-[10px] text-gray-500 leading-tight">
+                  Razorpay requires both Key ID & Key Secret to generate live order signatures. Get them from Razorpay Dashboard → Account & Settings → API Keys.
                 </p>
               </div>
             )}
