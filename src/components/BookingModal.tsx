@@ -31,12 +31,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [wishes, setWishes] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
   const [customRazorpayKey, setCustomRazorpayKey] = useState<string>(() => {
-    return (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : '') || '';
+    return (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : '') || 'rzp_live_TLfxE402PT1cGO';
   });
   const [customRazorpaySecret, setCustomRazorpaySecret] = useState<string>(() => {
-    return (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_secret') : '') || '';
+    return (typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_secret') : '') || 'ywZ9PwaRiRpsZjGQwkI0Itbk';
   });
-  const [showKeyInput, setShowKeyInput] = useState(false);
   const [showUpiQr, setShowUpiQr] = useState(false);
   const [utrNumber, setUtrNumber] = useState('');
   const [couponCode, setCouponCode] = useState('');
@@ -190,8 +189,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
       const savedKeyId = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_id') : null;
       const savedKeySecret = typeof window !== 'undefined' ? localStorage.getItem('razorpay_key_secret') : null;
-      const keyId = (customRazorpayKey.trim() || savedKeyId?.trim() || import.meta.env.VITE_RAZORPAY_KEY_ID?.trim() || '').trim();
-      const keySecret = (customRazorpaySecret.trim() || savedKeySecret?.trim() || '').trim();
+      const keyId = (customRazorpayKey.trim() || savedKeyId?.trim() || import.meta.env.VITE_RAZORPAY_KEY_ID?.trim() || 'rzp_live_TLfxE402PT1cGO').trim();
+      const keySecret = (customRazorpaySecret.trim() || savedKeySecret?.trim() || 'ywZ9PwaRiRpsZjGQwkI0Itbk').trim();
 
       let orderData: any = null;
       try {
@@ -217,32 +216,16 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
       const activeKeyId = orderData?.keyId || keyId;
 
-      if (!activeKeyId || !activeKeyId.startsWith('rzp_')) {
-        setIsSubmitting(false);
-        setShowKeyInput(true);
-        showToast('Please enter your Razorpay Key ID & Key Secret to proceed.', 'info');
-        return;
-      }
-
-      // Check if order creation requires Secret or failed
+      // Check if order creation failed
       if (!orderData?.orderId) {
         setIsSubmitting(false);
-        setShowKeyInput(true);
-        if (orderData?.requiresSecret) {
-          showToast(
-            lang === 'hi'
-              ? 'Razorpay Order बनाने के लिए Key Secret आवश्यक है। कृपया दर्ज करें या GPay / UPI QR से भुगतान करें।'
-              : 'Razorpay Key Secret is required to create live orders. Enter Key Secret below or pay via GPay / UPI QR.',
-            'info'
-          );
-        } else {
-          showToast(
-            lang === 'hi'
-              ? 'Razorpay ऑर्डर सृजन विफल रहा। नीचे सही Key Secret दर्ज करें या GPay / QR चुनें।'
-              : 'Razorpay order creation failed. Please enter valid Key Secret or pay via GPay / QR.',
-            'info'
-          );
-        }
+        showToast(
+          lang === 'hi'
+            ? 'Razorpay ऑर्डर सृजन विफल रहा। कृपया GPay / UPI QR से भुगतान करें।'
+            : 'Razorpay payment unavailable. Redirecting to GPay / UPI QR payment...',
+          'info'
+        );
+        setShowUpiQr(true);
         return;
       }
 
@@ -606,77 +589,6 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 <span className="text-xs font-bold">GPay / PhonePe / QR</span>
               </label>
             </div>
-
-            {showKeyInput && (
-              <div className="mt-3 p-3.5 bg-amber-50 border border-amber-300 rounded-xl space-y-2.5 text-xs shadow-sm">
-                <div className="flex items-center justify-between font-bold text-[#2C1A0E]">
-                  <span>🔑 {lang === 'hi' ? 'Razorpay Key ID एवं Key Secret दर्ज करें' : 'Enter Razorpay Key ID & Key Secret'}</span>
-                  <button
-                    type="button"
-                    onClick={() => setShowKeyInput(false)}
-                    className="text-gray-400 hover:text-gray-600 font-bold"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div className="space-y-2">
-                  <div>
-                    <label className="block text-[11px] font-bold text-[#5C3A1E] mb-1">Razorpay Key ID</label>
-                    <input
-                      type="text"
-                      value={customRazorpayKey}
-                      onChange={(e) => setCustomRazorpayKey(e.target.value)}
-                      placeholder="e.g. rzp_live_TKQ0HEnQP01SZE"
-                      className="w-full bg-white border border-amber-300 rounded-lg px-3 py-1.5 font-mono text-xs outline-none focus:border-[#ff5c00]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-[#5C3A1E] mb-1">Razorpay Key Secret</label>
-                    <input
-                      type="password"
-                      value={customRazorpaySecret}
-                      onChange={(e) => setCustomRazorpaySecret(e.target.value)}
-                      placeholder="e.g. ywZ9PwaRiRpsZjGQwkI0Itbk"
-                      className="w-full bg-white border border-amber-300 rounded-lg px-3 py-1.5 font-mono text-xs outline-none focus:border-[#ff5c00]"
-                    />
-                  </div>
-                  <div className="flex gap-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (customRazorpayKey.trim() && customRazorpayKey.trim().startsWith('rzp_')) {
-                          localStorage.setItem('razorpay_key_id', customRazorpayKey.trim());
-                          if (customRazorpaySecret.trim()) {
-                            localStorage.setItem('razorpay_key_secret', customRazorpaySecret.trim());
-                          }
-                          showToast('✅ Credentials saved! Retrying Razorpay order...', 'success');
-                          setShowKeyInput(false);
-                          handleRazorpayPayment();
-                        } else {
-                          showToast('Please enter a valid Razorpay Key ID starting with rzp_live_ or rzp_test_', 'error');
-                        }
-                      }}
-                      className="flex-1 bg-[#ff5c00] hover:bg-[#e05200] text-white py-2 rounded-lg font-bold transition-all cursor-pointer text-center text-xs shadow-sm"
-                    >
-                      Save Credentials & Pay with Razorpay
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowKeyInput(false);
-                        setShowUpiQr(true);
-                      }}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-bold transition-all cursor-pointer text-xs shadow-sm"
-                    >
-                      Pay via GPay / QR
-                    </button>
-                  </div>
-                </div>
-                <p className="text-[10px] text-gray-500 leading-tight">
-                  Razorpay requires both Key ID & Key Secret to generate live order signatures. Get them from Razorpay Dashboard → Account & Settings → API Keys.
-                </p>
-              </div>
-            )}
           </div>
 
           {/* TOTAL & SUBMIT */}

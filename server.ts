@@ -392,8 +392,8 @@ app.post("/api/customization", async (req, res) => {
 // API: Razorpay Config status
 app.get("/api/razorpay/config", (_req, res) => {
   const cust = getStoredCustomization() || {};
-  const keyId = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || cust.razorpayKeyId || "").trim();
-  const hasSecret = Boolean((process.env.RAZORPAY_KEY_SECRET || cust.razorpayKeySecret || "").trim());
+  const keyId = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || cust.razorpayKeyId || "rzp_live_TLfxE402PT1cGO").trim();
+  const hasSecret = Boolean((process.env.RAZORPAY_KEY_SECRET || cust.razorpayKeySecret || "ywZ9PwaRiRpsZjGQwkI0Itbk").trim());
   const upiId = (process.env.VITE_UPI_ID || cust.upiId || "ramayentertainment@ybl").trim();
   const upiName = (process.env.VITE_UPI_NAME || cust.upiName || "The Ujjain Puja Services").trim();
 
@@ -416,8 +416,8 @@ app.post("/api/razorpay/create-order", async (req, res) => {
     }
 
     const cust = getStoredCustomization() || {};
-    const keyId = (clientKeyId || process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || cust.razorpayKeyId || "").trim();
-    const keySecret = (clientKeySecret || process.env.RAZORPAY_KEY_SECRET || cust.razorpayKeySecret || "").trim();
+    const keyId = (clientKeyId || process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || cust.razorpayKeyId || "rzp_live_TLfxE402PT1cGO").trim();
+    const keySecret = (clientKeySecret || process.env.RAZORPAY_KEY_SECRET || cust.razorpayKeySecret || "ywZ9PwaRiRpsZjGQwkI0Itbk").trim();
 
     // Check if both key and secret credentials exist
     if (keyId && keySecret && keyId.startsWith("rzp_")) {

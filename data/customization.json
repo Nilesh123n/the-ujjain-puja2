@@ -10,5 +10,7 @@
       "description": "Test"
     }
   ],
-  "updatedAt": "2026-08-02T13:29:34.529Z"
+  "razorpayKeyId": "rzp_live_TLfxE402PT1cGO",
+  "razorpayKeySecret": "ywZ9PwaRiRpsZjGQwkI0Itbk",
+  "updatedAt": "2026-08-12T03:52:00.000Z"
 }

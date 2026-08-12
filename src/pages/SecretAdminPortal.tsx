@@ -351,10 +351,10 @@ export const SecretAdminPortal: React.FC<SecretAdminPortalProps> = ({ showToast,
 
   // Payment Gateway Config State
   const [razorpayKeyInput, setRazorpayKeyInput] = useState<string>(() => {
-    return localStorage.getItem('razorpay_key_id') || '';
+    return localStorage.getItem('razorpay_key_id') || 'rzp_live_TLfxE402PT1cGO';
   });
   const [razorpaySecretInput, setRazorpaySecretInput] = useState<string>(() => {
-    return localStorage.getItem('razorpay_key_secret') || '';
+    return localStorage.getItem('razorpay_key_secret') || 'ywZ9PwaRiRpsZjGQwkI0Itbk';
   });
   const [razorpayWebhookSecretInput, setRazorpayWebhookSecretInput] = useState<string>(() => {
     return localStorage.getItem('razorpay_webhook_secret') || '';
