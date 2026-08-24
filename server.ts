@@ -19,6 +19,25 @@ app.use(express.urlencoded({ limit: "25mb", extended: true }));
 // Serve static assets from public folder
 app.use(express.static(path.join(process.cwd(), "public")));
 
+// Direct endpoints for LLM context files
+app.get(["/llms.txt", "/llm.txt", "/llm.tst"], (req, res) => {
+  const filePath = path.join(process.cwd(), "public", "llms.txt");
+  if (fs.existsSync(filePath)) {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    return res.sendFile(filePath);
+  }
+  res.status(404).send("llms.txt not found");
+});
+
+app.get("/llms-full.txt", (req, res) => {
+  const filePath = path.join(process.cwd(), "public", "llms-full.txt");
+  if (fs.existsSync(filePath)) {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    return res.sendFile(filePath);
+  }
+  res.status(404).send("llms-full.txt not found");
+});
+
 // Ensure upload & data directories exist
 const uploadsDir = path.join(process.cwd(), "public", "uploads");
 if (!fs.existsSync(uploadsDir)) {

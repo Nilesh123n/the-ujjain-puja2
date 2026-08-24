@@ -5,6 +5,7 @@ import { Toast, ToastMessage } from './components/Toast';
 import { PujaDetailModal } from './components/PujaDetailModal';
 import { BookingModal } from './components/BookingModal';
 import { AiChatbot } from './components/AiChatbot';
+import { SeoSchema } from './components/SeoSchema';
 
 import { HomePage } from './pages/HomePage';
 import { PujaPage } from './pages/PujaPage';
@@ -130,6 +131,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#ffffff] text-[#2C1A0E] relative selection:bg-[#f7ae62] selection:text-[#5C3A1E]">
+      {/* DYNAMIC SCHEMA MARKUP (JSON-LD) & SEO METADATA */}
+      <SeoSchema
+        activeTab={activeTab}
+        selectedDetailPuja={selectedDetailPuja}
+        selectedBookingPuja={selectedBookingPuja}
+        pujas={pujas}
+      />
+
       {/* NAVBAR */}
       <Navbar
         activeTab={activeTab}

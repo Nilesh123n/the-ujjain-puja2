@@ -189,12 +189,22 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onOpenBooking }) =
         {/* BOTTOM COPYRIGHT */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-[#3A220F]">
           <p>© 2026 Ujjain Puja | {t('footer_rights', 'All Rights Reserved.')}</p>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap items-center gap-3">
             <span className="hover:text-[#2C1A0E] cursor-pointer">Privacy Policy</span>
             <span>•</span>
             <span className="hover:text-[#2C1A0E] cursor-pointer">Terms of Service</span>
             <span>•</span>
             <span className="hover:text-[#2C1A0E] cursor-pointer">Refund Policy</span>
+            <span>•</span>
+            <a
+              href="/llms.txt"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-[#2C1A0E] font-bold underline cursor-pointer inline-flex items-center gap-1"
+              title="LLM & AI Knowledge Directory"
+            >
+              <span>llms.txt</span>
+            </a>
           </div>
         </div>
       </div>
