@@ -38,6 +38,16 @@ app.get("/llms-full.txt", (req, res) => {
   res.status(404).send("llms-full.txt not found");
 });
 
+app.get("/docs/:file", (req, res) => {
+  const fileName = req.params.file.replace(/[^a-zA-Z0-9_\-\.]/g, "");
+  const filePath = path.join(process.cwd(), "public", "docs", fileName);
+  if (fs.existsSync(filePath)) {
+    res.setHeader("Content-Type", "text/markdown; charset=utf-8");
+    return res.sendFile(filePath);
+  }
+  res.status(404).send("Document not found");
+});
+
 // Ensure upload & data directories exist
 const uploadsDir = path.join(process.cwd(), "public", "uploads");
 if (!fs.existsSync(uploadsDir)) {
