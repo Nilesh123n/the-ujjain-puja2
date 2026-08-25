@@ -25,6 +25,12 @@
     "react": "^19.0.1",
     "react-dom": "^19.0.1"
   },
+  "overrides": {
+    "esbuild": "0.28.2"
+  },
+  "resolutions": {
+    "esbuild": "0.28.2"
+  },
   "devDependencies": {
     "esbuild": "0.28.2",
     "tsx": "^4.19.2",
